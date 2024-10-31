@@ -40,8 +40,10 @@ class AppTextFormField extends StatelessWidget {
   final Color enabledBorderColor;
   final Color errorBorderColor;
   final Color textColor;
+  final TextAlign textAlign;
   final VoidCallback? prefixCallback;
   final VoidCallback? suffixCallback;
+  final TextStyle? textStyle;
 
   const AppTextFormField(
       {super.key,
@@ -75,19 +77,22 @@ class AppTextFormField extends StatelessWidget {
       this.maxLines = 1,
       this.minLines = 1,
       this.letterSpacing,
+      this.textStyle,
       this.filled = false,
       this.fillColor = Colors.transparent,
       this.textInputAction = TextInputAction.done,
       this.focusedBorderColor = AppColors.primary,
-      this.enabledBorderColor = AppColors.neutral500,
+      this.enabledBorderColor = AppColors.neutral300,
       this.errorBorderColor = Colors.red,
       this.prefixCallback,
       this.suffixCallback,
-      this.textColor = Colors.black});
+      this.textColor = Colors.black,
+      this.textAlign = TextAlign.start});
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      textAlign: textAlign,
       controller: controller,
       focusNode: focusNode,
       keyboardType: keyboardType,
@@ -105,12 +110,13 @@ class AppTextFormField extends StatelessWidget {
       onTap: onTap,
       onEditingComplete: onEditingComplete,
       onTapOutside: onTapOutside,
-      style: TextStyle(
-        fontSize: fontSize,
-        fontWeight: fontWeight,
-        color: textColor,
-        letterSpacing: letterSpacing,
-      ),
+      style: textStyle ??
+          TextStyle(
+            fontSize: fontSize,
+            fontWeight: fontWeight,
+            color: textColor,
+            letterSpacing: letterSpacing,
+          ),
       decoration: InputDecoration(
         isDense: true,
         contentPadding: EdgeInsets.symmetric(
@@ -149,7 +155,7 @@ class AppTextFormField extends StatelessWidget {
         suffixText: suffixText,
         filled: filled,
         fillColor: fillColor,
-        suffixStyle: TextStyle(),
+        suffixStyle: const TextStyle(),
         suffixIconConstraints: BoxConstraints.tightFor(
           width: constraintWidth,
           height: constraintHeight,
@@ -170,12 +176,12 @@ class AppTextFormField extends StatelessWidget {
               )
             : UnderlineInputBorder(
                 borderSide: BorderSide(
-                  width: 2,
+                  width: 1,
                   color: enabledBorderColor,
                 ),
-                borderRadius: BorderRadius.all(
-                  Radius.circular(radius),
-                ),
+                // borderRadius: BorderRadius.all(
+                //   Radius.circular(radius),
+                // ),
               ),
         enabledBorder: borderType == BorderType.outline
             ? OutlineInputBorder(
@@ -189,12 +195,12 @@ class AppTextFormField extends StatelessWidget {
               )
             : UnderlineInputBorder(
                 borderSide: BorderSide(
-                  width: 2,
+                  width: 1,
                   color: enabledBorderColor,
                 ),
-                borderRadius: BorderRadius.all(
-                  Radius.circular(radius),
-                ),
+                // borderRadius: BorderRadius.all(
+                //   Radius.circular(radius),
+                // ),
               ),
         focusedBorder: borderType == BorderType.outline
             ? OutlineInputBorder(
@@ -202,18 +208,18 @@ class AppTextFormField extends StatelessWidget {
                   width: 1,
                   color: focusedBorderColor,
                 ),
-                borderRadius: BorderRadius.all(
-                  Radius.circular(radius),
-                ),
+                // borderRadius: BorderRadius.all(
+                //   Radius.circular(radius),
+                // ),
               )
             : UnderlineInputBorder(
                 borderSide: BorderSide(
-                  width: 2,
+                  width: 1,
                   color: focusedBorderColor,
                 ),
-                borderRadius: BorderRadius.all(
-                  Radius.circular(radius),
-                ),
+                // borderRadius: BorderRadius.all(
+                //   Radius.circular(radius),
+                // ),
               ),
         errorBorder: borderType == BorderType.outline
             ? OutlineInputBorder(
@@ -227,12 +233,12 @@ class AppTextFormField extends StatelessWidget {
               )
             : UnderlineInputBorder(
                 borderSide: BorderSide(
-                  width: 2,
+                  width: 1,
                   color: errorBorderColor,
                 ),
-                borderRadius: BorderRadius.all(
-                  Radius.circular(radius),
-                ),
+                // borderRadius: BorderRadius.all(
+                //   Radius.circular(radius),
+                // ),
               ),
         focusedErrorBorder: borderType == BorderType.outline
             ? OutlineInputBorder(
@@ -246,12 +252,12 @@ class AppTextFormField extends StatelessWidget {
               )
             : UnderlineInputBorder(
                 borderSide: BorderSide(
-                  width: 2,
+                  width: 1,
                   color: errorBorderColor,
                 ),
-                borderRadius: BorderRadius.all(
-                  Radius.circular(radius),
-                ),
+                // borderRadius: BorderRadius.all(
+                //   Radius.circular(radius),
+                // ),
               ),
       ),
     );

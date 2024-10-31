@@ -7,6 +7,8 @@ import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/sign_up/presentation/create_account_screen.dart';
 
+import '../../main_screen/presentation/main_screen.dart';
+
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
 
@@ -60,6 +62,7 @@ class _SignInScreenState extends State<SignInScreen> {
           AppTextFormField(
             controller: _passwordController,
             hintText: '* * * * * * * *',
+            obscureText: true,
             textColor: Colors.white,
             suffixIcon: FaIcon(showPassword
                 ? FontAwesomeIcons.eye
@@ -78,8 +81,13 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
           ),
           const Gap(30),
-          const AppButton(
+          AppGradientButton(
             text: 'Sign In',
+            callback: () => Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const MainScreen()),
+                (r) {
+              return false;
+            }),
           ),
           const Gap(
             40,

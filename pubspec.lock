@@ -41,6 +41,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  board_datetime_picker:
+    dependency: "direct main"
+    description:
+      name: board_datetime_picker
+      sha256: "6bcf2645ffbbb688e82a5fdfecbb3ba00bdbcadaadbb774ccd2498d8376f4b51"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.4"
   boolean_selector:
     dependency: transitive
     description:
@@ -49,6 +57,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  carousel_slider:
+    dependency: "direct main"
+    description:
+      name: carousel_slider
+      sha256: "7b006ec356205054af5beaef62e2221160ea36b90fb70a35e4deacd49d0349ae"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.0"
   characters:
     dependency: transitive
     description:
@@ -113,6 +129,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  date_time_format:
+    dependency: "direct main"
+    description:
+      name: date_time_format
+      sha256: dc47de14c95a7511e98ca429e1ebfd98c339badb496c9f2aaf56a70d07c7c0bf
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.1"
+  dotted_border:
+    dependency: "direct main"
+    description:
+      name: dotted_border
+      sha256: "108837e11848ca776c53b30bc870086f84b62ed6e01c503ed976e8f8c7df9c04"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   fake_async:
     dependency: transitive
     description:
@@ -320,6 +352,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.3.0"
+  intl:
+    dependency: transitive
+    description:
+      name: intl
+      sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.19.0"
   json_annotation:
     dependency: transitive
     description:
@@ -408,6 +448,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.0"
+  path_drawing:
+    dependency: transitive
+    description:
+      name: path_drawing
+      sha256: bbb1934c0cbb03091af082a6389ca2080345291ef07a5fa6d6e078ba8682f977
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
+  path_parsing:
+    dependency: transitive
+    description:
+      name: path_parsing
+      sha256: "45f7d6bba1128761de5540f39d5ca000ea8a1f22f06b76b61094a60a2997bd0e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   path_provider:
     dependency: transitive
     description:

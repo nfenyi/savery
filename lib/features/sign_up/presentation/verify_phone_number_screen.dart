@@ -28,13 +28,11 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen> {
       appBar: AppBar(
         actions: [
           AppTextButton(
-            callback: () {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => const MainScreen(),
-                ),
-              );
-            },
+            callback: () => Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const MainScreen()),
+                (r) {
+              return false;
+            }),
             text: 'Skip',
           ),
         ],
@@ -70,7 +68,7 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen> {
                   ),
                 ],
               ),
-              AppButton(
+              AppGradientButton(
                 text: 'Send',
                 callback: () => Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => const OTPScreen(),

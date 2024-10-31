@@ -5,7 +5,7 @@ import '../app_constants/app_sizes.dart';
 class AppText extends StatelessWidget {
   final String text;
   final double? size;
-  final FontWeight weight;
+  final FontWeight? weight;
   final FontStyle style;
   final TextDecoration decoration;
   final Color? color;
@@ -19,7 +19,7 @@ class AppText extends StatelessWidget {
       {super.key,
       required this.text,
       this.size = AppSizes.bodySmaller,
-      this.weight = FontWeight.bold,
+      this.weight,
       this.style = FontStyle.normal,
       this.decoration = TextDecoration.none,
       this.color = Colors.black,

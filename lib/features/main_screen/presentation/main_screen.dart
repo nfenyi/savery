@@ -5,7 +5,10 @@ import 'package:iconsax/iconsax.dart';
 import 'package:logger/logger.dart';
 import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
+import 'package:savery/app_widgets/app_text.dart';
+import 'package:savery/features/new_transaction/presentation/new_transaction_screen.dart';
 
+import '../../../app_widgets/widgets.dart';
 import 'budget_screen.dart';
 import 'home_screen.dart';
 import 'statistics_screen.dart';
@@ -47,6 +50,74 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: ElevatedButton(
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const NewTransactionScreen(),
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.zero,
+          shape: const CircleBorder(),
+        ),
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(colors: [
+              Color.fromARGB(
+                255,
+                224,
+                6,
+                135,
+              ),
+              AppColors.primary
+            ]),
+            borderRadius: BorderRadius.circular(100),
+          ),
+          child: Container(
+            // padding: padding,
+            width: 50,
+            height: 50,
+            alignment: Alignment.center,
+            child: const Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+      appBar: AppBar(
+        title: AppText(
+          text: _currentIndex == 0
+              ? "Hello, Ann"
+              : _currentIndex == 1
+                  ? "Statistics"
+                  : _currentIndex == 2
+                      ? "Budget"
+                      : _currentIndex == 3
+                          ? 'Profile'
+                          : "",
+          color: _currentIndex != 3 ? Colors.black : Colors.white,
+          size: AppSizes.heading6,
+        ),
+        centerTitle: _currentIndex != 0 ? true : false,
+        backgroundColor: _currentIndex != 3 ? Colors.white : AppColors.primary,
+        actions: (_currentIndex == 3)
+            ? [
+                AppTextButton(
+                  text: 'Edit',
+                  color: Colors.orange,
+                  callback: () {
+                    // Navigator.of(context).pushReplacement(
+                    //   MaterialPageRoute(
+                    //     builder: (context) => const SignInScreen(),
+                    //   ),
+                    // );
+                  },
+                ),
+              ]
+            : null,
+      ),
       body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -78,34 +149,18 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Iconsax.home),
-            activeIcon: Icon(
-              Iconsax.home5,
-              color: AppColors.primary,
-            ),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Iconsax.wifi),
-            activeIcon: Icon(
-              Iconsax.wifi5,
-              color: AppColors.primary,
-            ),
+            icon: Icon(Iconsax.setting_4),
             label: 'Statistics',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Iconsax.monitor_mobbile),
-            activeIcon: Icon(
-              Iconsax.monitor_mobbile5,
-              color: AppColors.primary,
-            ),
+            icon: Icon(Iconsax.wallet),
             label: 'Budget',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Iconsax.profile_2user),
-            activeIcon: Icon(
-              Iconsax.profile_2user5,
-              color: AppColors.primary,
-            ),
+            icon: Icon(Iconsax.user),
             label: 'User',
           ),
         ],

@@ -218,7 +218,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         dotColor: Color.fromARGB(255, 93, 69, 142)),
                     count: _onboardingTexts.length),
                 const Gap(30),
-                AppButton(
+                AppGradientButton(
                   text: currentPage != 2 ? 'NEXT' : 'GET STARTED',
                   callback: () {
                     if (currentPage != 2) {

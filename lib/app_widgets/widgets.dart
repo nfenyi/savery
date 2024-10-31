@@ -16,7 +16,7 @@ import '../../app_constants/app_sizes.dart';
 import '../app_constants/app_colors.dart';
 import 'app_text.dart';
 
-part 'app_button.dart';
+part 'app_gradient_button.dart';
 part 'app_loader.dart';
 part 'app_text_form_field.dart';
 part 'app_dialog.dart';
@@ -25,5 +25,6 @@ part 'required_text.dart';
 part 'app_circular_icon_button.dart';
 part 'app_name_widget.dart';
 part 'app_text_button.dart';
+part 'app_button.dart';
 
 // part 'custom_text.dart';

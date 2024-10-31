@@ -115,7 +115,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
             ],
           ),
           const Gap(30),
-          AppButton(
+          AppGradientButton(
             text: 'Sign Up',
             callback: () => Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => const VerifyPhoneNumberScreen(),
