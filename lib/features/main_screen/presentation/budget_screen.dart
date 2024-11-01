@@ -8,16 +8,17 @@ import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 
 import '../../../app_functions/app_functions.dart';
+import '../../my_budgets/presentation/my_budgets_screen.dart';
 import '../models/account.dart';
 
-class BudgetScreen extends ConsumerStatefulWidget {
-  const BudgetScreen({super.key});
+class BudgetsScreen extends ConsumerStatefulWidget {
+  const BudgetsScreen({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _BudgetScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _BudgetsScreenState();
 }
 
-class _BudgetScreenState extends ConsumerState<BudgetScreen> {
+class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
   Account? _selectedAccount;
 
   DateTime _dateHolder = DateTime.now();
@@ -146,6 +147,11 @@ class _BudgetScreenState extends ConsumerState<BudgetScreen> {
                 const Gap(10),
                 Expanded(
                   child: InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const MyBillsScreen(),
+                      ));
+                    },
                     child: Ink(
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),

@@ -3,9 +3,11 @@ part of 'widgets.dart';
 class CircularIconButton extends StatelessWidget {
   final IconData icon;
   final Color? color;
+  final Function? callback;
   const CircularIconButton({
     required this.icon,
     this.color,
+    this.callback,
     super.key,
   });
 

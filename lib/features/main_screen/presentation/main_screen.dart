@@ -31,7 +31,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const StatisticsScreen(),
-    const BudgetScreen(),
+    const BudgetsScreen(),
     const UserScreen(),
   ];
 
@@ -93,12 +93,12 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               : _currentIndex == 1
                   ? "Statistics"
                   : _currentIndex == 2
-                      ? "Budget"
+                      ? "Budgets"
                       : _currentIndex == 3
                           ? 'Profile'
                           : "",
           color: _currentIndex != 3 ? Colors.black : Colors.white,
-          size: AppSizes.heading6,
+          size: AppSizes.bodySmall,
         ),
         centerTitle: _currentIndex != 0 ? true : false,
         backgroundColor: _currentIndex != 3 ? Colors.white : AppColors.primary,

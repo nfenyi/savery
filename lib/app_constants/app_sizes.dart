@@ -39,4 +39,7 @@ class AppSizes {
 
   //buttons
   static const double buttonHeight = 40.0;
+
+  //forms
+  static const double dropDownBoxHeight = 42.0;
 }

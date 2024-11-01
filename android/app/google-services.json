@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "26297828009",
+    "project_id": "savery-d54a9",
+    "storage_bucket": "savery-d54a9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:26297828009:android:cd713cc7f8788fa7dedfb8",
+        "android_client_info": {
+          "package_name": "com.example.savery"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcZZ7ihjd0zLZJktSZ3F86lEnCOmZzinI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

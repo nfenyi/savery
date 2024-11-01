@@ -1,6 +1,6 @@
 part of 'widgets.dart';
 
-Future<dynamic> appDialog(BuildContext context,
+Future<dynamic> showAppDialog(BuildContext context,
     {required String title,
     String? description,
     String confirmText = 'Proceed',

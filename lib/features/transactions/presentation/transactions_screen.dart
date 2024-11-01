@@ -5,57 +5,46 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:lottie/lottie.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:savery/app_constants/app_assets.dart';
 import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:savery/app_widgets/widgets.dart';
 
 import '../../../app_functions/app_functions.dart';
-import '../models/account.dart';
-import '../models/statistics/statistics_model.dart';
+import '../../main_screen/models/account.dart';
 
-class StatisticsScreen extends ConsumerStatefulWidget {
-  const StatisticsScreen({super.key});
+class TransactionsScreen extends ConsumerStatefulWidget {
+  const TransactionsScreen({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _StatisticsScreenState();
+      _TransactionsScreenState();
 }
 
-class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
+class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
+  String? _selectedAccountName;
+  String? _selectedSortBy;
+  Account? _selectedAccount;
   List<String>? dropdownOptions = [];
 
   int? _periodFilter = 0;
-  String? _selectedAccountName;
-  String? _selectedSortBy = 'Sort by categories';
-  Account? _selectedAccount;
-  late List<_ChartData> data;
-  DateTime? _dateHolder;
+  int? _transactionTypeFilter = 0;
 
-  Map<dynamic, int> serviceTypeCounts = {0: 5};
-
-  @override
-  void initState() {
-    super.initState();
-    data = [
-      _ChartData('CHN', 12),
-      _ChartData('GER', 15),
-      _ChartData('RUS', 30),
-      _ChartData('BRZ', 6.4),
-      _ChartData('IND', 14)
-    ];
-  }
+  DateTime _dateHolder = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-          horizontal: AppSizes.horizontalPaddingSmall),
-      child: SingleChildScrollView(
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        title: const AppText(text: 'Transactions'),
+      ),
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSizes.horizontalPaddingSmall),
         child: Column(
           children: [
             DropdownButtonHideUnderline(
@@ -159,63 +148,61 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             Row(
               children: [
                 Expanded(
-                  child: TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                              side:
-                                  const BorderSide(color: AppColors.neutral100),
-                              borderRadius: BorderRadius.circular(20))),
-                      onPressed: () {},
-                      child: const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Iconsax.arrow_down),
-                              AppText(text: 'Income')
-                            ],
-                          ),
-                          AppText(
-                            text: '+ 2 215.10 GHc',
-                            size: AppSizes.heading5,
-                            color: Colors.green,
-                            weight: FontWeight.w500,
-                          )
-                        ],
-                      )),
+                  child: AppButton(
+                    borderRadius: 20,
+                    callback: () {
+                      setState(() {
+                        _transactionTypeFilter = 0;
+                      });
+                    },
+                    text: 'All',
+                    textColor: _transactionTypeFilter == 0
+                        ? Colors.white
+                        : Colors.black,
+                    buttonColor: _transactionTypeFilter == 0
+                        ? AppColors.primary
+                        : Colors.grey.shade100,
+                  ),
                 ),
                 const Gap(10),
                 Expanded(
-                  child: TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                              side:
-                                  const BorderSide(color: AppColors.neutral100),
-                              borderRadius: BorderRadius.circular(20))),
-                      onPressed: () {},
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Row(
-                            children: [
-                              Icon(Iconsax.arrow_down),
-                              AppText(text: 'Expenses')
-                            ],
-                          ),
-                          AppText(
-                            text: '+ 2 215.10 GHc',
-                            size: AppSizes.heading5,
-                            color: Colors.red.shade300,
-                            weight: FontWeight.w500,
-                          )
-                        ],
-                      )),
+                  child: AppButton(
+                    borderRadius: 20,
+                    callback: () {
+                      setState(() {
+                        _transactionTypeFilter = 1;
+                      });
+                    },
+                    text: 'Incomes',
+                    textColor: _transactionTypeFilter == 1
+                        ? Colors.white
+                        : Colors.black,
+                    buttonColor: _transactionTypeFilter == 1
+                        ? AppColors.primary
+                        : Colors.grey.shade100,
+                  ),
+                ),
+                const Gap(10),
+                Expanded(
+                  child: AppButton(
+                    borderRadius: 20,
+                    callback: () {
+                      setState(() {
+                        _transactionTypeFilter = 2;
+                      });
+                    },
+                    buttonColor: _transactionTypeFilter == 2
+                        ? AppColors.primary
+                        : Colors.grey.shade100,
+                    text: 'Expenses',
+                    textColor: _transactionTypeFilter == 2
+                        ? Colors.white
+                        : Colors.black,
+                  ),
                 ),
               ],
             ),
-            const Gap(10),
+            const Gap(20),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -289,78 +276,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 ),
               ],
             ),
-            const Gap(10),
-            _selectedSortBy == 'Sort by categories'
-                ? SfCircularChart(
-                    // annotations: <CircularChartAnnotation>[
-                    //   const CircularChartAnnotation(
-                    //       angle: 200,
-                    //       radius: '80%',
-                    //       widget: Text('Circular Chart')),
-                    //   const CircularChartAnnotation(
-                    //       angle: 60,
-                    //       radius: '80%',
-                    //       widget: Text('Circular Chart')),
-                    //   const CircularChartAnnotation(
-                    //       angle: 100,
-                    //       radius: '80%',
-                    //       widget: Text('Circular Chart')),
-                    // ],
-                    // backgroundColor: Colors.green,
-                    legend: const Legend(isVisible: true, isResponsive: true),
-                    series: <CircularSeries>[
-                      DoughnutSeries<ChartData, String>(
-                        // explodeAll: true,
-                        groupMode: CircularChartGroupMode.point,
-                        groupTo: 3, explode: true, explodeAll: true,
-                        explodeOffset: '3%',
-                        dataSource:
-                            // List.generate(serviceTypeCounts.length,
-                            //               (index) {
-                            //             String type =
-                            //                 serviceTypeCounts.keys.elementAt(index);
-                            //             Map<String, dynamic> data =
-                            //                 serviceTypeCounts[type]!;
-                            //             int count = data['count'] as int;
-                            //             Color color = data['color'] as Color;
-
-                            //             return ChartData(type, count, color);
-                            //           }),
-                            [
-                          ChartData('Jan', 50, Colors.brown),
-                          ChartData('Feb', 10, Colors.blue),
-                          ChartData('March', 70, Colors.red),
-                        ],
-                        xValueMapper: (ChartData data, _) => data.month,
-                        yValueMapper: (ChartData data, _) => data.amount,
-                        pointColorMapper: (ChartData data, _) => data.color,
-                        innerRadius: '40%',
-                        dataLabelSettings:
-                            const DataLabelSettings(isVisible: true),
-                      ),
-                    ],
-                  )
-                : SfCartesianChart(
-                    // borderWidth: 0,
-                    primaryXAxis: const CategoryAxis(
-                      majorGridLines: MajorGridLines(width: 0),
-                    ),
-                    primaryYAxis: const NumericAxis(
-                        majorGridLines: MajorGridLines(width: 0),
-                        minimum: 0,
-                        maximum: 40,
-                        interval: 10),
-                    series: <CartesianSeries<_ChartData, String>>[
-                      ColumnSeries<_ChartData, String>(
-                          dataSource: data,
-                          xValueMapper: (_ChartData data, _) => data.x,
-                          yValueMapper: (_ChartData data, _) => data.y,
-                          borderRadius: BorderRadius.circular(10),
-                          // name: 'Gold',
-                          color: AppColors.primary)
-                    ],
-                  ),
-            (_selectedAccount != null)
+            const Divider(),
+            (_selectedAccountName != null)
                 ? SizedBox(
                     height: Adaptive.h(40),
                     child: ListView.separated(
@@ -442,17 +359,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                         },
                         itemCount: _selectedAccount!.transactions.length),
                   )
-                : Lottie.asset(AppAssets.noData, height: 100)
+                : Container()
           ],
         ),
       ),
     );
   }
-}
-
-class _ChartData {
-  _ChartData(this.x, this.y);
-
-  final String x;
-  final double y;
 }

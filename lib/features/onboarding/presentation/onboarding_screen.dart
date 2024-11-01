@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_assets.dart';
 import 'package:savery/app_constants/app_sizes.dart';
@@ -17,6 +18,7 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  final Box box = Hive.box('application');
   double? currentPage = 0.0;
   final _pageController = PageController(initialPage: 0);
   // final _indicatorController = PageController(initialPage: 0);
@@ -56,6 +58,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           AppTextButton(
             text: 'Skip',
             callback: () {
+              box.put('onboarded', true);
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
                   builder: (context) => const SignInScreen(),
@@ -226,6 +229,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           duration: const Duration(seconds: 1),
                           curve: Curves.easeIn);
                     } else {
+                      box.put('onboarded', true);
                       Navigator.of(context).pushReplacement(MaterialPageRoute(
                         builder: (context) => const SignInScreen(),
                       ));

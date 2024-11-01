@@ -5,6 +5,7 @@ import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/features/sign_in/backend/authentcator.dart';
 import 'package:savery/features/sign_up/presentation/create_account_screen.dart';
 
 import '../../main_screen/presentation/main_screen.dart';
@@ -17,6 +18,7 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  final authenticator = const Authenticator();
   final _nameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool showPassword = false;
@@ -111,7 +113,12 @@ class _SignInScreenState extends State<SignInScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               CircularIconButton(
-                  icon: FontAwesomeIcons.facebookF, color: Colors.blue[900]),
+                callback: () async {
+                  await authenticator.logInWithFacebook(context);
+                },
+                icon: FontAwesomeIcons.facebookF,
+                color: Colors.blue[900],
+              ),
               const Gap(20),
               const CircularIconButton(
                 icon: FontAwesomeIcons.google,

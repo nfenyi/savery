@@ -11,6 +11,7 @@ import 'package:savery/app_functions/app_functions.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart' as widgets;
 import 'package:savery/features/new_transaction/models/transaction_category.dart';
+import 'package:savery/features/transactions/presentation/transactions_screen.dart';
 
 import '../models/account.dart';
 
@@ -146,7 +147,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 weight: FontWeight.bold,
                 size: AppSizes.bodySmall,
               ),
-              widgets.AppTextButton(text: 'View All', callback: () {})
+              widgets.AppTextButton(
+                  text: 'View All',
+                  callback: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const TransactionsScreen(),
+                    ));
+                  })
             ],
           ),
         ),

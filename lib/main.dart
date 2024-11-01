@@ -1,15 +1,22 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:savery/features/main_screen/presentation/main_screen.dart';
+import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
 
 import 'features/onboarding/presentation/onboarding_screen.dart';
+import 'firebase_options.dart';
 
 void main() async {
   await Hive.initFlutter();
   await Hive.openBox("application");
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const ProviderScope(child: Savery()));
 }
 
@@ -68,13 +75,17 @@ class Wrapper extends ConsumerWidget {
       body: ValueListenableBuilder(
         valueListenable: Hive.box('application').listenable(),
         builder: (context, box, child) {
+          bool onboarded = box.get('onboarded', defaultValue: false);
+          if (!onboarded) {
+            return const OnboardingScreen();
+          }
           bool authenticated = box.get('authenticated', defaultValue: false);
-          return const OnboardingScreen();
-          // if (!authenticated) {
-          //   return const SignInScreen();
-          // } else {
-          //   return const MainScreen();
-          // }
+
+          if (!authenticated) {
+            return const SignInScreen();
+          } else {
+            return const MainScreen();
+          }
         },
       ),
     );
