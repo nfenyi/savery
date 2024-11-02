@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -23,7 +22,7 @@ class Authenticator {
     await FacebookAuth.instance.logOut();
   }
 
-  Future<AuthResult> logInWithFacebook(BuildContext context) async {
+  Future<AuthResult> logInWithFacebook() async {
     final loginResult = await FacebookAuth.instance.login();
     final AccessToken? accessToken = loginResult.accessToken;
     final Box box = Hive.box('application');
@@ -38,7 +37,7 @@ class Authenticator {
       box.put('authenticated', true);
       return AuthResult.success;
     } on FirebaseAuthException catch (e) {
-      await showAppDialog(context, title: e.toString());
+      await showAppDialog(navigatorKey.currentContext!, title: e.toString());
       // final credential = e.credential;
       // if (e.code == Constants.accountExistsWithDifferentCredential &&
       //     email != null &&
@@ -79,6 +78,7 @@ class Authenticator {
       box.put('authenticated', true);
       return AuthResult.success;
     } catch (e) {
+      await showAppDialog(navigatorKey.currentContext!, title: e.toString());
       return AuthResult.failure;
     }
   }

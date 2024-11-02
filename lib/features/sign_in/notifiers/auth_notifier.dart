@@ -1,8 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-
-import '../backend/authentcator.dart';
+import '../services/authentcator.dart';
 import '../models/auth_state.dart';
 import '../user_info/backend/user_info_storage.dart';
 
@@ -40,9 +37,9 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     );
   }
 
-  Future<void> logInWithFacebook(BuildContext context) async {
+  Future<void> logInWithFacebook() async {
     state = state.copiedWithIsLoading(true);
-    final result = await _authenticator.logInWithFacebook(context);
+    final result = await _authenticator.logInWithFacebook();
     final userId = _authenticator.userId;
 
     // if (result == AuthResult.success && userId != null) {

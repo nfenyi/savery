@@ -7,6 +7,7 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/features/main_screen/models/settings.dart';
+import 'package:savery/features/sign_in/notifiers/providers/providers.dart';
 
 import '../../../app_constants/app_assets.dart';
 import '../../../app_constants/app_colors.dart';
@@ -144,14 +145,16 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                     );
                   },
                 ),
-                const ListTile(
-                  contentPadding: EdgeInsets.all(0),
+                ListTile(
+                  onTap: () async =>
+                      ref.read(authStateProvider.notifier).logOut,
+                  contentPadding: const EdgeInsets.all(0),
                   dense: true,
-                  leading: Icon(
+                  leading: const Icon(
                     Iconsax.logout,
                     color: Colors.red,
                   ),
-                  title: AppText(
+                  title: const AppText(
                     text: 'Log Out',
                     weight: FontWeight.w900,
                     color: Colors.red,

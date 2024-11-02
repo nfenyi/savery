@@ -6,7 +6,6 @@ import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
-import 'package:savery/features/sign_in/backend/authentcator.dart';
 import 'package:savery/features/sign_up/presentation/create_account_screen.dart';
 import 'package:savery/main.dart';
 
@@ -121,21 +120,25 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              //facebook button
               CircularIconButton(
-                callback: () async {
-                  await ref
-                      .read(authStateProvider.notifier)
-                      .logInWithFacebook(context);
-                },
+                callback: () async => await ref
+                    .read(authStateProvider.notifier)
+                    .logInWithFacebook(),
                 icon: FontAwesomeIcons.facebookF,
                 color: Colors.blue[900],
               ),
               const Gap(20),
-              const CircularIconButton(
+              //google button
+              CircularIconButton(
                 icon: FontAwesomeIcons.google,
                 // color: null,
+                callback: () async => await ref
+                    .read(authStateProvider.notifier)
+                    .logInWithGoogle(),
               ),
               const Gap(20),
+              //TODO:
               const CircularIconButton(
                 icon: FontAwesomeIcons.apple,
                 color: Colors.black,
