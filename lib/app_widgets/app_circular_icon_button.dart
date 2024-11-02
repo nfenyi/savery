@@ -3,7 +3,7 @@ part of 'widgets.dart';
 class CircularIconButton extends StatelessWidget {
   final IconData icon;
   final Color? color;
-  final Function? callback;
+  final VoidCallback? callback;
   const CircularIconButton({
     required this.icon,
     this.color,
@@ -17,7 +17,7 @@ class CircularIconButton extends StatelessWidget {
       height: 40,
       width: 40,
       child: TextButton(
-        onPressed: () {},
+        onPressed: callback,
         style: TextButton.styleFrom(
           alignment: Alignment.center,
 

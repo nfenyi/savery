@@ -6,6 +6,7 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
+import 'package:savery/main.dart';
 
 import '../../../app_functions/app_functions.dart';
 import '../../my_budgets/presentation/my_budgets_screen.dart';
@@ -148,7 +149,7 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
                 Expanded(
                   child: InkWell(
                     onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
+                      navigatorKey.currentState!.push(MaterialPageRoute(
                         builder: (context) => const MyBillsScreen(),
                       ));
                     },

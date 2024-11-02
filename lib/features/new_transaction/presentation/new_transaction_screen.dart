@@ -9,6 +9,7 @@ import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/new_transaction/models/transaction_category.dart';
+import 'package:savery/main.dart';
 
 import '../../../app_constants/app_sizes.dart';
 
@@ -156,7 +157,8 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                       FontAwesomeIcons.xmark,
                                       size: 18,
                                     ),
-                                    onTap: () => Navigator.of(context).pop(),
+                                    onTap: () =>
+                                        navigatorKey.currentState!.pop(),
                                   ),
                                   // const Gap(10),
                                   const AppText(
@@ -167,7 +169,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                   AppTextButton(
                                     text: 'Done',
                                     callback: () {
-                                      Navigator.of(context).pop();
+                                      navigatorKey.currentState!.pop();
                                     },
                                   )
                                 ],
@@ -251,7 +253,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
             AppGradientButton(
               text: 'Save',
               callback: () {
-                Navigator.of(context).pop();
+                navigatorKey.currentState!.pop();
               },
             )
             // Row(

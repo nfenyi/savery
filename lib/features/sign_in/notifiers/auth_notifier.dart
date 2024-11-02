@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../backend/authentcator.dart';
 import '../models/auth_state.dart';
@@ -29,9 +30,9 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     final result = await _authenticator.loginWithGoogle();
     final userId = _authenticator.userId;
 
-    if (result == AuthResult.success && userId != null) {
-      await saveUserInfo(userId: userId);
-    }
+    // if (result == AuthResult.success && userId != null) {
+    //   await saveUserInfo(userId: userId);
+    // }
     state = AuthState(
       isLoading: false,
       result: result,
@@ -44,9 +45,9 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     final result = await _authenticator.logInWithFacebook(context);
     final userId = _authenticator.userId;
 
-    if (result == AuthResult.success && userId != null) {
-      await saveUserInfo(userId: userId);
-    }
+    // if (result == AuthResult.success && userId != null) {
+    //   await saveUserInfo(userId: userId);
+    // }
     state = AuthState(
       isLoading: false,
       result: result,
@@ -54,11 +55,9 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     );
   }
 
-  Future<void> saveUserInfo({required String userId}) =>
-      _userInfoStorage.saveUserInfo(
-          userId: userId,
-          displayName: _authenticator.displayName,
-          email: _authenticator.email);
+  // Future<void> saveUserInfo({required String userId}) =>
+  //     _userInfoStorage.saveUserInfo(
+  //         userId: userId,
+  //         displayName: _authenticator.displayName,
+  //         email: _authenticator.email);
 }
-//Scaffold(appBar)
-// Text(Welcome to Instantgram)

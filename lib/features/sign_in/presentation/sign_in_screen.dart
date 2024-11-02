@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:savery/app_constants/app_colors.dart';
@@ -7,21 +8,29 @@ import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/sign_in/backend/authentcator.dart';
 import 'package:savery/features/sign_up/presentation/create_account_screen.dart';
+import 'package:savery/main.dart';
 
 import '../../main_screen/presentation/main_screen.dart';
+import '../notifiers/providers/providers.dart';
 
-class SignInScreen extends StatefulWidget {
+class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
 
   @override
-  State<SignInScreen> createState() => _SignInScreenState();
+  ConsumerState<SignInScreen> createState() => _SignInScreenState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
-  final authenticator = const Authenticator();
+class _SignInScreenState extends ConsumerState<SignInScreen> {
+  // late final StateNotifier _authStateProvider;
   final _nameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool showPassword = false;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _authStateProvider = ref.read(authStateProvider.notifier);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +94,7 @@ class _SignInScreenState extends State<SignInScreen> {
           const Gap(30),
           AppGradientButton(
             text: 'Sign In',
-            callback: () => Navigator.of(context).pushAndRemoveUntil(
+            callback: () => navigatorKey.currentState!.pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => const MainScreen()),
                 (r) {
               return false;
@@ -114,7 +123,9 @@ class _SignInScreenState extends State<SignInScreen> {
             children: [
               CircularIconButton(
                 callback: () async {
-                  await authenticator.logInWithFacebook(context);
+                  await ref
+                      .read(authStateProvider.notifier)
+                      .logInWithFacebook(context);
                 },
                 icon: FontAwesomeIcons.facebookF,
                 color: Colors.blue[900],
@@ -141,7 +152,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 width: 47,
                 child: TextButton(
                   style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
-                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                  onPressed: () =>
+                      navigatorKey.currentState!.push(MaterialPageRoute(
                     builder: (context) => const CreateAccountScreen(),
                   )),
                   child: const AppText(

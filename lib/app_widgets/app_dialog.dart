@@ -3,7 +3,7 @@ part of 'widgets.dart';
 Future<dynamic> showAppDialog(BuildContext context,
     {required String title,
     String? description,
-    String confirmText = 'Proceed',
+    String confirmText = 'OK',
     String cancelText = 'Cancel',
     void Function()? confirmCallbackFunction,
     void Function()? cancelCallbackFunction,

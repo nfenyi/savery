@@ -6,6 +6,7 @@ import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/sign_up/presentation/verify_phone_number_screen.dart';
+import 'package:savery/main.dart';
 
 import '../../sign_in/presentation/sign_in_screen.dart';
 
@@ -117,7 +118,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
           const Gap(30),
           AppGradientButton(
             text: 'Sign Up',
-            callback: () => Navigator.of(context).push(MaterialPageRoute(
+            callback: () => navigatorKey.currentState!.push(MaterialPageRoute(
               builder: (context) => const VerifyPhoneNumberScreen(),
             )),
           ),
@@ -167,7 +168,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                 width: 41,
                 child: TextButton(
                   style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
-                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                  onPressed: () =>
+                      navigatorKey.currentState!.push(MaterialPageRoute(
                     builder: (context) => const SignInScreen(),
                   )),
                   child: const AppText(

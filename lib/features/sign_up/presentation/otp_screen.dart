@@ -7,6 +7,7 @@ import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/main_screen/presentation/main_screen.dart';
+import 'package:savery/main.dart';
 
 class OTPScreen extends StatefulWidget {
   const OTPScreen({super.key});
@@ -53,7 +54,7 @@ class _OTPScreenState extends State<OTPScreen> {
       appBar: AppBar(
         actions: [
           AppTextButton(
-            callback: () => Navigator.of(context).pushAndRemoveUntil(
+            callback: () => navigatorKey.currentState!.pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => const MainScreen()),
                 (r) {
               return false;
@@ -125,7 +126,7 @@ class _OTPScreenState extends State<OTPScreen> {
               ),
               AppGradientButton(
                 text: 'Verify',
-                callback: () => Navigator.of(context).pushAndRemoveUntil(
+                callback: () => navigatorKey.currentState!.pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => const MainScreen()),
                     (r) {
                   return false;

@@ -4,12 +4,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:logger/logger.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/features/main_screen/presentation/main_screen.dart';
 import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
 
 import 'features/onboarding/presentation/onboarding_screen.dart';
 import 'firebase_options.dart';
+
+final Logger logger = Logger();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   await Hive.initFlutter();
@@ -59,6 +63,7 @@ class Savery extends StatelessWidget {
               radius: const Radius.circular(10),
             ),
           ),
+          navigatorKey: navigatorKey,
           home: const Wrapper());
     });
   }

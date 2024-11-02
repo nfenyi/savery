@@ -8,6 +8,7 @@ import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/onboarding/onboarding_texts.dart';
 import 'package:savery/features/onboarding/presentation/widgets.dart';
 import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
+import 'package:savery/main.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -59,7 +60,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             text: 'Skip',
             callback: () {
               box.put('onboarded', true);
-              Navigator.of(context).pushReplacement(
+              navigatorKey.currentState!.pushReplacement(
                 MaterialPageRoute(
                   builder: (context) => const SignInScreen(),
                 ),
@@ -230,7 +231,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           curve: Curves.easeIn);
                     } else {
                       box.put('onboarded', true);
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      navigatorKey.currentState!
+                          .pushReplacement(MaterialPageRoute(
                         builder: (context) => const SignInScreen(),
                       ));
                     }

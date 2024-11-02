@@ -7,6 +7,7 @@ import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/features/new_transaction/presentation/new_transaction_screen.dart';
+import 'package:savery/main.dart';
 
 import '../../../app_widgets/widgets.dart';
 import 'budget_screen.dart';
@@ -52,7 +53,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       backgroundColor: Colors.white,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: ElevatedButton(
-        onPressed: () => Navigator.of(context).push(
+        onPressed: () => navigatorKey.currentState!.push(
           MaterialPageRoute(
             builder: (context) => const NewTransactionScreen(),
           ),
@@ -108,7 +109,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                   text: 'Edit',
                   color: Colors.orange,
                   callback: () {
-                    // Navigator.of(context).pushReplacement(
+                    // navigatorKey.currentState!.pushReplacement(
                     //   MaterialPageRoute(
                     //     builder: (context) => const SignInScreen(),
                     //   ),

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/main_screen/presentation/main_screen.dart';
-import 'package:savery/features/sign_up/presentation/create_account_screen.dart';
+import 'package:savery/main.dart';
 
 import 'otp_screen.dart';
 
@@ -28,7 +27,7 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen> {
       appBar: AppBar(
         actions: [
           AppTextButton(
-            callback: () => Navigator.of(context).pushAndRemoveUntil(
+            callback: () => navigatorKey.currentState!.pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => const MainScreen()),
                 (r) {
               return false;
@@ -70,7 +69,8 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen> {
               ),
               AppGradientButton(
                 text: 'Send',
-                callback: () => Navigator.of(context).push(MaterialPageRoute(
+                callback: () =>
+                    navigatorKey.currentState!.push(MaterialPageRoute(
                   builder: (context) => const OTPScreen(),
                 )),
               ),
