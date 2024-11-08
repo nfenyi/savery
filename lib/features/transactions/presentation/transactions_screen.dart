@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
@@ -12,7 +13,7 @@ import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
 
 import '../../../app_functions/app_functions.dart';
-import '../../main_screen/models/account.dart';
+import '../../sign_in/user_info/models/user_model.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
   const TransactionsScreen({super.key});
@@ -285,7 +286,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                             horizontal: AppSizes.horizontalPaddingSmall),
                         itemBuilder: (context, index) {
                           final transaction =
-                              _selectedAccount!.transactions[index];
+                              _selectedAccount!.transactions![index];
                           return ListTile(
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15)),
@@ -295,25 +296,15 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                             leading: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: Container(
-                                padding: const EdgeInsets.all(10),
-                                width: 50,
-                                color: AppColors.primary.withOpacity(0.1),
-                                child: _selectedAccount!.transactions[index]
-                                            .category.name !=
-                                        ''
-                                    ? Icon(
-                                        _selectedAccount!
-                                            .transactions[index].category.icon,
-                                        color: AppColors.primary,
-                                      )
-                                    : Icon(
-                                        _selectedAccount!
-                                            .transactions[index].category.icon,
-                                        color: AppColors.primary,
-                                      ),
-                              ),
+                                  padding: const EdgeInsets.all(10),
+                                  width: 50,
+                                  color: AppColors.primary.withOpacity(0.1),
+                                  child: Icon(
+                                    getIcon(transaction),
+                                    color: AppColors.primary,
+                                  )),
                             ),
-                            title: AppText(text: transaction.category.name),
+                            title: AppText(text: transaction.description),
                             subtitle: AppText(
                               text: transaction.description,
                               color: Colors.grey,
@@ -327,7 +318,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                                         '-${transaction.amount.toString()}GHc'),
                                 AppText(
                                   text: AppFunctions.formatDate(
-                                      transaction.createdAt.toString(),
+                                      transaction.date.toString(),
                                       format: r'g:i A'),
                                   color: Colors.grey,
                                 ),
@@ -336,10 +327,10 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                           );
                         },
                         separatorBuilder: (context, index) {
-                          if (_selectedAccount!.transactions[index].createdAt !=
+                          if (_selectedAccount!.transactions![index].date !=
                               _dateHolder) {
                             _dateHolder =
-                                _selectedAccount!.transactions[index].createdAt;
+                                _selectedAccount!.transactions![index].date;
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -347,7 +338,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                                 AppText(
                                     text: AppFunctions.formatDate(
                                         _selectedAccount!
-                                            .transactions[index].createdAt
+                                            .transactions![index].date
                                             .toString(),
                                         format: r'j M Y')),
                                 const Gap(5),
@@ -357,12 +348,46 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                             return const Gap(10);
                           }
                         },
-                        itemCount: _selectedAccount!.transactions.length),
+                        itemCount: _selectedAccount!.transactions!.length),
                   )
                 : Container()
           ],
         ),
       ),
     );
+  }
+
+  IconData getIcon(AccountTransaction transaction) {
+    switch (transaction.type) {
+      case 'Gifts':
+        return Iconsax.gift;
+
+      case 'Health':
+        return FontAwesomeIcons.stethoscope;
+      case 'Car':
+        return FontAwesomeIcons.car;
+      case 'Game':
+        return FontAwesomeIcons.chess;
+      case 'Cafe':
+        return FontAwesomeIcons.utensils;
+
+      case 'Travel':
+        return Iconsax.airplane;
+      case 'Utility':
+        return FontAwesomeIcons.lightbulb;
+      case 'Care':
+        return Icons.face_2;
+      case 'Devices':
+        return FontAwesomeIcons.tv;
+      case 'Food':
+        return FontAwesomeIcons.bowlFood;
+      case 'Shopping':
+        return FontAwesomeIcons.cartShopping;
+      case 'Transport':
+        return Iconsax.truck;
+
+      default:
+        return Iconsax.pen_add;
+    }
   }
 }

@@ -7,4 +7,5 @@ class AppAssets {
 
   //animations
   static const noData = 'assets/animations/no-data.json';
+  static const emptyList = 'assets/animations/empty.json';
 }

@@ -1,20 +1,29 @@
-import 'package:flutter/foundation.dart';
+import 'package:board_datetime_picker/board_datetime_picker.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:gap/gap.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_colors.dart';
+import 'package:savery/app_constants/app_constants.dart';
+import 'package:savery/app_functions/app_functions.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/new_transaction/models/transaction_category.dart';
+import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'package:savery/main.dart';
 
 import '../../../app_constants/app_sizes.dart';
 
 class NewTransactionScreen extends ConsumerStatefulWidget {
-  const NewTransactionScreen({super.key});
+  const NewTransactionScreen({
+    super.key,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -22,10 +31,12 @@ class NewTransactionScreen extends ConsumerStatefulWidget {
 }
 
 class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
-  final _priceController = TextEditingController();
-  final _nameController = TextEditingController();
-  // final _accountsController = TextEditingController();
-  // final _dateController = TextEditingController();
+  final _amountController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  DateTime? _selectedDate;
+  String _selectedTransactionType = "Income";
+  String? _selectedCategory;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final List<TransactionCategory> _categories = [
     TransactionCategory(icon: Iconsax.gift, name: 'Gifts'),
@@ -42,24 +53,46 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
     TransactionCategory(icon: Iconsax.truck, name: 'Transport'),
   ];
 
+//
+  final _user = Hive.box<AppUser>(AppBoxes.user).values.first;
+  final _transactionsBox = Hive.box<AccountTransaction>(AppBoxes.transactions);
+
+  String? _selectedAccountName;
+
+  final List<String> _accountNames = Hive.box<Account>('accounts')
+      .values
+      .map(
+        (e) => e.name,
+      )
+      .toList();
+
+  Color? _accountNameColor;
+
+  Color? _dateColor;
+
+  Color? _categoryColor;
+
   @override
   void initState() {
     super.initState();
-    _categories.add(TransactionCategory(icon: Icons.add_circle, name: ''));
+    // _categories.add(TransactionCategory(icon: Icons.add_circle, name: ''));
   }
 
   @override
   void dispose() {
     super.dispose();
-    _priceController.dispose();
-    _nameController.dispose();
+    _amountController.dispose();
+    _descriptionController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // logger.d()
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         centerTitle: true,
+        backgroundColor: Colors.white,
         title: const AppText(text: 'New Transaction'),
       ),
       body: SingleChildScrollView(
@@ -67,193 +100,399 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
             horizontal: AppSizes.horizontalPaddingSmall),
         child: Column(
           children: [
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 AppButton(
+                  callback: () {
+                    setState(() {
+                      _selectedTransactionType = 'Income';
+                    });
+                  },
                   width: 130,
-                  padding: EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(12),
                   text: 'Income',
-                  isSecondary: true,
+                  isSecondary: _selectedTransactionType == 'Expense',
                   textSize: 17,
                   iconFirst: true,
                   borderRadius: 15,
                   icon: Icon(
                     Iconsax.arrow_down,
-                    color: AppColors.primary,
+                    color: _selectedTransactionType == 'Expense'
+                        ? AppColors.primary
+                        : Colors.white,
                     size: 17,
                   ),
                 ),
-                Gap(15),
+                const Gap(15),
                 AppButton(
+                  callback: () {
+                    setState(() {
+                      _selectedTransactionType = 'Expense';
+                    });
+                  },
                   borderRadius: 15,
-                  padding: EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(12),
                   text: 'Expense',
+                  isSecondary: _selectedTransactionType == 'Income',
                   width: 130,
                   textSize: 17,
                   iconFirst: true,
                   icon: Icon(
                     Iconsax.arrow_up_3,
-                    color: Colors.white,
+                    color: _selectedTransactionType == 'Income'
+                        ? AppColors.primary
+                        : Colors.white,
                     size: 17,
                   ),
                 ),
               ],
             ),
-            // TextFormField(controller: _priceController,textAlign: TextAlign.right,decoration: InputDecoration(hintStyle: ),)
-            AppTextFormField(
-              controller: _priceController,
-              textAlign: TextAlign.right,
-              borderType: BorderType.underline,
-              hintText: 'Price',
-              keyboardType: const TextInputType.numberWithOptions(),
-              textStyle: const TextStyle(fontWeight: FontWeight.bold),
-              // suffixIcon: const AppText(text: '₵'),
-            ),
-            AppTextFormField(
-              controller: _nameController,
-              borderType: BorderType.underline,
-              hintText: 'Name',
-            ),
-            ListTile(
-              title: const AppText(text: 'Category'),
-              trailing: const Icon(
-                Icons.keyboard_arrow_down,
-                color: AppColors.primary,
-              ),
-              dense: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 0),
-              onTap: () async {
-                await showModalBottomSheet(
-                  context: context,
-                  barrierColor: Colors.black.withOpacity(0.6),
-                  builder: (BuildContext context) {
-                    return Container(
-                        width: double.infinity,
-                        // height: Adaptive.h(40),
-                        height: MediaQuery.sizeOf(context).height * 0.4,
-                        decoration: const BoxDecoration(
+
+            Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppTextFormField(
+                    controller: _amountController,
+                    textAlign: TextAlign.right,
+                    borderType: BorderType.underline,
+                    hintText: '0.00',
+                    keyboardType: const TextInputType.numberWithOptions(),
+                    textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                    suffixIcon: const AppText(text: 'GHC'),
+                    validator: FormBuilderValidators.compose(
+                        [FormBuilderValidators.required()]),
+                  ),
+                  AppTextFormField(
+                    fontWeight: FontWeight.bold,
+                    controller: _descriptionController,
+                    borderType: BorderType.underline,
+                    hintText: 'Description',
+                    hintStyleColor: Colors.grey,
+                    validator: FormBuilderValidators.compose(
+                        [FormBuilderValidators.required()]),
+                  ),
+                  Visibility(
+                    visible: _selectedTransactionType == 'Expense',
+                    child: Column(
+                      children: [
+                        ListTile(
+                          contentPadding:
+                              const EdgeInsets.only(left: 12, right: 5),
+                          title: AppText(
+                            text: _selectedCategory == null
+                                ? 'Category'
+                                : _selectedCategory!,
+                            weight: _selectedCategory == null
+                                ? null
+                                : FontWeight.bold,
+                            color:
+                                _selectedCategory == null ? Colors.grey : null,
+                          ),
+                          trailing: const Icon(
+                            Icons.keyboard_arrow_down,
+                            color: AppColors.primary,
+                          ),
+                          dense: true,
+                          onTap: () async {
+                            await showModalBottomSheet(
+                              context: context,
+                              barrierColor: Colors.black.withOpacity(0.6),
+                              builder: (BuildContext context) {
+                                return Container(
+                                    width: double.infinity,
+                                    // height: Adaptive.h(40),
+                                    height:
+                                        MediaQuery.sizeOf(context).height * 0.4,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(15.0),
+                                        topRight: Radius.circular(15.0),
+                                      ),
+                                    ),
+                                    child: SingleChildScrollView(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 30),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Gap(
+                                            5,
+                                          ),
+                                          const Gap(10),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              const SizedBox.shrink(),
+                                              const AppText(
+                                                text: "Select the category",
+                                                size: AppSizes.bodySmaller,
+                                                weight: FontWeight.bold,
+                                              ),
+                                              // const Gap(10),
+                                              GestureDetector(
+                                                child: const FaIcon(
+                                                  FontAwesomeIcons.xmark,
+                                                  size: 18,
+                                                ),
+                                                onTap: () => navigatorKey
+                                                    .currentState!
+                                                    .pop(),
+                                              ),
+                                              // const Gap(10),
+                                              // AppTextButton(
+                                              //   text: 'Done',
+                                              //   color: AppColors.primary,
+                                              //   callback: () {
+                                              //     navigatorKey.currentState!.pop();
+                                              //   },
+                                              // )
+                                            ],
+                                          ),
+                                          const Gap(30),
+                                          SizedBox(
+                                            height: Adaptive.h(30),
+                                            child: GridView.builder(
+                                              itemCount: _categories.length,
+                                              gridDelegate:
+                                                  const SliverGridDelegateWithMaxCrossAxisExtent(
+                                                      maxCrossAxisExtent: 70,
+                                                      mainAxisExtent: 65,
+                                                      crossAxisSpacing: 10,
+                                                      mainAxisSpacing: 10),
+                                              itemBuilder: (context, index) {
+                                                final category =
+                                                    _categories[index];
+                                                return InkWell(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      _selectedCategory =
+                                                          category.name;
+                                                    });
+                                                    navigatorKey.currentState!
+                                                        .pop();
+                                                  },
+                                                  child: Ink(
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                      child: TileIcon(
+                                                          category: category),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ));
+                              },
+                            );
+                          },
+                        ),
+                        Divider(
+                          color: _categoryColor,
+                        ),
+                      ],
+                    ),
+                  ),
+                  DropdownButtonHideUnderline(
+                    child: DropdownButton2<String>(
+                      style: GoogleFonts.manrope(
+                        fontSize: AppSizes.bodySmaller,
+                        fontWeight: _selectedAccountName == null
+                            ? null
+                            : FontWeight.bold,
+                        color: _selectedAccountName == null
+                            ? Colors.grey
+                            : Colors.black,
+                      ),
+                      isExpanded: true,
+                      hint: const AppText(
+                        text: 'Select an account',
+                        overflow: TextOverflow.ellipsis,
+                        color: Colors.grey,
+                      ),
+                      iconStyleData: const IconStyleData(
+                        icon: FaIcon(
+                          FontAwesomeIcons.chevronDown,
+                          color: AppColors.primary,
+                        ),
+                        iconSize: 12.0,
+                      ),
+                      items: _accountNames
+                          .map((item) => DropdownMenuItem(
+                                value: item,
+                                child: Text(
+                                  item,
+                                  style: const TextStyle(
+                                    fontSize: AppSizes.bodySmaller,
+                                    fontWeight: FontWeight.w500,
+                                    // color: Colors.grey,
+                                  ),
+                                ),
+                              ))
+                          .toList(),
+                      value: _selectedAccountName,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedAccountName = value;
+                        });
+                      },
+                      buttonStyleData: ButtonStyleData(
+                        height: AppSizes.dropDownBoxHeight,
+                        padding: const EdgeInsets.only(right: 10.0),
+                        decoration: BoxDecoration(
+                          // color: Colors.grey.shade100,
+                          // border: Border.all(
+                          //   width: 1.0,
+                          //   color: AppColors.neutral300,
+                          // ),
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
+                      dropdownStyleData: DropdownStyleData(
+                        maxHeight: 350,
+                        elevation: 1,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5.0),
                           color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(15.0),
-                            topRight: Radius.circular(15.0),
+                        ),
+                      ),
+                      menuItemStyleData: const MenuItemStyleData(
+                        height: 40.0,
+                      ),
+                    ),
+                  ),
+                  Divider(
+                    color: _accountNameColor,
+                  ),
+                  ListTile(
+                    title: Text(
+                      _selectedDate == null
+                          ? 'Date'
+                          : AppFunctions.formatDate(_selectedDate.toString(),
+                              format: 'j M Y, g:i A'),
+                      style: GoogleFonts.manrope(
+                        fontSize: AppSizes.bodySmaller,
+                        fontWeight:
+                            _selectedDate == null ? null : FontWeight.bold,
+                        color: _selectedDate == null ? Colors.grey : null,
+                      ),
+                    ),
+                    trailing: const Icon(
+                      FontAwesomeIcons.calendar,
+                      color: AppColors.primary,
+                      size: 15,
+                    ),
+                    dense: true,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                    onTap: () async {
+                      await showBoardDateTimePicker(
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedDate = value;
+                          });
+                        },
+                        showDragHandle: true,
+                        options: const BoardDateTimeOptions(
+                          backgroundColor: Colors.white,
+                          foregroundColor: AppColors.neutral200,
+                          // boardTitle: "Select 'TODAY' or '",
+                          // boardTitleTextStyle: TextStyle(fontWeight: FontWeight.w400),
+                          inputable: false,
+                          pickerSubTitles: BoardDateTimeItemTitles(
+                            year: 'Year',
+                            // day: 'd',
+                            // hour: 'h',
+                            // minute: 'm',
                           ),
                         ),
-                        child: SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(horizontal: 30),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Gap(
-                                5,
-                              ),
-                              const Gap(10),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  GestureDetector(
-                                    child: const FaIcon(
-                                      FontAwesomeIcons.xmark,
-                                      size: 18,
-                                    ),
-                                    onTap: () =>
-                                        navigatorKey.currentState!.pop(),
-                                  ),
-                                  // const Gap(10),
-                                  const AppText(
-                                    text: "Select the category",
-                                    size: AppSizes.bodySmaller,
-                                  ),
-                                  // const Gap(10),
-                                  AppTextButton(
-                                    text: 'Done',
-                                    callback: () {
-                                      navigatorKey.currentState!.pop();
-                                    },
-                                  )
-                                ],
-                              ),
-                              const Gap(30),
-                              SizedBox(
-                                height: Adaptive.h(30),
-                                child: GridView.builder(
-                                  itemCount: _categories.length,
-                                  gridDelegate:
-                                      const SliverGridDelegateWithMaxCrossAxisExtent(
-                                          maxCrossAxisExtent: 70,
-                                          mainAxisExtent: 65,
-                                          crossAxisSpacing: 10,
-                                          mainAxisSpacing: 10),
-                                  itemBuilder: (context, index) {
-                                    final category = _categories[index];
-                                    return ClipRRect(
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: TileIcon(category: category),
-                                    );
-                                  },
-                                ),
-                              )
-                            ],
-                          ),
-                        )
+                        context: context,
+                        pickerType: DateTimePickerType.datetime,
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
 
-                        //  CupertinoDatePicker(
-                        //   backgroundColor: Colors.white,
-                        //   initialDateTime: DateTime.now(),
-                        //   maximumDate: DateTime.now(),
-                        //   minimumDate: DateTime(1900),
-                        //   mode: CupertinoDatePickerMode.date,
-                        //   onDateTimeChanged: (DateTime datetime) {
-                        //     _dobController.text =
-                        //         AppFunctions.formatDate(
-                        //       datetime.toIso8601String(),
-                        //     );
-                        //   },
-                        // ),
-                        );
-                  },
-                );
-              },
+            Divider(
+              color: _dateColor,
             ),
-            const Divider(),
-            ListTile(
-              title: const AppText(text: 'Accounts'),
-              trailing: const Icon(
-                Icons.keyboard_arrow_down,
-                color: AppColors.primary,
-              ),
-              dense: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 0),
-              onTap: () {},
-            ),
-            const Divider(),
-            ListTile(
-              title: const AppText(text: 'Date'),
-              trailing: const Icon(
-                Icons.keyboard_arrow_down,
-                color: AppColors.primary,
-              ),
-              dense: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 0),
-              onTap: () {},
-            ),
-            const Divider(),
-            ListTile(
-              title: const AppText(text: 'Photo'),
-              trailing: const Icon(
-                Icons.camera_alt_outlined,
-                color: AppColors.primary,
-              ),
-              dense: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 0),
-              onTap: () {},
-            ),
-            const Divider(),
             AppGradientButton(
               text: 'Save',
-              callback: () {
-                navigatorKey.currentState!.pop();
+              callback: () async {
+                if (_formKey.currentState!.validate() &&
+                    _selectedAccountName != null &&
+                    _selectedDate != null) {
+                  if (_selectedTransactionType == 'Income') {
+                    // submit income transaction
+
+                    final selectedAccount = _user.accounts!
+                        .where(
+                            (element) => element.name == _selectedAccountName)
+                        .first;
+                    await _transactionsBox.add((AccountTransaction(
+                        amount: double.parse(_amountController.text),
+                        date: _selectedDate!,
+                        description: _descriptionController.text,
+                        type: _selectedTransactionType)));
+                    selectedAccount.transactions = HiveList(_transactionsBox);
+
+                    navigatorKey.currentState!.pop();
+                  } else {
+                    if (_selectedCategory != null) {
+                      //submit expense transaction
+                      final selectedAccount = _user.accounts!
+                          .where(
+                              (element) => element.name == _selectedAccountName)
+                          .first;
+                      await _transactionsBox.add((AccountTransaction(
+                          amount: double.parse(_amountController.text),
+                          date: _selectedDate!,
+                          category: _selectedCategory,
+                          description: _descriptionController.text,
+                          type: _selectedTransactionType)));
+                      selectedAccount.transactions = HiveList(_transactionsBox);
+                      navigatorKey.currentState!.pop();
+                    } else {
+                      setState(() {
+                        _categoryColor = Colors.red;
+                      });
+                      showInfoToast('Please select a category',
+                          context: context);
+                    }
+                  }
+                } else {
+                  if (_selectedAccountName == null) {
+                    setState(() {
+                      _accountNameColor = Colors.red;
+                    });
+                    showInfoToast('Please select an account', context: context);
+                  } else {
+                    setState(() {
+                      _accountNameColor = null;
+                    });
+                  }
+                  if (_selectedDate == null) {
+                    setState(() {
+                      _dateColor = Colors.red;
+                    });
+                    showInfoToast('Please pick a date', context: context);
+                  } else {
+                    setState(() {
+                      _dateColor = null;
+                    });
+                  }
+                }
               },
             )
             // Row(

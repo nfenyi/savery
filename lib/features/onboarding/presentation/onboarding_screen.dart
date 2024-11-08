@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_assets.dart';
+import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/onboarding/onboarding_texts.dart';
@@ -19,7 +20,7 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  final Box box = Hive.box('application');
+  final Box _appStateBox = Hive.box(AppBoxes.appState);
   double? currentPage = 0.0;
   final _pageController = PageController(initialPage: 0);
   // final _indicatorController = PageController(initialPage: 0);
@@ -58,9 +59,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         actions: [
           AppTextButton(
             text: 'Skip',
-            callback: () {
-              box.put('onboarded', true);
-              navigatorKey.currentState!.pushReplacement(
+            callback: () async {
+              await _appStateBox.put('onboarded', true);
+              await navigatorKey.currentState!.pushReplacement(
                 MaterialPageRoute(
                   builder: (context) => const SignInScreen(),
                 ),
@@ -207,8 +208,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Column(
               children: [
                 SmoothPageIndicator(
-                    onDotClicked: (index) {
-                      _pageController.animateToPage(index,
+                    onDotClicked: (index) async {
+                      await _pageController.animateToPage(index,
                           duration: const Duration(seconds: 1),
                           curve: Curves.easeIn);
                     },
@@ -224,14 +225,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 const Gap(30),
                 AppGradientButton(
                   text: currentPage != 2 ? 'NEXT' : 'GET STARTED',
-                  callback: () {
+                  callback: () async {
                     if (currentPage != 2) {
-                      _pageController.nextPage(
+                      await _pageController.nextPage(
                           duration: const Duration(seconds: 1),
                           curve: Curves.easeIn);
                     } else {
-                      box.put('onboarded', true);
-                      navigatorKey.currentState!
+                      await _appStateBox.put('onboarded', true);
+                      await navigatorKey.currentState!
                           .pushReplacement(MaterialPageRoute(
                         builder: (context) => const SignInScreen(),
                       ));

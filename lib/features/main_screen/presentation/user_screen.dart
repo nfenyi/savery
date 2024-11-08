@@ -8,6 +8,8 @@ import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/features/main_screen/models/settings.dart';
 import 'package:savery/features/sign_in/notifiers/providers/providers.dart';
+import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
+import 'package:savery/main.dart';
 
 import '../../../app_constants/app_assets.dart';
 import '../../../app_constants/app_colors.dart';
@@ -118,6 +120,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                 ),
                 const Gap(20),
                 ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: _settings.length,
                   itemBuilder: (context, index) {
@@ -146,8 +149,16 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                   },
                 ),
                 ListTile(
-                  onTap: () async =>
-                      ref.read(authStateProvider.notifier).logOut,
+                  onTap: () async {
+                    await ref.read(authStateProvider.notifier).logOut();
+                    if (ref.read(authStateProvider).userId == null) {
+                      await navigatorKey.currentState!.pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => const SignInScreen()), (r) {
+                        return false;
+                      });
+                    }
+                  },
                   contentPadding: const EdgeInsets.all(0),
                   dense: true,
                   leading: const Icon(

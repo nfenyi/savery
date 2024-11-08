@@ -10,7 +10,7 @@ import 'package:savery/main.dart';
 
 import '../../../app_functions/app_functions.dart';
 import '../../my_budgets/presentation/my_budgets_screen.dart';
-import '../models/account.dart';
+import '../../sign_in/user_info/models/user_model.dart';
 
 class BudgetsScreen extends ConsumerStatefulWidget {
   const BudgetsScreen({super.key});
@@ -189,7 +189,7 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
                                   ),
                                   const Gap(5),
                                   const AppText(
-                                    text: 'My Budgets',
+                                    text: 'My Bills',
                                     isWhite: true,
                                   ),
                                 ],
@@ -259,9 +259,7 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      AppText(
-                                          text:
-                                              budget.transactionCategory.name),
+                                      AppText(text: budget.name),
                                       AppText(text: budget.amount.toString())
                                     ],
                                   ),
@@ -349,10 +347,10 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
                         );
                       },
                       separatorBuilder: (context, index) {
-                        if (_selectedAccount!.transactions[index].createdAt !=
+                        if (_selectedAccount!.transactions![index].date !=
                             _dateHolder) {
                           _dateHolder =
-                              _selectedAccount!.transactions[index].createdAt;
+                              _selectedAccount!.transactions![index].date;
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -360,7 +358,7 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
                               AppText(
                                   text: AppFunctions.formatDate(
                                       _selectedAccount!
-                                          .transactions[index].createdAt
+                                          .transactions![index].date
                                           .toString(),
                                       format: r'j M Y')),
                               const Gap(5),
@@ -370,7 +368,7 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
                           return const Gap(10);
                         }
                       },
-                      itemCount: _selectedAccount!.transactions.length),
+                      itemCount: _selectedAccount!.transactions!.length),
                 )
               : Container()
         ],

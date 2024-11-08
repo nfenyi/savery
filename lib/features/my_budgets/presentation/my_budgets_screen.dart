@@ -6,7 +6,7 @@ import 'package:gap/gap.dart';
 import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
-import 'package:savery/features/main_screen/models/account.dart';
+import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 
 class MyBillsScreen extends ConsumerStatefulWidget {
   const MyBillsScreen({super.key});
@@ -61,7 +61,7 @@ class _MyBillsScreenState extends ConsumerState<MyBillsScreen> {
                     ),
                     Gap(5),
                     AppText(
-                      text: 'Create New Budget',
+                      text: 'Create New Bill',
                       weight: FontWeight.bold,
                       size: AppSizes.heading6,
                     ),
@@ -96,8 +96,7 @@ class _MyBillsScreenState extends ConsumerState<MyBillsScreen> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      AppText(
-                                          text: bill.transactionCategory.name),
+                                      AppText(text: bill.name),
                                       AppText(text: bill.amount.toString())
                                     ],
                                   ),

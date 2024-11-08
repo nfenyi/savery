@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:gap/gap.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pinput/pinput.dart';
 import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
@@ -8,6 +10,9 @@ import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/main_screen/presentation/main_screen.dart';
 import 'package:savery/main.dart';
+
+import '../../../app_constants/app_constants.dart';
+import '../../sign_in/user_info/models/user_model.dart';
 
 class OTPScreen extends StatefulWidget {
   const OTPScreen({super.key});
@@ -54,11 +59,21 @@ class _OTPScreenState extends State<OTPScreen> {
       appBar: AppBar(
         actions: [
           AppTextButton(
-            callback: () => navigatorKey.currentState!.pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => const MainScreen()),
-                (r) {
-              return false;
-            }),
+            callback: () async {
+              User user = FirebaseAuth.instance.currentUser!;
+
+              await Hive.box<AppUser>(AppBoxes.user).add(AppUser(
+                  uid: user.uid,
+                  displayName: user.displayName,
+                  email: user.email,
+                  photoUrl: user.photoURL,
+                  phoneNumber: user.phoneNumber));
+              return navigatorKey.currentState!.pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const MainScreen()),
+                  (r) {
+                return false;
+              });
+            },
             text: 'Skip',
           ),
         ],
@@ -126,11 +141,22 @@ class _OTPScreenState extends State<OTPScreen> {
               ),
               AppGradientButton(
                 text: 'Verify',
-                callback: () => navigatorKey.currentState!.pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const MainScreen()),
-                    (r) {
-                  return false;
-                }),
+                callback: () async {
+                  User user = FirebaseAuth.instance.currentUser!;
+
+                  //because phone number has been added to firebase user account
+                  await Hive.box<AppUser>(AppBoxes.user).add(AppUser(
+                      uid: user.uid,
+                      displayName: user.displayName,
+                      email: user.email,
+                      photoUrl: user.photoURL,
+                      phoneNumber: user.phoneNumber));
+                  await navigatorKey.currentState!.pushAndRemoveUntil(
+                      MaterialPageRoute(
+                          builder: (context) => const MainScreen()), (r) {
+                    return false;
+                  });
+                },
               ),
             ]),
       ),

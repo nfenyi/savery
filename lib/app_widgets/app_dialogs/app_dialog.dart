@@ -1,6 +1,6 @@
-part of 'widgets.dart';
+part of '../widgets.dart';
 
-Future<dynamic> showAppDialog(BuildContext context,
+Future<dynamic> showAppInfoDialog(BuildContext context,
     {required String title,
     String? description,
     String confirmText = 'OK',
@@ -33,7 +33,10 @@ Future<dynamic> showAppDialog(BuildContext context,
               : null,
           actions: <Widget>[
             CupertinoDialogAction(
-              onPressed: confirmCallbackFunction,
+              onPressed: confirmCallbackFunction ??
+                  () {
+                    navigatorKey.currentState!.pop();
+                  },
               child: AppText(
                 text: confirmText,
                 color: AppColors.primary,
@@ -41,7 +44,10 @@ Future<dynamic> showAppDialog(BuildContext context,
               ),
             ),
             CupertinoDialogAction(
-              onPressed: cancelCallbackFunction,
+              onPressed: cancelCallbackFunction ??
+                  () {
+                    navigatorKey.currentState!.pop();
+                  },
               child: AppText(
                 text: cancelText,
                 color: Colors.red,
@@ -71,7 +77,10 @@ Future<dynamic> showAppDialog(BuildContext context,
               : null,
           actions: <Widget>[
             TextButton(
-              onPressed: confirmCallbackFunction,
+              onPressed: confirmCallbackFunction ??
+                  () {
+                    navigatorKey.currentState!.pop();
+                  },
               child: AppText(
                 text: confirmText,
                 color: AppColors.primary,
@@ -79,7 +88,10 @@ Future<dynamic> showAppDialog(BuildContext context,
               ),
             ),
             TextButton(
-              onPressed: cancelCallbackFunction,
+              onPressed: cancelCallbackFunction ??
+                  () {
+                    navigatorKey.currentState!.pop();
+                  },
               child: AppText(
                 text: cancelText,
                 color: AppColors.primary,

@@ -1,0 +1,47 @@
+part of '../widgets.dart';
+
+void showLoadingDialog({required String description}) async {
+  await showDialog(
+    context: navigatorKey.currentContext!,
+    barrierDismissible: false, // Dialog cannot be dismissed by tapping outside
+    builder: (BuildContext context) {
+      if (Platform.isIOS) {
+        return CupertinoAlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Gap(10.0),
+              const AppLoader(color: AppColors.primary),
+              const Gap(20.0),
+              AppText(
+                text: description,
+                weight: FontWeight.w600,
+                textAlign: TextAlign.center,
+              ),
+              const Gap(10.0),
+            ],
+          ),
+        );
+      } else {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+          backgroundColor: Colors.white,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Gap(10.0),
+              const AppLoader(color: AppColors.primary),
+              const Gap(20.0),
+              AppText(
+                text: description,
+                weight: FontWeight.w600,
+              ),
+              const Gap(10.0),
+            ],
+          ),
+        );
+      }
+    },
+  );
+}

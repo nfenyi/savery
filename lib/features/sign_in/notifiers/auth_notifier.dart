@@ -1,11 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import 'package:savery/main.dart';
 import '../services/authentcator.dart';
 import '../models/auth_state.dart';
-import '../user_info/backend/user_info_storage.dart';
+// import '../user_info/backend/user_info_storage.dart';
 
 class AuthStateNotifier extends StateNotifier<AuthState> {
   final _authenticator = const Authenticator();
-  final _userInfoStorage = const UserInfoStorage();
+  // final _userInfoStorage = const UserInfoStorage();
 
   AuthStateNotifier() : super(const AuthState.unknown()) {
     if (_authenticator.isAlreadyLoggedIn) {
@@ -37,6 +38,42 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     );
   }
 
+  Future<void> createAccountWithEmailAndPassword(
+      {required String email,
+      required String password,
+      required String name}) async {
+    state = state.copiedWithIsLoading(true);
+    final result = await _authenticator.createAccountWithEmailAndPassword(
+        email: email, password: password, name: name);
+    final userId = _authenticator.userId;
+
+    state = AuthState(
+      isLoading: false,
+      result: result,
+      userId: userId,
+    );
+  }
+
+  Future<void> sendResetLink(String email) async {
+    state = state.copiedWithIsLoading(true);
+    await _authenticator.sendPasswordReset(
+      email,
+    );
+  }
+
+  Future<void> signInWithEmailAndPassword(String email, String password) async {
+    state = state.copiedWithIsLoading(true);
+    final result =
+        await _authenticator.signInWithEmailAndPassword(email, password);
+    final userId = _authenticator.userId;
+
+    state = AuthState(
+      isLoading: false,
+      result: result,
+      userId: userId,
+    );
+  }
+
   Future<void> logInWithFacebook() async {
     state = state.copiedWithIsLoading(true);
     final result = await _authenticator.logInWithFacebook();
@@ -51,6 +88,14 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
       userId: userId,
     );
   }
+
+  //  Future<void> verifyPhoneNumber(
+  //     String phoneNumber) async {
+  //   state = state.copiedWithIsLoading(true);
+
+  //       await _authenticator.verifyPhoneNumber(phoneNumber);
+
+  // }
 
   // Future<void> saveUserInfo({required String userId}) =>
   //     _userInfoStorage.saveUserInfo(
