@@ -17,6 +17,7 @@ import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_functions/app_functions.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart' as widgets;
+import 'package:savery/features/main_screen/streams/streams.dart';
 import 'package:savery/features/transactions/presentation/transactions_screen.dart';
 import 'package:savery/main.dart';
 
@@ -33,18 +34,25 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  final Box _accountsBox = Hive.box<Account>('accounts');
-
   Account? _selectedAccount;
   DateTime? _dateHolder;
 
   final GlobalKey<FormState> _accountNameFormKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final db = FirebaseFirestore.instance;
+  final _userBox = Hive.box<AppUser>(AppBoxes.user);
+  final _accountsBox = Hive.box<Account>(AppBoxes.accounts);
+  late final ValueNotifier<Account?> valueNotifier;
+
+  String? _dayHolder;
 
   @override
   void initState() {
     super.initState();
+    if (_accountsBox.values.isNotEmpty) {
+      _selectedAccount = _accountsBox.values.first;
+    }
+    valueNotifier = ValueNotifier(_selectedAccount);
 
     // _accounts.add(
     //   Account(
@@ -83,6 +91,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    logger.d(_selectedAccount!.name);
+
+    // logger.d(_userBox);
     // var val = _accountsBox.watch().map(
     //   (event) {
     //     logger.d('not dele');
@@ -105,6 +116,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     // logger.d(db.doc(
     //     '${FirestoreFieldNames.users}/${FirebaseAuth.instance.currentUser!.uid}/${FirestoreFieldNames.accounts}/').get());
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -119,8 +131,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
         const Gap(10),
-        StreamBuilder<BoxEvent>(
-            stream: _accountsBox.watch(),
+        StreamBuilder<List<Account>>(
+            stream: accountsStream(),
             // .map(
             //   (event) {
             //     logger.d('not dele');
@@ -138,119 +150,55 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             builder: (context, snapshot) {
               // logger.d(snapshot.connectionState);
               // _accountsBox.listenable().add
-
-              {
-                if (!snapshot.hasData) {
-                  final accounts = _accountsBox.values.toList();
-                  if (accounts.isEmpty) {
-                    return InkWell(
-                      onTap: () async {
-                        await showAccountDialog(context);
-                      },
-                      child: Ink(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: AppSizes.horizontalPaddingSmall),
-                          child: d_border.DottedBorder(
-                              color: AppColors.primary,
-                              borderType: d_border.BorderType.RRect,
-                              radius: const Radius.circular(10),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: Adaptive.w(90),
-                                    height: 200,
-                                    child: const Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.add_circle,
-                                          color: AppColors.primary,
-                                          // size: 5,
-                                        ),
-                                        Gap(10),
-                                        AppText(
-                                            text:
-                                                'Tap here to create an account.')
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              )),
-                        ),
-                      ),
-                    );
-                  } else {
-                    return CarouselSlider.builder(
-                      itemCount: accounts.length,
-                      itemBuilder: (context, index, realIndex) {
-                        final account = accounts[index];
-                        if (index != accounts.length - 1) {
-                          return AccountCard(account: account);
-                        } else {
-                          return SizedBox(
-                            width: 380,
-                            height: 200,
-                            child: Row(
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const widgets.AppLoader();
+              } else {
+                if (snapshot.data!.isEmpty) {
+                  return InkWell(
+                    onTap: () async {
+                      await showAccountDialog(context);
+                    },
+                    child: Ink(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: AppSizes.horizontalPaddingSmall),
+                        child: d_border.DottedBorder(
+                            color: AppColors.primary,
+                            borderType: d_border.BorderType.RRect,
+                            radius: const Radius.circular(10),
+                            child: Column(
                               mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 SizedBox(
-                                  width: 320,
-                                  child: AccountCard(
-                                    account: account,
-                                  ),
-                                ),
-                                const Gap(1),
-                                InkWell(
-                                  onTap: () async {
-                                    await showAccountDialog(context);
-                                  },
-                                  child: Ink(
-                                    child: d_border.DottedBorder(
+                                  width: Adaptive.w(90),
+                                  height: 200,
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.add_circle,
                                         color: AppColors.primary,
-                                        borderType: d_border.BorderType.RRect,
-                                        radius: const Radius.circular(10),
-                                        child: const Column(
-                                          mainAxisSize: MainAxisSize.max,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.add_circle,
-                                              color: AppColors.primary,
-                                              // size: 5,
-                                            ),
-                                          ],
-                                        )),
+                                        // size: 5,
+                                      ),
+                                      Gap(10),
+                                      AppText(
+                                          text:
+                                              'Tap here to create an account.')
+                                    ],
                                   ),
                                 ),
                               ],
-                            ),
-                          );
-                        }
-                      },
-                      options: CarouselOptions(
-                          // enlargeCenterPage: true,
-                          height: 200,
-                          enableInfiniteScroll: false,
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              _selectedAccount = accounts[index];
-                            });
-                          },
-                          viewportFraction: 0.85),
-                    );
-                  }
+                            )),
+                      ),
+                    ),
+                  );
                 } else {
-                  final accounts = _accountsBox.values.toList();
                   return CarouselSlider.builder(
-                    itemCount: accounts.length,
+                    itemCount: snapshot.data!.length,
                     itemBuilder: (context, index, realIndex) {
-                      final account = accounts[index];
-                      if (index != accounts.length - 1) {
+                      final account = snapshot.data![index];
+                      if (index != snapshot.data!.length - 1) {
                         return AccountCard(account: account);
                       } else {
                         return SizedBox(
@@ -297,11 +245,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     options: CarouselOptions(
                         // enlargeCenterPage: true,
                         height: 200,
+                        initialPage: _selectedAccount == null
+                            ? 0
+                            : _accountsBox.values
+                                .firstWhere((element) =>
+                                    element.name == _selectedAccount!.name)
+                                .key,
                         enableInfiniteScroll: false,
                         onPageChanged: (index, reason) {
-                          setState(() {
-                            _selectedAccount = accounts[index];
-                          });
+                          valueNotifier.value = snapshot.data![index];
                         },
                         viewportFraction: 0.85),
                   );
@@ -312,119 +264,184 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(
               horizontal: AppSizes.horizontalPaddingSmall),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const AppText(
-                text: 'Transactions',
-                weight: FontWeight.bold,
-                size: AppSizes.bodySmall,
-              ),
-              widgets.AppTextButton(
-                  text: 'View All',
-                  callback: () async {
-                    await navigatorKey.currentState!.push(MaterialPageRoute(
-                      builder: (context) => const TransactionsScreen(),
-                    ));
-                  })
-            ],
+          child: Container(
+            color: Colors.white,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const AppText(
+                      text: 'Transactions',
+                      weight: FontWeight.bold,
+                      size: AppSizes.bodySmall,
+                    ),
+                    widgets.AppTextButton(
+                        text: 'View All',
+                        callback: () async {
+                          await navigatorKey.currentState!
+                              .push(MaterialPageRoute(
+                            builder: (context) => const TransactionsScreen(),
+                          ));
+                        })
+                  ],
+                ),
+                const Gap(5),
+                ValueListenableBuilder(
+                    valueListenable: valueNotifier,
+                    builder: (context, value, child) {
+                      _dateHolder = value?.transactions?.reversed.first.date;
+                      return Container(
+                        color: Colors.white,
+                        child: AppText(
+                            text: (DateTime.now().day == _dateHolder?.day)
+                                ? 'Today'
+                                : (DateTime.now().weekday -
+                                            _dateHolder!.weekday ==
+                                        1)
+                                    ? 'Yesterday'
+                                    : AppFunctions.formatDate(
+                                        _dateHolder.toString(),
+                                        format: r'g:i A')),
+                      );
+                    }),
+                const Gap(5)
+              ],
+            ),
           ),
         ),
-        // AppText(
-        //     text: AppFunctions.formatDate(DateTime.now().toString(),
-        //         format: r'j M Y')),
-        const Gap(5),
-        (_selectedAccount != null)
-            ? (_selectedAccount!.transactions == null)
-                ? Center(
-                    child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Lottie.asset(AppAssets.emptyList, height: 200),
-                      const AppText(
-                          text: 'Tap on the + button to add a transaction.')
-                    ],
-                  ))
-                : SizedBox(
-                    height: Adaptive.h(40),
-                    child: ListView.separated(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: AppSizes.horizontalPaddingSmall),
-                        itemBuilder: (context, index) {
-                          final transaction =
-                              _selectedAccount!.transactions![index];
-                          return ListTile(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15)),
-                            tileColor: Colors.grey.shade100,
-                            contentPadding:
-                                const EdgeInsets.symmetric(horizontal: 10),
-                            leading: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Container(
-                                  padding: const EdgeInsets.all(10),
-                                  width: 50,
-                                  color: AppColors.primary.withOpacity(0.1),
-                                  child: Icon(
-                                    getIcon(transaction),
-                                    color: AppColors.primary,
-                                  )),
+        ValueListenableBuilder(
+          valueListenable: valueNotifier,
+          builder: (context, value, child) {
+            return StreamBuilder<List<AccountTransaction>>(
+                stream: transactionsStream(value?.name),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const widgets.AppLoader();
+                  } else {
+                    final reversedTransactions =
+                        value!.transactions!.reversed.toList();
+                    return (snapshot.data!.isNotEmpty)
+                        ? Expanded(
+                            child: SizedBox(
+                              child: ListView.separated(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal:
+                                          AppSizes.horizontalPaddingSmall),
+                                  itemBuilder: (context, index) {
+                                    final transaction = value
+                                        .transactions!.reversed
+                                        .toList()[index];
+                                    return ListTile(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15)),
+                                      tileColor: Colors.grey.shade100,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                      leading: ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Container(
+                                            padding: const EdgeInsets.all(10),
+                                            width: 50,
+                                            color: AppColors.primary
+                                                .withOpacity(0.1),
+                                            child: Icon(
+                                              getIcon(transaction),
+                                              color: AppColors.primary,
+                                            )),
+                                      ),
+                                      title: AppText(text: transaction.type),
+                                      subtitle: AppText(
+                                        text: transaction.description,
+                                        color: Colors.grey,
+                                      ),
+                                      trailing: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          AppText(
+                                              text:
+                                                  '-${transaction.amount.toString()}GHc'),
+                                          AppText(
+                                            text: AppFunctions.formatDate(
+                                                transaction.date.toString(),
+                                                format: r'g:i A'),
+                                            color: Colors.grey,
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  separatorBuilder: (context, index) {
+                                    if (reversedTransactions[index]
+                                            .date
+                                            .difference(_dateHolder!) >
+                                        const Duration(days: 6)) {
+                                      // _dateHolder =
+                                      //     value.transactions?[index].date;
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Gap(5),
+                                          AppText(
+                                              text: AppFunctions.formatDate(
+                                                  reversedTransactions[index]
+                                                      .date
+                                                      .toString(),
+                                                  format: r'j M Y')),
+                                          const Gap(5),
+                                        ],
+                                      );
+                                    } else {
+                                      final transactionDay =
+                                          reversedTransactions[index].date.day;
+
+                                      if (_dateHolder!.day == transactionDay) {
+                                        return const Gap(10);
+                                      } else {
+                                        _dateHolder =
+                                            reversedTransactions[index].date;
+                                        return Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Gap(5),
+                                            AppText(
+                                                text: AppFunctions.formatDate(
+                                                    reversedTransactions[index]
+                                                        .date
+                                                        .toString(),
+                                                    format: 'l')),
+                                            const Gap(5),
+                                          ],
+                                        );
+                                      }
+                                    }
+                                  },
+                                  itemCount: snapshot.data!.length < 5
+                                      ? snapshot.data!.length
+                                      : 5),
                             ),
-                            title: AppText(text: transaction.type),
-                            subtitle: AppText(
-                              text: transaction.description,
-                              color: Colors.grey,
-                            ),
-                            trailing: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                AppText(
-                                    text:
-                                        '-${transaction.amount.toString()}GHc'),
-                                AppText(
-                                  text: AppFunctions.formatDate(
-                                      transaction.date.toString(),
-                                      format: r'g:i A'),
-                                  color: Colors.grey,
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                        separatorBuilder: (context, index) {
-                          if (_selectedAccount!.transactions![index].date !=
-                              _dateHolder) {
-                            _dateHolder =
-                                _selectedAccount!.transactions?[index].date;
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Gap(5),
-                                AppText(
-                                    text: AppFunctions.formatDate(
-                                        _selectedAccount!
-                                            .transactions![index].date
-                                            .toString(),
-                                        format: r'j M Y')),
-                                const Gap(5),
-                              ],
-                            );
-                          } else {
-                            return const Gap(10);
-                          }
-                        },
-                        itemCount: _selectedAccount!.transactions!.length),
-                  )
-            : Center(
-                child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Lottie.asset(AppAssets.emptyList, height: 200),
-                  const AppText(
-                      text: 'Tap on the + button to add a  transaction.')
-                ],
-              ))
+                          )
+                        : Center(
+                            child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Lottie.asset(AppAssets.emptyList, height: 200),
+                              const AppText(
+                                  text:
+                                      'Tap on the + button to add a  transaction.')
+                            ],
+                          ));
+                  }
+                });
+          },
+        )
       ],
     );
   }
@@ -525,11 +542,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               TextButton(
                 onPressed: () async {
                   if (_accountNameFormKey.currentState!.validate()) {
-                    final userBox = Hive.box<AppUser>(AppBoxes.user);
-                    final user = userBox.values.first;
+                    final user = _userBox.values.first;
 
                     await _accountsBox.add(Account(name: _nameController.text));
+                    // logger.d(HiveList(_accountsBox));
+
                     user.accounts = HiveList(_accountsBox);
+
+                    user.accounts!.addAll(_accountsBox.values);
+
+                    await user.save();
 
                     // _accounts.isEmpty
                     //     ? await db
@@ -578,9 +600,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                     navigatorKey.currentState!.pop();
                     _nameController.clear();
-                    setState(() {
-                      _selectedAccount = _accountsBox.values.last;
-                    });
+                    // setState(() {
+                    //   valueNotifier.value = _accountsBox.values.last;
+                    // });
                   }
                 },
                 child: const AppText(
@@ -641,7 +663,6 @@ class AccountCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    logger.d(Hive.box('app_state').values);
     return Container(
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.symmetric(horizontal: 5),

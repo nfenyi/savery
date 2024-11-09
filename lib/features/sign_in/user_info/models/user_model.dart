@@ -30,9 +30,11 @@ class AppUser extends HiveObject {
   factory AppUser.fromJson(Map<String, dynamic> json) {
     return AppUser(
       uid: json['uid'] ?? AppConstants.na,
-      accounts: (json['accounts'])
-          .map((accountJson) => Account.fromJson(accountJson))
-          .toList(),
+      accounts: HiveList(
+        json['accounts']
+            .map((accountJson) => Account.fromJson(accountJson))
+            .toList<Account>(),
+      ),
       displayName: json['displayName'],
       email: json['email'],
       phoneNumber: json['phoneNumber'],
@@ -95,9 +97,8 @@ class Account extends HiveObject {
       'name': name,
       'income': income,
       'expenses': expenses,
-      'transactions': transactions == null
-          ? []
-          : transactions!.map((transaction) => transaction.toJson()).toList(),
+      'transactions':
+          transactions!.map((transaction) => transaction.toJson()).toList(),
       'budgets': budgets == null
           ? []
           : budgets?.map((budget) => budget.toJson()).toList(),

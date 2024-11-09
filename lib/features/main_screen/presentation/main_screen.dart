@@ -37,8 +37,8 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
-    const BudgetsScreen(),
     const StatisticsScreen(),
+    const BudgetsScreen(),
     const UserScreen(),
   ];
 
@@ -104,9 +104,9 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               text: _currentIndex == 0
                   ? "Hello, ${_userBox.values.first.displayName}"
                   : _currentIndex == 1
-                      ? "Budgets"
+                      ? "Statistics"
                       : _currentIndex == 2
-                          ? "Statistics"
+                          ? "Budgets"
                           : _currentIndex == 3
                               ? 'Profile'
                               : "",
@@ -171,12 +171,12 @@ class _MainScreenState extends ConsumerState<MainScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Iconsax.wallet),
-            label: 'Budgets',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Iconsax.setting_4),
             label: 'Statistics',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Iconsax.wallet),
+            label: 'Budgets',
           ),
           BottomNavigationBarItem(
             icon: Icon(Iconsax.user),

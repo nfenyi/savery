@@ -142,12 +142,16 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                         _emailController.text,
                         _passwordController.text,
                       );
-                  await _appBox.put('authenticated', true);
-                  await navigatorKey.currentState!.pushAndRemoveUntil(
-                      MaterialPageRoute(
-                          builder: (context) => const MainScreen()), (r) {
-                    return false;
-                  });
+                  if (ref.read(authStateProvider).result ==
+                      AuthResult.success) {
+                    await _appBox.put('authenticated', true);
+
+                    await navigatorKey.currentState!.pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (context) => const MainScreen()), (r) {
+                      return false;
+                    });
+                  }
                   setState(() {
                     _isLoading = false;
                   });

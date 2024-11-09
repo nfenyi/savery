@@ -87,7 +87,6 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // logger.d()
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -436,17 +435,22 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                   if (_selectedTransactionType == 'Income') {
                     // submit income transaction
 
+                    // logger.d(_user.accounts);
                     final selectedAccount = _user.accounts!
                         .where(
                             (element) => element.name == _selectedAccountName)
                         .first;
+                    logger.d(_transactionsBox.values);
                     await _transactionsBox.add((AccountTransaction(
                         amount: double.parse(_amountController.text),
                         date: _selectedDate!,
                         description: _descriptionController.text,
                         type: _selectedTransactionType)));
+                    // logger.d('word');
                     selectedAccount.transactions = HiveList(_transactionsBox);
-
+                    selectedAccount.transactions!
+                        .addAll(_transactionsBox.values);
+                    await selectedAccount.save();
                     navigatorKey.currentState!.pop();
                   } else {
                     if (_selectedCategory != null) {
@@ -462,6 +466,9 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                           description: _descriptionController.text,
                           type: _selectedTransactionType)));
                       selectedAccount.transactions = HiveList(_transactionsBox);
+                      selectedAccount.transactions!
+                          .add(_transactionsBox.values.last);
+                      await selectedAccount.save();
                       navigatorKey.currentState!.pop();
                     } else {
                       setState(() {
