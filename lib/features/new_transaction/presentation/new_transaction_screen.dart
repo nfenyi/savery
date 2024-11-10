@@ -440,7 +440,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                         .where(
                             (element) => element.name == _selectedAccountName)
                         .first;
-                    logger.d(_transactionsBox.values);
+                    // logger.d(_transactionsBox.values);
                     await _transactionsBox.add((AccountTransaction(
                         amount: double.parse(_amountController.text),
                         date: _selectedDate!,
@@ -450,8 +450,10 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                     selectedAccount.transactions = HiveList(_transactionsBox);
                     selectedAccount.transactions!
                         .addAll(_transactionsBox.values);
+                    selectedAccount.income +=
+                        double.parse(_amountController.text);
                     await selectedAccount.save();
-                    navigatorKey.currentState!.pop();
+                    navigatorKey.currentState!.pop(true);
                   } else {
                     if (_selectedCategory != null) {
                       //submit expense transaction
@@ -467,9 +469,11 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                           type: _selectedTransactionType)));
                       selectedAccount.transactions = HiveList(_transactionsBox);
                       selectedAccount.transactions!
-                          .add(_transactionsBox.values.last);
+                          .addAll(_transactionsBox.values);
+                      selectedAccount.expenses +=
+                          double.parse(_amountController.text);
                       await selectedAccount.save();
-                      navigatorKey.currentState!.pop();
+                      navigatorKey.currentState!.pop(true);
                     } else {
                       setState(() {
                         _categoryColor = Colors.red;

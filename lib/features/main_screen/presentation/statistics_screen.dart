@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -14,9 +15,11 @@ import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+import '../../../app_constants/app_constants.dart';
 import '../../../app_functions/app_functions.dart';
 import '../../sign_in/user_info/models/user_model.dart';
 import '../models/statistics/statistics_model.dart';
+import 'widgets.dart';
 
 class StatisticsScreen extends ConsumerStatefulWidget {
   const StatisticsScreen({super.key});
@@ -35,12 +38,16 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
   Account? _selectedAccount;
   late List<_ChartData> data;
   DateTime? _dateHolder;
-
+  final Box<AppUser> _userBox = Hive.box(AppBoxes.user);
   Map<dynamic, int> serviceTypeCounts = {0: 5};
+
+  bool _inIncomeView = true;
 
   @override
   void initState() {
     super.initState();
+    _selectedAccount = _userBox.values.first.accounts?.first;
+    _selectedAccountName = _selectedAccount?.name;
     data = [
       _ChartData('CHN', 12),
       _ChartData('GER', 15),
@@ -76,7 +83,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   ),
                   iconSize: 12.0,
                 ),
-                items: dropdownOptions!
+                items: _userBox.values.first.accounts!
+                    .map(
+                      (e) => e.name,
+                    )
                     .map((item) => DropdownMenuItem(
                           value: item,
                           child: Text(
@@ -161,19 +171,35 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 Expanded(
                   child: TextButton(
                       style: TextButton.styleFrom(
+                          padding: const EdgeInsets.all(15),
                           backgroundColor: Colors.transparent,
                           shape: RoundedRectangleBorder(
-                              side:
-                                  const BorderSide(color: AppColors.neutral100),
+                              side: BorderSide(
+                                  color: _inIncomeView
+                                      ? AppColors.primary
+                                      : AppColors.neutral100),
                               borderRadius: BorderRadius.circular(20))),
-                      onPressed: () {},
+                      onPressed: () {
+                        if (!_inIncomeView) {
+                          setState(() {
+                            _inIncomeView = true;
+                          });
+                        }
+                      },
                       child: const Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
-                              Icon(Iconsax.arrow_down),
-                              AppText(text: 'Income')
+                              Icon(
+                                Iconsax.arrow_down,
+                                color: AppColors.neutral500,
+                                size: 15,
+                              ),
+                              AppText(
+                                text: 'Income',
+                                color: AppColors.neutral500,
+                              )
                             ],
                           ),
                           AppText(
@@ -189,19 +215,35 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 Expanded(
                   child: TextButton(
                       style: TextButton.styleFrom(
+                          padding: const EdgeInsets.all(15),
                           backgroundColor: Colors.transparent,
                           shape: RoundedRectangleBorder(
-                              side:
-                                  const BorderSide(color: AppColors.neutral100),
+                              side: BorderSide(
+                                  color: !_inIncomeView
+                                      ? AppColors.primary
+                                      : AppColors.neutral100),
                               borderRadius: BorderRadius.circular(20))),
-                      onPressed: () {},
+                      onPressed: () {
+                        if (_inIncomeView) {
+                          setState(() {
+                            _inIncomeView = false;
+                          });
+                        }
+                      },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Row(
                             children: [
-                              Icon(Iconsax.arrow_down),
-                              AppText(text: 'Expenses')
+                              Icon(
+                                Iconsax.arrow_up_3,
+                                size: 15,
+                                color: AppColors.neutral500,
+                              ),
+                              AppText(
+                                text: 'Expenses',
+                                color: AppColors.neutral500,
+                              )
                             ],
                           ),
                           AppText(
@@ -250,7 +292,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                                   style: GoogleFonts.manrope(
                                     fontSize: AppSizes.bodySmaller,
                                     fontWeight: FontWeight.w500,
-                                    color: AppColors.neutral900,
+                                    color: AppColors.primary,
                                   ),
                                 ),
                               ))
@@ -433,45 +475,17 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                         },
                         itemCount: _selectedAccount!.transactions!.length),
                   )
-                : Lottie.asset(AppAssets.noData, height: 100)
+                : Center(
+                    child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Lottie.asset(AppAssets.emptyList, height: 200),
+                    ],
+                  ))
           ],
         ),
       ),
     );
-  }
-
-  IconData getIcon(AccountTransaction transaction) {
-    switch (transaction.type) {
-      case 'Gifts':
-        return Iconsax.gift;
-
-      case 'Health':
-        return FontAwesomeIcons.stethoscope;
-      case 'Car':
-        return FontAwesomeIcons.car;
-      case 'Game':
-        return FontAwesomeIcons.chess;
-      case 'Cafe':
-        return FontAwesomeIcons.utensils;
-
-      case 'Travel':
-        return Iconsax.airplane;
-      case 'Utility':
-        return FontAwesomeIcons.lightbulb;
-      case 'Care':
-        return Icons.face_2;
-      case 'Devices':
-        return FontAwesomeIcons.tv;
-      case 'Food':
-        return FontAwesomeIcons.bowlFood;
-      case 'Shopping':
-        return FontAwesomeIcons.cartShopping;
-      case 'Transport':
-        return Iconsax.truck;
-
-      default:
-        return Iconsax.pen_add;
-    }
   }
 }
 

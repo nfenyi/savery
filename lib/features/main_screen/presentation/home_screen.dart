@@ -9,7 +9,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:gap/gap.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_colors.dart';
@@ -25,6 +24,7 @@ import '../../../app_constants/app_assets.dart';
 import '../../../app_constants/app_constants.dart';
 import '../../../app_widgets/widgets.dart';
 import '../../sign_in/user_info/models/user_model.dart';
+import 'widgets.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -42,9 +42,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final db = FirebaseFirestore.instance;
   final _userBox = Hive.box<AppUser>(AppBoxes.user);
   final _accountsBox = Hive.box<Account>(AppBoxes.accounts);
-  late final ValueNotifier<Account?> valueNotifier;
-
-  String? _dayHolder;
+  late final ValueNotifier<Account?> _valueNotifier;
 
   @override
   void initState() {
@@ -52,7 +50,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (_accountsBox.values.isNotEmpty) {
       _selectedAccount = _accountsBox.values.first;
     }
-    valueNotifier = ValueNotifier(_selectedAccount);
+    _valueNotifier = ValueNotifier(_selectedAccount);
 
     // _accounts.add(
     //   Account(
@@ -91,7 +89,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    logger.d(_selectedAccount!.name);
+    // logger.d(_selectedAccount!.name);
 
     // logger.d(_userBox);
     // var val = _accountsBox.watch().map(
@@ -253,7 +251,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 .key,
                         enableInfiniteScroll: false,
                         onPageChanged: (index, reason) {
-                          valueNotifier.value = snapshot.data![index];
+                          _valueNotifier.value = snapshot.data![index];
                         },
                         viewportFraction: 0.85),
                   );
@@ -277,21 +275,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       weight: FontWeight.bold,
                       size: AppSizes.bodySmall,
                     ),
-                    widgets.AppTextButton(
-                        text: 'View All',
-                        callback: () async {
-                          await navigatorKey.currentState!
-                              .push(MaterialPageRoute(
-                            builder: (context) => const TransactionsScreen(),
-                          ));
-                        })
+                    ValueListenableBuilder(
+                      valueListenable: _valueNotifier,
+                      builder: (context, value, child) {
+                        return Visibility(
+                            visible: value?.transactions == null ||
+                                value!.transactions!.isEmpty,
+                            child: child!);
+                      },
+                      child: widgets.AppTextButton(
+                          text: 'View All',
+                          callback: () async {
+                            await navigatorKey.currentState!
+                                .push(MaterialPageRoute(
+                              builder: (context) => TransactionsScreen(
+                                initAccount: _valueNotifier.value!,
+                              ),
+                            ));
+                          }),
+                    )
                   ],
                 ),
                 const Gap(5),
                 ValueListenableBuilder(
-                    valueListenable: valueNotifier,
+                    valueListenable: _valueNotifier,
                     builder: (context, value, child) {
-                      _dateHolder = value?.transactions?.reversed.first.date;
+                      if (value?.transactions == null ||
+                          value!.transactions!.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
+                      _dateHolder = value.transactions?.reversed.first.date;
                       return Container(
                         color: Colors.white,
                         child: AppText(
@@ -312,7 +325,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
         ValueListenableBuilder(
-          valueListenable: valueNotifier,
+          valueListenable: _valueNotifier,
           builder: (context, value, child) {
             return StreamBuilder<List<AccountTransaction>>(
                 stream: transactionsStream(value?.name),
@@ -321,68 +334,97 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     return const widgets.AppLoader();
                   } else {
                     final reversedTransactions =
-                        value!.transactions!.reversed.toList();
+                        value!.transactions?.reversed.toList();
                     return (snapshot.data!.isNotEmpty)
                         ? Expanded(
-                            child: SizedBox(
-                              child: ListView.separated(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal:
-                                          AppSizes.horizontalPaddingSmall),
-                                  itemBuilder: (context, index) {
-                                    final transaction = value
-                                        .transactions!.reversed
-                                        .toList()[index];
-                                    return ListTile(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15)),
-                                      tileColor: Colors.grey.shade100,
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                      leading: ClipRRect(
-                                        borderRadius: BorderRadius.circular(10),
-                                        child: Container(
-                                            padding: const EdgeInsets.all(10),
-                                            width: 50,
-                                            color: AppColors.primary
-                                                .withOpacity(0.1),
-                                            child: Icon(
-                                              getIcon(transaction),
-                                              color: AppColors.primary,
-                                            )),
-                                      ),
-                                      title: AppText(text: transaction.type),
-                                      subtitle: AppText(
-                                        text: transaction.description,
-                                        color: Colors.grey,
-                                      ),
-                                      trailing: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          AppText(
-                                              text:
-                                                  '-${transaction.amount.toString()}GHc'),
-                                          AppText(
+                            child: ListView.separated(
+                                physics: const NeverScrollableScrollPhysics(),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal:
+                                        AppSizes.horizontalPaddingSmall),
+                                itemBuilder: (context, index) {
+                                  final transaction = value
+                                      .transactions!.reversed
+                                      .toList()[index];
+                                  return ListTile(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
+                                    tileColor: Colors.grey.shade100,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    leading: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Container(
+                                          padding: const EdgeInsets.all(10),
+                                          width: 50,
+                                          color: AppColors.primary
+                                              .withOpacity(0.1),
+                                          child: Icon(
+                                            getIcon(transaction),
+                                            color: AppColors.primary,
+                                          )),
+                                    ),
+                                    title: AppText(
+                                        text: transaction.type == 'Income'
+                                            ? "Income"
+                                            : transaction.category!),
+                                    subtitle: AppText(
+                                      text: transaction.description,
+                                      color: Colors.grey,
+                                    ),
+                                    trailing: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        AppText(
+                                          text:
+                                              '${transaction.type == 'Income' ? '+' : '-'} GHc ${transaction.amount.toString()}',
+                                          color: transaction.type == 'Income'
+                                              ? Colors.green
+                                              : Colors.red,
+                                        ),
+                                        AppText(
+                                          text: AppFunctions.formatDate(
+                                              transaction.date.toString(),
+                                              format: r'g:i A'),
+                                          color: Colors.grey,
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                separatorBuilder: (context, index) {
+                                  if (reversedTransactions![index]
+                                          .date
+                                          .difference(_dateHolder!) >
+                                      const Duration(days: 6)) {
+                                    // _dateHolder =
+                                    //     value.transactions?[index].date;
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Gap(5),
+                                        AppText(
                                             text: AppFunctions.formatDate(
-                                                transaction.date.toString(),
-                                                format: r'g:i A'),
-                                            color: Colors.grey,
-                                          ),
-                                        ],
-                                      ),
+                                                reversedTransactions[index]
+                                                    .date
+                                                    .toString(),
+                                                format: r'j M Y')),
+                                        const Gap(5),
+                                      ],
                                     );
-                                  },
-                                  separatorBuilder: (context, index) {
-                                    if (reversedTransactions[index]
-                                            .date
-                                            .difference(_dateHolder!) >
-                                        const Duration(days: 6)) {
-                                      // _dateHolder =
-                                      //     value.transactions?[index].date;
+                                  } else {
+                                    final transactionDay =
+                                        reversedTransactions[index].date.day;
+
+                                    if (_dateHolder!.day == transactionDay) {
+                                      return const Gap(10);
+                                    } else {
+                                      _dateHolder =
+                                          reversedTransactions[index].date;
                                       return Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -393,40 +435,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                   reversedTransactions[index]
                                                       .date
                                                       .toString(),
-                                                  format: r'j M Y')),
+                                                  format: 'l')),
                                           const Gap(5),
                                         ],
                                       );
-                                    } else {
-                                      final transactionDay =
-                                          reversedTransactions[index].date.day;
-
-                                      if (_dateHolder!.day == transactionDay) {
-                                        return const Gap(10);
-                                      } else {
-                                        _dateHolder =
-                                            reversedTransactions[index].date;
-                                        return Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const Gap(5),
-                                            AppText(
-                                                text: AppFunctions.formatDate(
-                                                    reversedTransactions[index]
-                                                        .date
-                                                        .toString(),
-                                                    format: 'l')),
-                                            const Gap(5),
-                                          ],
-                                        );
-                                      }
                                     }
-                                  },
-                                  itemCount: snapshot.data!.length < 5
-                                      ? snapshot.data!.length
-                                      : 5),
-                            ),
+                                  }
+                                },
+                                itemCount: snapshot.data!.length < 5
+                                    ? snapshot.data!.length
+                                    : 5),
                           )
                         : Center(
                             child: Column(
@@ -615,183 +633,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           );
         }
       },
-    );
-  }
-
-  IconData getIcon(AccountTransaction transaction) {
-    switch (transaction.type) {
-      case 'Gifts':
-        return Iconsax.gift;
-
-      case 'Health':
-        return FontAwesomeIcons.stethoscope;
-      case 'Car':
-        return FontAwesomeIcons.car;
-      case 'Game':
-        return FontAwesomeIcons.chess;
-      case 'Cafe':
-        return FontAwesomeIcons.utensils;
-
-      case 'Travel':
-        return Iconsax.airplane;
-      case 'Utility':
-        return FontAwesomeIcons.lightbulb;
-      case 'Care':
-        return Icons.face_2;
-      case 'Devices':
-        return FontAwesomeIcons.tv;
-      case 'Food':
-        return FontAwesomeIcons.bowlFood;
-      case 'Shopping':
-        return FontAwesomeIcons.cartShopping;
-      case 'Transport':
-        return Iconsax.truck;
-
-      default:
-        return Iconsax.pen_add;
-    }
-  }
-}
-
-class AccountCard extends StatelessWidget {
-  const AccountCard({
-    super.key,
-    required this.account,
-  });
-
-  final Account account;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      margin: const EdgeInsets.symmetric(horizontal: 5),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [
-          Color.fromARGB(255, 224, 130, 186),
-          Color.fromARGB(255, 156, 117, 233)
-        ]),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const SizedBox(),
-              AppText(
-                text: account.name,
-                isWhite: true,
-                weight: FontWeight.bold,
-                size: AppSizes.heading6,
-              ),
-              const Icon(
-                Icons.share_outlined,
-                color: Colors.white,
-                size: 20,
-              ),
-            ],
-          ),
-          const Gap(5),
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AppText(
-                text: 'Available Balance',
-                isWhite: true,
-              ),
-              AppText(
-                text: 'GHc TODO}',
-                isWhite: true,
-              )
-            ],
-          ),
-          const Gap(25),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5),
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    color: Colors.grey.withOpacity(0.35),
-                    child: Row(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(5),
-                          child: Container(
-                            padding: const EdgeInsets.all(5),
-                            color: Colors.green,
-                            child: const FaIcon(
-                              Icons.file_download_outlined,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        const Gap(5),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const AppText(
-                              text: 'Income',
-                              isWhite: true,
-                            ),
-                            AppText(
-                              text: 'GHc ${account.income.toString()}',
-                              isWhite: true,
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const Gap(10),
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5),
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    color: Colors.grey.withOpacity(0.35),
-                    child: Row(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(5),
-                          child: Container(
-                            padding: const EdgeInsets.all(5),
-                            color: Colors.red,
-                            child: const FaIcon(
-                              Icons.file_upload_outlined,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        const Gap(5),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const AppText(
-                              text: 'Expenses',
-                              isWhite: true,
-                            ),
-                            AppText(
-                              text: 'GHc ${account.expenses.toString()}',
-                              isWhite: true,
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              )
-            ],
-          )
-        ],
-      ),
     );
   }
 }

@@ -5,18 +5,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:lottie/lottie.dart';
+import 'package:savery/app_constants/app_assets.dart';
 import 'package:savery/app_constants/app_colors.dart';
+import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/main.dart';
 
 import '../../../app_functions/app_functions.dart';
+import '../../main_screen/presentation/widgets.dart';
 import '../../sign_in/user_info/models/user_model.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
-  const TransactionsScreen({super.key});
+  final Account initAccount;
+  const TransactionsScreen({required this.initAccount, super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -24,18 +29,42 @@ class TransactionsScreen extends ConsumerStatefulWidget {
 }
 
 class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
-  String? _selectedAccountName;
-  String? _selectedSortBy;
-  Account? _selectedAccount;
-  List<String>? dropdownOptions = [];
+  late String _selectedAccountName;
+  String? _selectedSortBy = 'Sort by date';
+  late Account _selectedAccount;
+  final _userBox = Hive.box<AppUser>(AppBoxes.user);
+  late Iterable<AccountTransaction>? _reversedTransactions;
+  late List<AccountTransaction>? _transactionsHolder;
 
-  int? _periodFilter = 0;
-  int? _transactionTypeFilter = 0;
+  int? _periodFilter = 1;
+  String _selectedTransactionTypeFilter = 'All';
+  final DateTime dateTimeNow = DateTime.now();
+  late DateTime? _dateHolder;
 
-  DateTime _dateHolder = DateTime.now();
+  @override
+  void initState() {
+    super.initState();
+    _selectedAccount = widget.initAccount;
+    _selectedAccountName = _selectedAccount.name;
+    _reversedTransactions = _selectedAccount.transactions?.reversed;
+
+    _transactionsHolder = _reversedTransactions
+        ?.where((element) =>
+            (element.date.day == dateTimeNow.day) &&
+            (element.date.difference(dateTimeNow) < const Duration(days: 1)))
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
+    //put at a better place:
+    DateTime dateTimeNow = DateTime.now();
+    // logger.d(_reversedTransactions);
+    // logger.d(_transactionsHolder);
+
+    _dateHolder = _selectedAccount.transactions?.reversed.first.date;
+    //  _selectedAccount = _userBox.values.first.accounts?.first;
+    // _selectedAccountName = _selectedAccount.name;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -47,6 +76,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
         padding: const EdgeInsets.symmetric(
             horizontal: AppSizes.horizontalPaddingSmall),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             DropdownButtonHideUnderline(
               child: DropdownButton2<String>(
@@ -54,6 +84,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                 isExpanded: true,
                 hint: const AppText(
                   text: 'Accounts',
+                  textAlign: TextAlign.center,
 
                   // isFetching ? 'Please wait...' : "Select...",
 
@@ -66,21 +97,42 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                   ),
                   iconSize: 12.0,
                 ),
-                items: dropdownOptions!
+                items: _userBox.values.first.accounts!
+                    .map(
+                      (e) => e.name,
+                    )
                     .map((item) => DropdownMenuItem(
                           value: item,
-                          child: Text(
-                            item,
-                            style: GoogleFonts.manrope(
-                              fontSize: AppSizes.bodySmaller,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.neutral900,
-                            ),
+                          child: AppText(
+                            text: item,
+                            textAlign: TextAlign.center,
+                            size: AppSizes.bodySmaller,
+                            weight: FontWeight.w500,
+                            color: AppColors.neutral900,
                           ),
                         ))
                     .toList(),
                 value: _selectedAccountName,
-                onChanged: (value) {},
+                onChanged: (value) {
+                  setState(() {
+                    _selectedAccountName = value!;
+                    _selectedAccount =
+                        _userBox.values.first.accounts!.firstWhere(
+                      (element) => element.name == value,
+                    );
+                    _reversedTransactions =
+                        _selectedAccount.transactions!.reversed;
+
+                    _transactionsHolder = _reversedTransactions
+                        ?.where((element) =>
+                            (element.date.day == dateTimeNow.day) &&
+                            (element.date.difference(dateTimeNow) <
+                                const Duration(days: 1)))
+                        .toList();
+                    _periodFilter = 1;
+                    _selectedTransactionTypeFilter = 'All';
+                  });
+                },
                 buttonStyleData: ButtonStyleData(
                   height: AppSizes.dropDownBoxHeight,
                   padding: const EdgeInsets.only(right: 10.0),
@@ -139,6 +191,151 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                     onValueChanged: (value) {
                       setState(() {
                         _periodFilter = value;
+                        if (_selectedAccount.transactions != null) {
+                          if (_periodFilter == 0) {
+                            if (_selectedTransactionTypeFilter == 'All') {
+                              _transactionsHolder =
+                                  _reversedTransactions?.toList();
+                            } else if (_selectedTransactionTypeFilter ==
+                                'Income') {
+                              _transactionsHolder = _reversedTransactions
+                                  ?.where(
+                                    (element) => element.type == 'Income',
+                                  )
+                                  .toList();
+                            } else {
+                              _transactionsHolder = _reversedTransactions
+                                  ?.where(
+                                    (element) => element.type == 'Expense',
+                                  )
+                                  .toList();
+                            }
+                          } else if (_periodFilter == 1) {
+                            if (_selectedTransactionTypeFilter == 'All') {
+                              _transactionsHolder = _reversedTransactions
+                                  ?.where((element) =>
+                                      element.date.day == dateTimeNow.day &&
+                                      element.date.difference(dateTimeNow) <
+                                          const Duration(days: 1))
+                                  .toList();
+                            } else if (_selectedTransactionTypeFilter ==
+                                'Income') {
+                              _transactionsHolder = _reversedTransactions
+                                  ?.where((element) =>
+                                      element.date.day == dateTimeNow.day &&
+                                      element.date.difference(dateTimeNow) <
+                                          const Duration(days: 1))
+                                  .where(
+                                    (element) => element.type == 'Income',
+                                  )
+                                  .toList();
+                            } else {
+                              _transactionsHolder = _reversedTransactions
+                                  ?.where((element) =>
+                                      element.date.day == dateTimeNow.day &&
+                                      element.date.difference(dateTimeNow) <
+                                          const Duration(days: 1))
+                                  .where(
+                                    (element) => element.type == 'Expense',
+                                  )
+                                  .toList();
+                            }
+                          } else if (_periodFilter == 2) {
+                            if (_selectedTransactionTypeFilter == 'All') {
+                              _transactionsHolder = _reversedTransactions
+                                  //TODO: Implement a better function so iteration stops right when the seventh day of
+                                  //transactions has been fetched.
+                                  //maybe use the firstWhere where on false values are added to an outside list and the search
+                                  //is terminated when true is emitted by the firstWhere function
+                                  ?.where(
+                                    (element) =>
+                                        element.date.difference(dateTimeNow) <
+                                        const Duration(days: 7),
+                                  )
+                                  .toList();
+                            } else if (_selectedTransactionTypeFilter ==
+                                'Income') {
+                              _transactionsHolder = _reversedTransactions
+                                  ?.where(
+                                    (element) =>
+                                        element.date.difference(dateTimeNow) <
+                                        const Duration(days: 7),
+                                  )
+                                  .where(
+                                    (element) => element.type == 'Income',
+                                  )
+                                  .toList();
+                            } else {
+                              _transactionsHolder = _reversedTransactions
+                                  ?.where(
+                                    (element) =>
+                                        element.date.difference(dateTimeNow) <
+                                        const Duration(days: 7),
+                                  )
+                                  .where(
+                                    (element) => element.type == 'Expense',
+                                  )
+                                  .toList();
+                            }
+                          } else if (_periodFilter == 3) {
+                            if (_selectedTransactionTypeFilter == 'All') {
+                              _transactionsHolder = _reversedTransactions
+                                  ?.where((element) =>
+                                      (element.date.year == dateTimeNow.year) &&
+                                      (element.date.month == dateTimeNow.month))
+                                  .toList();
+                            } else if (_selectedTransactionTypeFilter ==
+                                'Income') {
+                              _transactionsHolder = _reversedTransactions
+                                  ?.where((element) =>
+                                      (element.date.month ==
+                                          dateTimeNow.month) &&
+                                      (element.date.year == dateTimeNow.year))
+                                  .where(
+                                    (element) => element.type == 'Income',
+                                  )
+                                  .toList();
+                            } else {
+                              _transactionsHolder = _reversedTransactions
+                                  ?.where((element) =>
+                                      (element.date.month ==
+                                          dateTimeNow.month) &&
+                                      (element.date.year == dateTimeNow.year))
+                                  .where(
+                                    (element) => element.type == 'Expense',
+                                  )
+                                  .toList();
+                            }
+                          } else {
+                            if (_selectedTransactionTypeFilter == 'All') {
+                              _transactionsHolder = _reversedTransactions
+                                  ?.where((element) =>
+                                      element.date.year == dateTimeNow.year)
+                                  .toList();
+                            } else if (_selectedTransactionTypeFilter ==
+                                'Income') {
+                              _transactionsHolder = _reversedTransactions
+                                  ?.where((element) =>
+                                      element.date.year == dateTimeNow.year)
+                                  .where(
+                                    (element) =>
+                                        element.type ==
+                                        _selectedTransactionTypeFilter,
+                                  )
+                                  .toList();
+                            } else {
+                              _transactionsHolder = _reversedTransactions
+                                  ?.where((element) =>
+                                      element.date.year == dateTimeNow.year)
+                                  .where(
+                                    (element) =>
+                                        element.type ==
+                                        _selectedTransactionTypeFilter,
+                                  )
+                                  .toList();
+                            }
+                          }
+                        }
                       });
                     },
                   ),
@@ -153,14 +350,43 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                     borderRadius: 20,
                     callback: () {
                       setState(() {
-                        _transactionTypeFilter = 0;
+                        _selectedTransactionTypeFilter = 'All';
+                        if (_periodFilter == 0) {
+                          _transactionsHolder = _reversedTransactions?.toList();
+                        } else if (_periodFilter == 1) {
+                          _transactionsHolder = _reversedTransactions
+                              ?.where((element) =>
+                                  (element.date.day == dateTimeNow.day) &&
+                                  (element.date.difference(dateTimeNow) <
+                                      const Duration(days: 1)))
+                              .toList();
+                        } else if (_periodFilter == 2) {
+                          _transactionsHolder = _reversedTransactions
+                              ?.where(
+                                (element) =>
+                                    element.date.difference(dateTimeNow) <
+                                    const Duration(days: 7),
+                              )
+                              .toList();
+                        } else if (_periodFilter == 3) {
+                          _transactionsHolder = _reversedTransactions
+                              ?.where((element) =>
+                                  (element.date.year == dateTimeNow.year) &&
+                                  (element.date.month == dateTimeNow.month))
+                              .toList();
+                        } else {
+                          _transactionsHolder = _reversedTransactions
+                              ?.where((element) =>
+                                  element.date.year == dateTimeNow.year)
+                              .toList();
+                        }
                       });
                     },
                     text: 'All',
-                    textColor: _transactionTypeFilter == 0
+                    textColor: _selectedTransactionTypeFilter == 'All'
                         ? Colors.white
                         : Colors.black,
-                    buttonColor: _transactionTypeFilter == 0
+                    buttonColor: _selectedTransactionTypeFilter == 'All'
                         ? AppColors.primary
                         : Colors.grey.shade100,
                   ),
@@ -171,14 +397,69 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                     borderRadius: 20,
                     callback: () {
                       setState(() {
-                        _transactionTypeFilter = 1;
+                        _selectedTransactionTypeFilter = 'Income';
+                        if (_periodFilter == 0) {
+                          _transactionsHolder = _reversedTransactions
+                              ?.where(
+                                (element) =>
+                                    element.type ==
+                                    _selectedTransactionTypeFilter,
+                              )
+                              .toList();
+                        } else if (_periodFilter == 1) {
+                          _transactionsHolder = _reversedTransactions
+                              ?.where((element) =>
+                                  (element.date.day == dateTimeNow.day) &&
+                                  (element.date.difference(dateTimeNow) <
+                                      const Duration(days: 1)))
+                              .where(
+                                (element) =>
+                                    element.type ==
+                                    _selectedTransactionTypeFilter,
+                              )
+                              .toList();
+                        } else if (_periodFilter == 2) {
+                          _transactionsHolder = _reversedTransactions
+                              ?.where(
+                                (element) =>
+                                    element.date.difference(dateTimeNow) <
+                                    const Duration(days: 7),
+                              )
+                              .where(
+                                (element) =>
+                                    element.type ==
+                                    _selectedTransactionTypeFilter,
+                              )
+                              .toList();
+                        } else if (_periodFilter == 3) {
+                          _transactionsHolder = _reversedTransactions
+                              ?.where((element) =>
+                                  (element.date.year == dateTimeNow.year) &&
+                                  (element.date.month == dateTimeNow.month))
+                              .where(
+                                (element) =>
+                                    element.type ==
+                                    _selectedTransactionTypeFilter,
+                              )
+                              .toList();
+                        } else {
+                          _transactionsHolder = _reversedTransactions
+                              ?.where((element) =>
+                                  element.date.year == dateTimeNow.year)
+                              .where(
+                                (element) =>
+                                    element.type ==
+                                    _selectedTransactionTypeFilter,
+                              )
+                              .toList();
+                        }
                       });
                     },
                     text: 'Incomes',
-                    textColor: _transactionTypeFilter == 1
+                    textColor: _selectedTransactionTypeFilter == 'Income'
                         ? Colors.white
                         : Colors.black,
-                    buttonColor: _transactionTypeFilter == 1
+                    buttonColor: _selectedTransactionTypeFilter == 'Income'
                         ? AppColors.primary
                         : Colors.grey.shade100,
                   ),
@@ -189,14 +470,69 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                     borderRadius: 20,
                     callback: () {
                       setState(() {
-                        _transactionTypeFilter = 2;
+                        _selectedTransactionTypeFilter = 'Expense';
+                        if (_periodFilter == 0) {
+                          _transactionsHolder = _reversedTransactions
+                              ?.where(
+                                (element) =>
+                                    element.type ==
+                                    _selectedTransactionTypeFilter,
+                              )
+                              .toList();
+                        } else if (_periodFilter == 1) {
+                          _transactionsHolder = _reversedTransactions
+                              ?.where((element) =>
+                                  (element.date.day == dateTimeNow.day) &&
+                                  (element.date.difference(dateTimeNow) <
+                                      const Duration(days: 1)))
+                              .where(
+                                (element) =>
+                                    element.type ==
+                                    _selectedTransactionTypeFilter,
+                              )
+                              .toList();
+                        } else if (_periodFilter == 2) {
+                          _transactionsHolder = _reversedTransactions
+                              ?.where(
+                                (element) =>
+                                    element.date.difference(dateTimeNow) <
+                                    const Duration(days: 7),
+                              )
+                              .where(
+                                (element) =>
+                                    element.type ==
+                                    _selectedTransactionTypeFilter,
+                              )
+                              .toList();
+                        } else if (_periodFilter == 3) {
+                          _transactionsHolder = _reversedTransactions
+                              ?.where((element) =>
+                                  (element.date.year == dateTimeNow.year) &&
+                                  (element.date.month == dateTimeNow.month))
+                              .where(
+                                (element) =>
+                                    element.type ==
+                                    _selectedTransactionTypeFilter,
+                              )
+                              .toList();
+                        } else {
+                          _transactionsHolder = _reversedTransactions
+                              ?.where((element) =>
+                                  element.date.year == dateTimeNow.year)
+                              .where(
+                                (element) =>
+                                    element.type ==
+                                    _selectedTransactionTypeFilter,
+                              )
+                              .toList();
+                        }
                       });
                     },
-                    buttonColor: _transactionTypeFilter == 2
+                    buttonColor: _selectedTransactionTypeFilter == 'Expense'
                         ? AppColors.primary
                         : Colors.grey.shade100,
                     text: 'Expenses',
-                    textColor: _transactionTypeFilter == 2
+                    textColor: _selectedTransactionTypeFilter == 'Expense'
                         ? Colors.white
                         : Colors.black,
                   ),
@@ -238,7 +574,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                                   style: GoogleFonts.manrope(
                                     fontSize: AppSizes.bodySmaller,
                                     fontWeight: FontWeight.w500,
-                                    color: AppColors.neutral900,
+                                    color: AppColors.primary,
                                   ),
                                 ),
                               ))
@@ -278,15 +614,27 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
               ],
             ),
             const Divider(),
-            (_selectedAccountName != null)
-                ? SizedBox(
-                    height: Adaptive.h(40),
+            if (_transactionsHolder != null && _transactionsHolder!.isNotEmpty)
+              Container(
+                color: Colors.white,
+                child: AppText(
+                    textAlign: TextAlign.left,
+                    text: (DateTime.now().day == _dateHolder?.day)
+                        ? 'Today'
+                        : (DateTime.now().weekday - _dateHolder!.weekday == 1)
+                            ? 'Yesterday'
+                            : AppFunctions.formatDate(_dateHolder.toString(),
+                                format: r'g:i A')),
+              ),
+            const Gap(10),
+            (_transactionsHolder != null && _transactionsHolder!.isNotEmpty)
+                ? Expanded(
                     child: ListView.separated(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: AppSizes.horizontalPaddingSmall),
+                        //TODO: find a better way to implement the implementation of timestamps
+                        //and remove cacheExtent property
+                        cacheExtent: 1000000,
                         itemBuilder: (context, index) {
-                          final transaction =
-                              _selectedAccount!.transactions![index];
+                          final transaction = _transactionsHolder![index];
                           return ListTile(
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15)),
@@ -304,7 +652,10 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                                     color: AppColors.primary,
                                   )),
                             ),
-                            title: AppText(text: transaction.description),
+                            title: AppText(
+                                text: transaction.type == 'Income'
+                                    ? "Income"
+                                    : transaction.category!),
                             subtitle: AppText(
                               text: transaction.description,
                               color: Colors.grey,
@@ -314,8 +665,12 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 AppText(
-                                    text:
-                                        '-${transaction.amount.toString()}GHc'),
+                                  text:
+                                      '${transaction.type == 'Income' ? '+' : '-'} GHc ${transaction.amount.toString()}',
+                                  color: transaction.type == 'Income'
+                                      ? Colors.green
+                                      : Colors.red,
+                                ),
                                 AppText(
                                   text: AppFunctions.formatDate(
                                       transaction.date.toString(),
@@ -327,67 +682,71 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                           );
                         },
                         separatorBuilder: (context, index) {
-                          if (_selectedAccount!.transactions![index].date !=
-                              _dateHolder) {
-                            _dateHolder =
-                                _selectedAccount!.transactions![index].date;
+                          if (_transactionsHolder![index]
+                                  .date
+                                  .difference(_dateHolder!) >
+                              const Duration(days: 6)) {
+                            // _dateHolder =
+                            //     value.transactions?[index].date;
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Gap(5),
                                 AppText(
                                     text: AppFunctions.formatDate(
-                                        _selectedAccount!
-                                            .transactions![index].date
+                                        _transactionsHolder![index]
+                                            .date
                                             .toString(),
                                         format: r'j M Y')),
                                 const Gap(5),
                               ],
                             );
                           } else {
-                            return const Gap(10);
+                            final transactionDay =
+                                _transactionsHolder![index].date.day;
+
+                            if (_dateHolder!.day == transactionDay) {
+                              return const Gap(10);
+                            } else {
+                              _dateHolder = _transactionsHolder![index].date;
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Gap(5),
+                                  AppText(
+                                      text: AppFunctions.formatDate(
+                                          _transactionsHolder![index]
+                                              .date
+                                              .toString(),
+                                          format: 'l')),
+                                  const Gap(5),
+                                ],
+                              );
+                            }
                           }
                         },
-                        itemCount: _selectedAccount!.transactions!.length),
+                        itemCount: _transactionsHolder!.length),
                   )
-                : Container()
+                : Center(
+                    child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Lottie.asset(AppAssets.emptyList, height: 200),
+                      AppText(
+                          text: _periodFilter == 0 &&
+                                  _selectedTransactionTypeFilter == 'All'
+                              ? 'No transactions made on this account.'
+                              : _periodFilter == 0
+                                  ? 'No ${_selectedTransactionTypeFilter}s.'
+                                  : _selectedTransactionTypeFilter == 'All'
+                                      ? 'No transactions made during this period.'
+                                      : 'No such transactions made during this period.')
+                    ],
+                  ))
           ],
         ),
       ),
     );
-  }
-
-  IconData getIcon(AccountTransaction transaction) {
-    switch (transaction.type) {
-      case 'Gifts':
-        return Iconsax.gift;
-
-      case 'Health':
-        return FontAwesomeIcons.stethoscope;
-      case 'Car':
-        return FontAwesomeIcons.car;
-      case 'Game':
-        return FontAwesomeIcons.chess;
-      case 'Cafe':
-        return FontAwesomeIcons.utensils;
-
-      case 'Travel':
-        return Iconsax.airplane;
-      case 'Utility':
-        return FontAwesomeIcons.lightbulb;
-      case 'Care':
-        return Icons.face_2;
-      case 'Devices':
-        return FontAwesomeIcons.tv;
-      case 'Food':
-        return FontAwesomeIcons.bowlFood;
-      case 'Shopping':
-        return FontAwesomeIcons.cartShopping;
-      case 'Transport':
-        return Iconsax.truck;
-
-      default:
-        return Iconsax.pen_add;
-    }
   }
 }

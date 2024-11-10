@@ -8,10 +8,11 @@ Stream<List<Account>> accountsStream() {
   final Box<AppUser> userBox = Hive.box<AppUser>(AppBoxes.user);
 
   late final StreamController<List<Account>> controller;
+  late final StreamSubscription sub;
 
   void startStream() {
     controller.add(userBox.values.first.accounts?.toList() ?? []);
-    userBox.watch().listen(
+    sub = userBox.watch().listen(
       (event) {
         controller.add(userBox.values.first.accounts!.toList());
       },
@@ -20,6 +21,9 @@ Stream<List<Account>> accountsStream() {
 
   controller = StreamController<List<Account>>.broadcast(
     onListen: startStream,
+    onCancel: () {
+      sub.cancel;
+    },
   );
   return controller.stream;
 }
@@ -28,6 +32,7 @@ Stream<List<AccountTransaction>> transactionsStream(String? selectedAccount) {
   final Box<AppUser> userBox = Hive.box(AppBoxes.user);
 
   late final StreamController<List<AccountTransaction>> controller;
+  late final StreamSubscription sub;
 
   void startStream() {
     controller.add(userBox.values.first.accounts
@@ -36,7 +41,7 @@ Stream<List<AccountTransaction>> transactionsStream(String? selectedAccount) {
             .transactions
             ?.toList() ??
         []);
-    userBox.watch().listen(
+    sub = userBox.watch().listen(
       (event) {
         controller.add(userBox.values.first.accounts
                 ?.toList()
@@ -50,6 +55,9 @@ Stream<List<AccountTransaction>> transactionsStream(String? selectedAccount) {
 
   controller = StreamController<List<AccountTransaction>>.broadcast(
     onListen: startStream,
+    onCancel: () {
+      sub.cancel;
+    },
   );
   return controller.stream;
 }

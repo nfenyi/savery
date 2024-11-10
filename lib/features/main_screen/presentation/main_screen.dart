@@ -61,11 +61,17 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           //     .then(
           //       (value) => _accounts = value.data()?.values.first.keys.toList(),
           //     );
-          await navigatorKey.currentState!.push(
+          final rebuild = await navigatorKey.currentState!.push(
             MaterialPageRoute(
               builder: (context) => const NewTransactionScreen(),
             ),
           );
+          // if (rebuild) {
+          //   logger.d('rebuild');
+          //   setState(() {
+
+          //   });
+          // }
         },
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.zero,
