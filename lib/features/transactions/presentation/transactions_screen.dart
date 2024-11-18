@@ -13,7 +13,6 @@ import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
-import 'package:savery/main.dart';
 
 import '../../../app_functions/app_functions.dart';
 import '../../main_screen/presentation/widgets.dart';
@@ -648,7 +647,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                                   width: 50,
                                   color: AppColors.primary.withOpacity(0.1),
                                   child: Icon(
-                                    getIcon(transaction),
+                                    getCategoryIcon(transaction.category!),
                                     color: AppColors.primary,
                                   )),
                             ),

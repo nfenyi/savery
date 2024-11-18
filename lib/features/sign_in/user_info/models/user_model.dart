@@ -109,34 +109,46 @@ class Account extends HiveObject {
 @HiveType(typeId: 2, adapterName: 'BudgetAdapter')
 class Budget extends HiveObject {
   @HiveField(0)
-  String name;
+  String? category;
   @HiveField(1)
   double amount;
   @HiveField(2)
   BudgetType type;
+  @HiveField(3)
+  int duration;
+  @HiveField(4)
+  DateTime createdAt;
 
   Budget({
-    required this.name,
+    this.category,
     required this.amount,
     required this.type,
+    required this.duration,
+    required this.createdAt,
   });
 
   factory Budget.fromJson(Map<String, dynamic> json) {
     return Budget(
-      name: json['name'] ?? AppConstants.na,
+      category: json['name'] ?? AppConstants.na,
       amount: json['amount'],
       type: BudgetType.values[json['type']],
+      duration: json['duration'],
+      createdAt: DateTime.parse(json['createdAt']),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
+      'name': category,
       'amount': amount,
       'type': type.index,
+      'duration': duration,
+      'createdAt': createdAt.toIso8601String(),
     };
   }
 }
+
+enum BudgetType { expenseBudget, savings, goal }
 
 @HiveType(typeId: 3, adapterName: 'TransactionAdapter')
 class AccountTransaction extends HiveObject {
@@ -163,7 +175,7 @@ class AccountTransaction extends HiveObject {
     return AccountTransaction(
       type: json['type'] ?? AppConstants.na,
       amount: json['amount'],
-      date: DateTime.parse(json['createdAt']),
+      date: DateTime.parse(json['date']),
       description: json['description'] ?? AppConstants.na,
       category: json['category'],
     );
@@ -173,11 +185,9 @@ class AccountTransaction extends HiveObject {
     return {
       'type': type,
       'amount': amount,
-      'createdAt': date.toIso8601String(),
+      'date': date.toIso8601String(),
       'description': description,
       'category': category,
     };
   }
 }
-
-enum BudgetType { bill, savings, goal }

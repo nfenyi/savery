@@ -7,6 +7,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_colors.dart';
@@ -14,7 +15,8 @@ import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_functions/app_functions.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
-import 'package:savery/features/new_transaction/models/transaction_category.dart';
+import 'package:savery/features/main_screen/presentation/widgets.dart';
+import 'package:savery/features/new_transaction/models/transaction_category_model.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'package:savery/main.dart';
 
@@ -38,20 +40,25 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
   String? _selectedCategory;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  final List<TransactionCategory> _categories = [
-    TransactionCategory(icon: Iconsax.gift, name: 'Gifts'),
-    TransactionCategory(icon: FontAwesomeIcons.stethoscope, name: 'Health'),
-    TransactionCategory(icon: FontAwesomeIcons.car, name: 'Car'),
-    TransactionCategory(icon: FontAwesomeIcons.chess, name: 'Game'),
-    TransactionCategory(icon: FontAwesomeIcons.utensils, name: 'Cafe'),
-    TransactionCategory(icon: Iconsax.airplane, name: 'Travel'),
-    TransactionCategory(icon: FontAwesomeIcons.lightbulb, name: 'Utility'),
-    TransactionCategory(icon: Icons.face_2, name: 'Care'),
-    TransactionCategory(icon: FontAwesomeIcons.tv, name: 'Devices'),
-    TransactionCategory(icon: FontAwesomeIcons.bowlFood, name: 'Food'),
-    TransactionCategory(icon: FontAwesomeIcons.cartShopping, name: 'Shopping'),
-    TransactionCategory(icon: Iconsax.truck, name: 'Transport'),
-  ];
+  final List<TransactionCategory> _categories =
+      Hive.box<TransactionCategory>(AppBoxes.transactionsCategories)
+          .values
+          .toList();
+
+  // final List<TransactionCategory> _categories = [
+  //   TransactionCategory(icon: Iconsax.gift, name: 'Gifts'),
+  //   TransactionCategory(icon: FontAwesomeIcons.stethoscope, name: 'Health'),
+  //   TransactionCategory(icon: FontAwesomeIcons.car, name: 'Car'),
+  //   TransactionCategory(icon: FontAwesomeIcons.chess, name: 'Game'),
+  //   TransactionCategory(icon: FontAwesomeIcons.utensils, name: 'Cafe'),
+  //   TransactionCategory(icon: Iconsax.airplane, name: 'Travel'),
+  //   TransactionCategory(icon: FontAwesomeIcons.lightbulb, name: 'Utility'),
+  //   TransactionCategory(icon: Icons.face_2, name: 'Care'),
+  //   TransactionCategory(icon: FontAwesomeIcons.tv, name: 'Devices'),
+  //   TransactionCategory(icon: FontAwesomeIcons.bowlFood, name: 'Food'),
+  //   TransactionCategory(icon: FontAwesomeIcons.cartShopping, name: 'Shopping'),
+  //   TransactionCategory(icon: Iconsax.truck, name: 'Transport'),
+  // ];
 
 //
   final _user = Hive.box<AppUser>(AppBoxes.user).values.first;
@@ -159,13 +166,13 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                     borderType: BorderType.underline,
                     hintText: '0.00',
                     keyboardType: const TextInputType.numberWithOptions(),
-                    textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                    suffixIcon: const AppText(text: 'GHC'),
+                    // textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                    suffixIcon: const AppText(text: 'GHc'),
                     validator: FormBuilderValidators.compose(
                         [FormBuilderValidators.required()]),
                   ),
                   AppTextFormField(
-                    fontWeight: FontWeight.bold,
+                    // fontWeight: FontWeight.bold,
                     controller: _descriptionController,
                     borderType: BorderType.underline,
                     hintText: 'Description',
@@ -184,9 +191,9 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                             text: _selectedCategory == null
                                 ? 'Category'
                                 : _selectedCategory!,
-                            weight: _selectedCategory == null
-                                ? null
-                                : FontWeight.bold,
+                            // weight: _selectedCategory == null
+                            //     ? null
+                            //     : FontWeight.bold,
                             color:
                                 _selectedCategory == null ? Colors.grey : null,
                           ),
@@ -231,7 +238,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                               const AppText(
                                                 text: "Select the category",
                                                 size: AppSizes.bodySmaller,
-                                                weight: FontWeight.bold,
+                                                // weight: FontWeight.bold,
                                               ),
                                               // const Gap(10),
                                               GestureDetector(
@@ -306,9 +313,9 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                     child: DropdownButton2<String>(
                       style: GoogleFonts.manrope(
                         fontSize: AppSizes.bodySmaller,
-                        fontWeight: _selectedAccountName == null
-                            ? null
-                            : FontWeight.bold,
+                        // fontWeight: _selectedAccountName == null
+                        //     ? null
+                        //     : FontWeight.bold,
                         color: _selectedAccountName == null
                             ? Colors.grey
                             : Colors.black,
@@ -381,8 +388,8 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                               format: 'j M Y, g:i A'),
                       style: GoogleFonts.manrope(
                         fontSize: AppSizes.bodySmaller,
-                        fontWeight:
-                            _selectedDate == null ? null : FontWeight.bold,
+                        // fontWeight:
+                        //     _selectedDate == null ? null : FontWeight.bold,
                         color: _selectedDate == null ? Colors.grey : null,
                       ),
                     ),
@@ -530,27 +537,22 @@ class TileIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      color: AppColors.primary.withOpacity(0.1),
-      child: category.name != ''
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  category.icon,
-                  color: AppColors.primary,
-                ),
-                AppText(
-                  text: category.name,
-                  color: AppColors.primary,
-                  size: AppSizes.bodySmallest,
-                )
-              ],
-            )
-          : Icon(
+        width: double.infinity,
+        color: AppColors.primary.withOpacity(0.1),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            //TODO: change to iconify widget
+            Iconify(
               category.icon,
               color: AppColors.primary,
             ),
-    );
+            AppText(
+              text: category.name,
+              color: AppColors.primary,
+              size: AppSizes.bodySmallest,
+            )
+          ],
+        ));
   }
 }

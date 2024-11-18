@@ -36,8 +36,7 @@ Stream<List<AccountTransaction>> transactionsStream(String? selectedAccount) {
 
   void startStream() {
     controller.add(userBox.values.first.accounts
-            ?.toList()
-            .firstWhere((element) => element.name == selectedAccount)
+            ?.firstWhere((element) => element.name == selectedAccount)
             .transactions
             ?.toList() ??
         []);
@@ -54,6 +53,45 @@ Stream<List<AccountTransaction>> transactionsStream(String? selectedAccount) {
   }
 
   controller = StreamController<List<AccountTransaction>>.broadcast(
+    onListen: startStream,
+    onCancel: () {
+      sub.cancel;
+    },
+  );
+  return controller.stream;
+}
+
+Stream<List<Budget>> budgetStream(
+    {required String? selectedAccount, required BudgetType type}) {
+  final accountsBox = Hive.box<Account>(AppBoxes.accounts);
+  final budgetsBox = Hive.box<Budget>(AppBoxes.budgets);
+  late final StreamController<List<Budget>> controller;
+  late final StreamSubscription sub;
+
+  void startStream() {
+    controller.add(accountsBox.values
+            .firstWhere((element) => element.name == selectedAccount)
+            .budgets
+            ?.where(
+              (element) => element.type == type,
+            )
+            .toList() ??
+        []);
+    sub = budgetsBox.watch().listen(
+      (event) {
+        controller.add(accountsBox.values
+                .firstWhere((element) => element.name == selectedAccount)
+                .budgets
+                ?.where(
+                  (element) => element.type == type,
+                )
+                .toList() ??
+            []);
+      },
+    );
+  }
+
+  controller = StreamController<List<Budget>>.broadcast(
     onListen: startStream,
     onCancel: () {
       sub.cancel;

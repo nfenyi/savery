@@ -1,11 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:iconify_flutter/icons/akar_icons.dart';
+import 'package:iconify_flutter/icons/arcticons.dart';
+import 'package:iconify_flutter/icons/bxs.dart';
+import 'package:iconify_flutter/icons/heroicons.dart';
+import 'package:iconify_flutter/icons/mdi_light.dart';
+import 'package:iconify_flutter/icons/ph.dart';
+import 'package:iconify_flutter/icons/tabler.dart';
+import 'package:iconify_flutter_plus/icons/ic.dart';
+import 'package:iconify_flutter_plus/icons/ion.dart';
+import 'package:iconify_flutter_plus/icons/la.dart';
+import 'package:iconify_flutter_plus/icons/material_symbols.dart';
+import 'package:iconify_flutter_plus/icons/teenyicons.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_assets.dart';
 import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/features/new_transaction/models/transaction_category_model.dart';
 import 'package:savery/features/onboarding/onboarding_texts.dart';
 import 'package:savery/features/onboarding/presentation/widgets.dart';
 import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
@@ -21,6 +36,8 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final Box _appStateBox = Hive.box(AppBoxes.appState);
+  final _transactionCategoriesBox =
+      Hive.box<TransactionCategory>(AppBoxes.transactionsCategories);
   double? currentPage = 0.0;
   final _pageController = PageController(initialPage: 0);
   // final _indicatorController = PageController(initialPage: 0);
@@ -61,6 +78,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             text: 'Skip',
             callback: () async {
               await _appStateBox.put('onboarded', true);
+              await _transactionCategoriesBox.addAll([
+                TransactionCategory(
+                    icon: Teenyicons.gift_outline, name: 'Gifts'),
+                TransactionCategory(icon: La.stethoscope, name: 'Health'),
+                TransactionCategory(
+                    icon: MaterialSymbols.directions_car_outline_rounded,
+                    name: 'Car'),
+                TransactionCategory(icon: Arcticons.chess, name: 'Game'),
+                TransactionCategory(icon: AkarIcons.utensils, name: 'Cafe'),
+                TransactionCategory(icon: Tabler.plane_tilt, name: 'Travel'),
+                TransactionCategory(
+                    icon: Ph.lightbulb_filament_light, name: 'Utility'),
+                TransactionCategory(icon: Ic.round_face_2, name: 'Care'),
+                TransactionCategory(icon: Heroicons.tv, name: 'Devices'),
+                TransactionCategory(icon: Bxs.bowl_rice, name: 'Food'),
+                TransactionCategory(
+                    icon: Ph.shopping_cart_thin, name: 'Shopping'),
+                TransactionCategory(icon: MdiLight.truck, name: 'Transport'),
+              ]);
               await navigatorKey.currentState!.pushReplacement(
                 MaterialPageRoute(
                   builder: (context) => const SignInScreen(),
@@ -232,6 +268,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           curve: Curves.easeIn);
                     } else {
                       await _appStateBox.put('onboarded', true);
+                      await _transactionCategoriesBox.addAll([
+                        TransactionCategory(
+                            icon: Teenyicons.gift_outline, name: 'Gifts'),
+                        TransactionCategory(
+                            icon: La.stethoscope, name: 'Health'),
+                        TransactionCategory(
+                            icon:
+                                MaterialSymbols.directions_car_outline_rounded,
+                            name: 'Car'),
+                        TransactionCategory(
+                            icon: Arcticons.chess, name: 'Game'),
+                        TransactionCategory(
+                            icon: AkarIcons.utensils, name: 'Cafe'),
+                        TransactionCategory(
+                            icon: Tabler.plane_tilt, name: 'Travel'),
+                        TransactionCategory(
+                            icon: Ph.lightbulb_filament_light, name: 'Utility'),
+                        TransactionCategory(
+                            icon: Ic.round_face_2, name: 'Care'),
+                        TransactionCategory(
+                            icon: Heroicons.tv, name: 'Devices'),
+                        TransactionCategory(icon: Bxs.bowl_rice, name: 'Food'),
+                        TransactionCategory(
+                            icon: Ph.shopping_cart_thin, name: 'Shopping'),
+                        TransactionCategory(
+                            icon: MdiLight.truck, name: 'Transport'),
+                      ]);
                       await navigatorKey.currentState!
                           .pushReplacement(MaterialPageRoute(
                         builder: (context) => const SignInScreen(),

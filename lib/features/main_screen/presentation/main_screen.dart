@@ -1,17 +1,21 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:iconify_flutter/icons/heroicons.dart';
+import 'package:iconify_flutter/icons/heroicons_outline.dart';
+import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
+import 'package:iconify_flutter_plus/icons/bi.dart';
+import 'package:iconify_flutter_plus/icons/clarity.dart';
+import 'package:iconify_flutter_plus/icons/ion.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:logger/logger.dart';
 import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
-import 'package:savery/app_constants/firestore_field_name_constants.dart';
+
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/features/new_transaction/presentation/new_transaction_screen.dart';
-import 'package:savery/features/sign_in/constants/constants.dart';
+
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'package:savery/main.dart';
 
@@ -31,7 +35,8 @@ class MainScreen extends ConsumerStatefulWidget {
 
 class _MainScreenState extends ConsumerState<MainScreen> {
   Logger logger = Logger();
-  final Box<AppUser> _userBox = Hive.box<AppUser>(AppBoxes.user);
+  final _userBox = Hive.box<AppUser>(AppBoxes.user);
+  final _accountBox = Hive.box<Account>(AppBoxes.accounts);
 
   // final int _currentIndex = 0;
 
@@ -54,24 +59,30 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: ElevatedButton(
         onPressed: () async {
-          // await FirebaseFirestore.instance
-          //     .doc(
-          //         '${FirestoreFieldNames.users}/${FirebaseAuth.instance.currentUser!.uid}')
-          //     .get()
-          //     .then(
-          //       (value) => _accounts = value.data()?.values.first.keys.toList(),
-          //     );
-          final rebuild = await navigatorKey.currentState!.push(
-            MaterialPageRoute(
-              builder: (context) => const NewTransactionScreen(),
-            ),
-          );
-          // if (rebuild) {
-          //   logger.d('rebuild');
-          //   setState(() {
+          //TODO: this would have to be changed to accomodate the situation where another person logs
+          //in maybe to make a brief check
+          if (_accountBox.isNotEmpty) {
+            // await FirebaseFirestore.instance
+            //     .doc(
+            //         '${FirestoreFieldNames.users}/${FirebaseAuth.instance.currentUser!.uid}')
+            //     .get()
+            //     .then(
+            //       (value) => _accounts = value.data()?.values.first.keys.toList(),
+            //     );
+            final rebuild = await navigatorKey.currentState!.push(
+              MaterialPageRoute(
+                builder: (context) => const NewTransactionScreen(),
+              ),
+            );
+            // if (rebuild) {
+            //   logger.d('rebuild');
+            //   setState(() {
 
-          //   });
-          // }
+            //   });
+            // }
+          } else {
+            showInfoToast('Please create an account first', context: context);
+          }
         },
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.zero,
@@ -171,21 +182,44 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           fontWeight: FontWeight.w500,
           color: AppColors.neutral500,
         ),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.home),
+        items: [
+          const BottomNavigationBarItem(
+            activeIcon: Iconify(
+              Ion.home,
+              color: AppColors.primary,
+            ),
+            icon: Iconify(
+              Bi.house_door,
+              // color: Colors.transparent,
+            ),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.setting_4),
+          const BottomNavigationBarItem(
+            activeIcon: Iconify(
+              Ion.stats_chart,
+              color: AppColors.primary,
+            ),
+            icon: Iconify(
+              Ion.stats_chart_outline,
+              color: AppColors.neutral500,
+            ),
             label: 'Statistics',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.wallet),
+          const BottomNavigationBarItem(
+            activeIcon: Iconify(
+              Ion.wallet,
+              color: AppColors.primary,
+            ),
+            icon: Iconify(
+              Ion.wallet_outline,
+              color: AppColors.neutral500,
+            ),
             label: 'Budgets',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Iconsax.user),
+            icon: (_userBox.values.first.photoUrl != null)
+                ? Image.network(_userBox.values.first.photoUrl!)
+                : const Icon(Iconsax.user),
             label: 'User',
           ),
         ],

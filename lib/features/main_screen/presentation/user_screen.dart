@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/features/main_screen/models/settings.dart';
 import 'package:savery/features/sign_in/notifiers/providers/providers.dart';
 import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
+import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'package:savery/main.dart';
 
 import '../../../app_constants/app_assets.dart';
@@ -22,6 +25,7 @@ class UserScreen extends ConsumerStatefulWidget {
 }
 
 class _UserScreenState extends ConsumerState<UserScreen> {
+  final _userBox = Hive.box<AppUser>(AppBoxes.user);
   final List<Setting> _settings = [
     Setting(
       icon: Iconsax.notification,
@@ -85,20 +89,21 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                           width: 120,
                         ),
                       ),
-                      const CircleAvatar(
+                      CircleAvatar(
                         maxRadius: 58,
                         minRadius: 58,
-                        backgroundImage: AssetImage(
+                        backgroundImage: const AssetImage(
                           AppAssets.noProfile,
                         ),
-                        foregroundImage: NetworkImage(
-                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9QjDx088rRn46JIdmY-e_ayp5nfCM0dWLjA&s'),
+                        foregroundImage: _userBox.values.first.photoUrl != null
+                            ? NetworkImage(_userBox.values.first.photoUrl!)
+                            : null,
                       ),
                     ],
                   ),
                   const Gap(10),
-                  const AppText(
-                    text: '[name]',
+                  AppText(
+                    text: _userBox.values.first.displayName!,
                     color: Colors.white,
                     size: AppSizes.bodySmall,
                   ),

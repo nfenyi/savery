@@ -22,7 +22,6 @@ class OTPScreen extends StatefulWidget {
 }
 
 class _OTPScreenState extends State<OTPScreen> {
-  final _phoneNumberController = TextEditingController();
   final TextEditingController _pinController = TextEditingController();
   bool showPassword = false;
 
@@ -68,6 +67,7 @@ class _OTPScreenState extends State<OTPScreen> {
                   email: user.email,
                   photoUrl: user.photoURL,
                   phoneNumber: user.phoneNumber));
+
               return navigatorKey.currentState!.pushAndRemoveUntil(
                   MaterialPageRoute(builder: (context) => const MainScreen()),
                   (r) {

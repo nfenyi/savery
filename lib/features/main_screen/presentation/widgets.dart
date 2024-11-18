@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
+import 'package:iconify_flutter_plus/icons/ic.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
@@ -184,13 +185,14 @@ class AccountCard extends StatelessWidget {
   }
 }
 
-IconData getIcon(AccountTransaction transaction) {
-  switch (transaction.category) {
+IconData getCategoryIcon(String? name) {
+  switch (name) {
     case 'Gifts':
       return Iconsax.gift;
 
     case 'Health':
       return FontAwesomeIcons.stethoscope;
+
     case 'Car':
       return FontAwesomeIcons.car;
     case 'Game':
@@ -204,6 +206,7 @@ IconData getIcon(AccountTransaction transaction) {
       return FontAwesomeIcons.lightbulb;
     case 'Care':
       return Icons.face_2;
+
     case 'Devices':
       return FontAwesomeIcons.tv;
     case 'Food':

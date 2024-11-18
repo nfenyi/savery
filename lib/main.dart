@@ -8,6 +8,7 @@ import 'package:logger/logger.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/features/main_screen/presentation/main_screen.dart';
+import 'package:savery/features/new_transaction/models/transaction_category_model.dart';
 import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 
@@ -34,6 +35,8 @@ Future<void> registerHiveAdpapters() async {
   Hive.registerAdapter(AccountAdapter());
   Hive.registerAdapter(BudgetAdapter());
   Hive.registerAdapter(TransactionAdapter());
+  Hive.registerAdapter(TransactionCategoryAdapter());
+  // Hive.registerAdapter(IconDataAdapter());
 }
 
 Future<void> openBoxes() async {
@@ -42,6 +45,7 @@ Future<void> openBoxes() async {
   await Hive.openBox<Account>(AppBoxes.accounts);
   await Hive.openBox<Budget>(AppBoxes.budgets);
   await Hive.openBox<AccountTransaction>(AppBoxes.transactions);
+  await Hive.openBox<TransactionCategory>(AppBoxes.transactionsCategories);
 }
 
 class Savery extends StatelessWidget {
@@ -58,7 +62,7 @@ class Savery extends StatelessWidget {
         title: 'Flutter Demo',
         theme: ThemeData(
           fontFamily: GoogleFonts.manrope(fontSize: 13).fontFamily,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
           scrollbarTheme: ScrollbarThemeData(
             // This is the theme of your application.

@@ -3,7 +3,7 @@ part of 'widgets.dart';
 enum BorderType { outline, underline }
 
 class AppTextFormField extends StatelessWidget {
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final FocusNode? focusNode;
   final String hintText;
   final BorderType borderType;
@@ -47,7 +47,7 @@ class AppTextFormField extends StatelessWidget {
 
   const AppTextFormField(
       {super.key,
-      required this.controller,
+      this.controller,
       this.focusNode,
       this.hintText = '',
       this.borderType = BorderType.outline,
