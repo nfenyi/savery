@@ -71,13 +71,14 @@ class AccountAdapter extends TypeAdapter<Account> {
       transactions: (fields[3] as HiveList?)?.castHiveList(),
       income: fields[1] as double,
       budgets: (fields[4] as HiveList?)?.castHiveList(),
+      currency: fields[5] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Account obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -87,7 +88,9 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..writeByte(3)
       ..write(obj.transactions)
       ..writeByte(4)
-      ..write(obj.budgets);
+      ..write(obj.budgets)
+      ..writeByte(5)
+      ..write(obj.currency);
   }
 
   @override

@@ -62,7 +62,7 @@ class AccountCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AppText(
-                    text: 'GHc $availableBalance',
+                    text: '${account.currency ?? 'GHS'} $availableBalance',
                     isWhite: true,
                   ),
                   Row(
@@ -128,7 +128,8 @@ class AccountCard extends StatelessWidget {
                               isWhite: true,
                             ),
                             AppText(
-                              text: 'GHc ${account.income.toString()}',
+                              text:
+                                  '${account.currency ?? 'GHS'} ${account.income.toString()}',
                               isWhite: true,
                             ),
                           ],
@@ -167,7 +168,8 @@ class AccountCard extends StatelessWidget {
                               isWhite: true,
                             ),
                             AppText(
-                              text: 'GHc ${account.expenses.toString()}',
+                              text:
+                                  '${account.currency ?? 'GHS'} ${account.expenses.toString()}',
                               isWhite: true,
                             ),
                           ],

@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:iconify_flutter/icons/heroicons.dart';
-import 'package:iconify_flutter/icons/heroicons_outline.dart';
 import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
-import 'package:iconify_flutter_plus/icons/bi.dart';
-import 'package:iconify_flutter_plus/icons/clarity.dart';
 import 'package:iconify_flutter_plus/icons/ion.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:logger/logger.dart';
@@ -14,10 +11,10 @@ import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 
 import 'package:savery/app_widgets/app_text.dart';
+import 'package:savery/features/main_screen/state/bottom_nav_index_provider.dart';
 import 'package:savery/features/new_transaction/presentation/new_transaction_screen.dart';
 
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
-import 'package:savery/main.dart';
 
 import '../../../app_constants/app_constants.dart';
 import '../../../app_widgets/widgets.dart';
@@ -43,16 +40,22 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const StatisticsScreen(),
+    Container(),
     const BudgetsScreen(),
     const UserScreen(),
   ];
 
-  int _currentIndex = 0;
+  // int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     // int currentIndex = ref.watch(mainScreenIndexProvider);
-
+    final int bottomNavIndex = ref.watch(bottomNavIndexProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
@@ -69,11 +72,14 @@ class _MainScreenState extends ConsumerState<MainScreen> {
             //     .then(
             //       (value) => _accounts = value.data()?.values.first.keys.toList(),
             //     );
-            final rebuild = await navigatorKey.currentState!.push(
-              MaterialPageRoute(
-                builder: (context) => const NewTransactionScreen(),
-              ),
-            );
+            // final rebuild = await navigatorKey.currentState!.push(
+            //   MaterialPageRoute(
+            //     builder: (context) => const NewTransactionScreen(),
+            //   ),
+            // );
+            final rebuild = await Get.to(() => const NewTransactionScreen(),
+                transition: Transition.downToUp);
+            //TODO: complete
             // if (rebuild) {
             //   logger.d('rebuild');
             //   setState(() {
@@ -118,27 +124,28 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AppText(
-              text: _currentIndex == 0
+              text: bottomNavIndex == 0
                   ? "Hello, ${_userBox.values.first.displayName}"
-                  : _currentIndex == 1
+                  : bottomNavIndex == 1
                       ? "Statistics"
-                      : _currentIndex == 2
+                      : bottomNavIndex == 3
                           ? "Budgets"
-                          : _currentIndex == 3
+                          : bottomNavIndex == 4
                               ? 'Profile'
                               : "",
               weight: FontWeight.bold,
-              color: _currentIndex != 3 ? Colors.black : Colors.white,
-              size: _currentIndex == 0 ? AppSizes.heading6 : AppSizes.bodySmall,
+              color: bottomNavIndex != 4 ? Colors.black : Colors.white,
+              size:
+                  bottomNavIndex == 0 ? AppSizes.heading6 : AppSizes.bodySmall,
             ),
-            _currentIndex == 0
+            bottomNavIndex == 0
                 ? const AppText(text: 'Save for your goals')
                 : const SizedBox.shrink()
           ],
         ),
-        centerTitle: _currentIndex != 0 ? true : false,
-        backgroundColor: _currentIndex != 3 ? Colors.white : AppColors.primary,
-        actions: (_currentIndex == 3)
+        centerTitle: bottomNavIndex != 0 ? true : false,
+        backgroundColor: bottomNavIndex != 4 ? Colors.white : AppColors.primary,
+        actions: (bottomNavIndex == 4)
             ? [
                 AppTextButton(
                   text: 'Edit',
@@ -154,75 +161,99 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               ]
             : null,
       ),
-      body: _screens[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (value) {
-          setState(() {
-            _currentIndex = value;
-          });
-          // ref.read(mainScreenIndexProvider.notifier).update(value);
-        },
-        backgroundColor: Colors.white,
-        elevation: 5,
-        enableFeedback: true,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-        selectedFontSize: AppSizes.bodySmallest,
-        unselectedFontSize: AppSizes.bodySmallest,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.neutral500,
-        selectedLabelStyle: GoogleFonts.manrope(
-          fontSize: AppSizes.bodySmallest,
-          fontWeight: FontWeight.w500,
-          color: AppColors.primary,
+      body: _screens[bottomNavIndex],
+      bottomNavigationBar: Theme(
+        data: ThemeData(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent),
+        child: BottomNavigationBar(
+          currentIndex: ref.watch(bottomNavIndexProvider),
+          onTap: (value) {
+            // setState(() {
+            //   _currentIndex = value;
+            // });
+
+            ref.read(bottomNavIndexProvider.notifier).updateIndex(value);
+          },
+          backgroundColor: Colors.white,
+          elevation: 5,
+          enableFeedback: true,
+          showUnselectedLabels: true,
+          type: BottomNavigationBarType.fixed,
+          selectedFontSize: AppSizes.bodySmallest,
+          unselectedFontSize: AppSizes.bodySmallest,
+          selectedItemColor: AppColors.primary,
+          unselectedItemColor: AppColors.neutral500,
+          selectedLabelStyle: GoogleFonts.manrope(
+            fontSize: AppSizes.bodySmallest,
+            fontWeight: FontWeight.w500,
+            color: AppColors.primary,
+          ),
+          unselectedLabelStyle: GoogleFonts.manrope(
+            fontSize: AppSizes.bodySmallest,
+            fontWeight: FontWeight.w500,
+            color: AppColors.neutral500,
+          ),
+          items: [
+            const BottomNavigationBarItem(
+              activeIcon: Icon(
+                Icons.home_rounded,
+                size: 27,
+                color: AppColors.primary,
+              ),
+              icon: Icon(
+                Icons.home_outlined,
+                size: 27,
+                // color: Colors.transparent,
+              ),
+              label: 'Home',
+            ),
+            const BottomNavigationBarItem(
+              activeIcon: Icon(
+                Icons.bar_chart_rounded,
+                color: AppColors.primary,
+                size: 27,
+              ),
+              icon: Icon(
+                Icons.bar_chart_outlined,
+                color: AppColors.neutral500,
+                size: 27,
+              ),
+              label: 'Statistics',
+            ),
+            const BottomNavigationBarItem(
+              icon: Iconify(
+                Ion.wallet_outline,
+                color: Colors.transparent,
+              ),
+              label: '',
+            ),
+            const BottomNavigationBarItem(
+              activeIcon: Icon(
+                Icons.account_balance_wallet,
+                color: AppColors.primary,
+              ),
+              icon: Icon(
+                Icons.account_balance_wallet_outlined,
+                color: AppColors.neutral500,
+              ),
+              label: 'Budgets',
+            ),
+            BottomNavigationBarItem(
+              activeIcon: (_userBox.values.first.photoUrl != null)
+                  ? Image.network(_userBox.values.first.photoUrl!)
+                  : const Icon(
+                      Icons.person,
+                      color: AppColors.primary,
+                      size: 27,
+                    ),
+              icon: (_userBox.values.first.photoUrl != null)
+                  ? Image.network(_userBox.values.first.photoUrl!)
+                  : const Icon(Iconsax.user),
+              label: 'User',
+            ),
+          ],
         ),
-        unselectedLabelStyle: GoogleFonts.manrope(
-          fontSize: AppSizes.bodySmallest,
-          fontWeight: FontWeight.w500,
-          color: AppColors.neutral500,
-        ),
-        items: [
-          const BottomNavigationBarItem(
-            activeIcon: Iconify(
-              Ion.home,
-              color: AppColors.primary,
-            ),
-            icon: Iconify(
-              Bi.house_door,
-              // color: Colors.transparent,
-            ),
-            label: 'Home',
-          ),
-          const BottomNavigationBarItem(
-            activeIcon: Iconify(
-              Ion.stats_chart,
-              color: AppColors.primary,
-            ),
-            icon: Iconify(
-              Ion.stats_chart_outline,
-              color: AppColors.neutral500,
-            ),
-            label: 'Statistics',
-          ),
-          const BottomNavigationBarItem(
-            activeIcon: Iconify(
-              Ion.wallet,
-              color: AppColors.primary,
-            ),
-            icon: Iconify(
-              Ion.wallet_outline,
-              color: AppColors.neutral500,
-            ),
-            label: 'Budgets',
-          ),
-          BottomNavigationBarItem(
-            icon: (_userBox.values.first.photoUrl != null)
-                ? Image.network(_userBox.values.first.photoUrl!)
-                : const Icon(Iconsax.user),
-            label: 'User',
-          ),
-        ],
       ),
     );
   }

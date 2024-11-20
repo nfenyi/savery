@@ -8,6 +8,8 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
+import 'package:savery/features/accounts_&_currencies/presentation/accounts_&_currencies_screen.dart';
+import 'package:savery/features/accounts_&_currencies/services/api_services.dart';
 import 'package:savery/features/main_screen/models/settings.dart';
 import 'package:savery/features/sign_in/notifiers/providers/providers.dart';
 import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
@@ -40,13 +42,17 @@ class _UserScreenState extends ConsumerState<UserScreen> {
       name: "Categories",
     ),
     Setting(
-      icon: Iconsax.personalcard,
-      name: "Accounts",
-    ),
-    Setting(
-      icon: FontAwesomeIcons.chartLine,
-      name: "Currency",
-    ),
+        icon: FontAwesomeIcons.chartLine,
+        name: "Accounts & Currencies",
+        callback: () async {
+          final response = await ApiServices().fetchExchangeRates();
+
+          navigatorKey.currentState!.push(MaterialPageRoute(
+            builder: (context) => CurrencyScreen(
+              currencyResponse: response,
+            ),
+          ));
+        }),
     Setting(
       icon: FontAwesomeIcons.globe,
       name: "Language",
@@ -55,10 +61,6 @@ class _UserScreenState extends ConsumerState<UserScreen> {
       icon: Iconsax.message,
       name: "Support",
     ),
-    // Setting(
-    //   icon: Iconsax.logout,
-    //   name: "Log Out",
-    // ),
   ];
 
   @override
@@ -132,13 +134,16 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                     final setting = _settings[index];
                     return ListTile(
                       contentPadding: const EdgeInsets.all(0),
+                      onTap: setting.callback,
                       dense: true,
                       leading: ClipRRect(
                         borderRadius: BorderRadius.circular(5),
                         child: Container(
-                          padding: const EdgeInsets.all(2),
-                          color: AppColors.neutral100,
-                          child: Icon(setting.icon),
+                          padding: const EdgeInsets.all(4),
+                          color: Colors.grey[200],
+                          child: Icon(
+                            setting.icon,
+                          ),
                         ),
                       ),
                       title: AppText(

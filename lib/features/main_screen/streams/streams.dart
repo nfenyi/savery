@@ -28,26 +28,17 @@ Stream<List<Account>> accountsStream() {
   return controller.stream;
 }
 
-Stream<List<AccountTransaction>> transactionsStream(String? selectedAccount) {
+Stream<List<AccountTransaction>> transactionsStream(Account? selectedAccount) {
   final Box<AppUser> userBox = Hive.box(AppBoxes.user);
 
   late final StreamController<List<AccountTransaction>> controller;
   late final StreamSubscription sub;
 
   void startStream() {
-    controller.add(userBox.values.first.accounts
-            ?.firstWhere((element) => element.name == selectedAccount)
-            .transactions
-            ?.toList() ??
-        []);
+    controller.add(selectedAccount?.transactions?.toList() ?? []);
     sub = userBox.watch().listen(
       (event) {
-        controller.add(userBox.values.first.accounts
-                ?.toList()
-                .firstWhere((element) => element.name == selectedAccount)
-                .transactions
-                ?.toList() ??
-            []);
+        controller.add(selectedAccount?.transactions?.toList() ?? []);
       },
     );
   }

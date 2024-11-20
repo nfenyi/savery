@@ -33,9 +33,11 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
   final _billNameController = TextEditingController();
 
   final _budgetBox = Hive.box<Budget>(AppBoxes.budgets);
+  late Account _selectedAccount;
 
   String? _selectedAccountName;
-  final _accounts = Hive.box<Account>('accounts');
+  final _accounts = Hive.box<Account>('accounts').values;
+  late String _currency;
 
   late final List<String> _accountNames;
   final List<TextEditingController> _controllers = [];
@@ -43,13 +45,16 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedAccountName = _accounts.values.first.name;
-    _accountNames = _accounts.values
+    _selectedAccount = _accounts.first;
+    //TODO: make _currency non-nullable
+    _currency = _selectedAccount.currency ?? 'GHS';
+    _selectedAccountName = _selectedAccount.name;
+    _accountNames = _accounts
         .map(
           (e) => e.name,
         )
         .toList();
-    _budgets = _accounts.values.first.budgets?.toList();
+    _budgets = _selectedAccount.budgets?.toList();
     _savings = _budgets
         ?.where(
           (budget) => budget.type == BudgetType.savings,
@@ -130,10 +135,11 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                   setState(() {
                     _selectedAccountName = value;
 
-                    _savings = _accounts.values
-                        .where((element) => element.name == value)
-                        .first
-                        .budgets
+                    _selectedAccount = _accounts.firstWhere(
+                      (element) => element.name == value,
+                    );
+                    _currency = _selectedAccount.currency ?? 'GHS';
+                    _savings = _selectedAccount.budgets
                         ?.where(
                           (element) => element.type == BudgetType.savings,
                         )
@@ -213,8 +219,8 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                                         ),
                                         Row(
                                           children: [
-                                            const AppText(
-                                              text: 'Ghc',
+                                            AppText(
+                                              text: _currency,
                                               weight: FontWeight.bold,
                                               size: AppSizes.bodySmall,
                                             ),
@@ -238,32 +244,45 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                                                             .amount =
                                                         double.parse(
                                                             value ?? '0');
-                                                    Hive.box<Account>(AppBoxes
-                                                                .accounts)
-                                                            .values
-                                                            .firstWhere(
-                                                              (element) =>
-                                                                  element
-                                                                      .name ==
-                                                                  _selectedAccountName,
-                                                            )
-                                                            .budgets =
+                                                    // Hive.box<Account>(AppBoxes
+                                                    //             .accounts)
+                                                    //         .values
+                                                    //         .firstWhere(
+                                                    //           (element) =>
+                                                    //               element
+                                                    //                   .name ==
+                                                    //               _selectedAccountName,
+                                                    //         )
+                                                    //         .budgets =
+                                                    //     HiveList(_budgetBox);
+                                                    // Hive.box<Account>(
+                                                    //         AppBoxes.accounts)
+                                                    //     .values
+                                                    //     .firstWhere(
+                                                    //       (element) =>
+                                                    //           element.name ==
+                                                    //           _selectedAccountName,
+                                                    //     )
+                                                    //     .budgets!
+                                                    //     .addAll(
+                                                    //         _budgetBox.values);
+                                                    // await Hive.box<Account>(
+                                                    //         AppBoxes.accounts)
+                                                    //     .values
+                                                    //     .first
+                                                    //     .save();
+                                                    await _budgetBox.values
+                                                        .toList()[index]
+                                                        .save();
+                                                    _selectedAccount.budgets =
                                                         HiveList(_budgetBox);
-                                                    Hive.box<Account>(
-                                                            AppBoxes.accounts)
-                                                        .values
-                                                        .firstWhere(
-                                                          (element) =>
-                                                              element.name ==
-                                                              _selectedAccountName,
-                                                        )
+                                                    _selectedAccount.budgets!
+                                                        .addAll(_savings!.map(
+                                                      (e) => e,
+                                                    ));
+                                                    await _selectedAccount
                                                         .budgets!
-                                                        .addAll(
-                                                            _budgetBox.values);
-                                                    await Hive.box<Account>(
-                                                            AppBoxes.accounts)
-                                                        .values
-                                                        .first
+                                                        .toList()[index]
                                                         .save();
                                                   },
                                                   radius: 5,

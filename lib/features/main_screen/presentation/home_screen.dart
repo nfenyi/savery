@@ -279,7 +279,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       valueListenable: _valueNotifier,
                       builder: (context, value, child) {
                         return Visibility(
-                            visible: value?.transactions != null ||
+                            visible: value?.transactions != null &&
                                 value!.transactions!.isNotEmpty,
                             child: child!);
                       },
@@ -329,7 +329,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           valueListenable: _valueNotifier,
           builder: (context, value, child) {
             return StreamBuilder<List<AccountTransaction>>(
-                stream: transactionsStream(value?.name),
+                stream: transactionsStream(value),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const widgets.AppLoader();
@@ -346,7 +346,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                           AppSizes.horizontalPaddingSmall),
                                   itemBuilder: (context, index) {
                                     final transaction =
-                                        reversedTransactions.toList()[index];
+                                        reversedTransactions[index];
                                     return ListTile(
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
@@ -383,7 +383,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         children: [
                                           AppText(
                                             text:
-                                                '${transaction.type == 'Income' ? '+' : '-'} GHc ${transaction.amount.toString()}',
+                                                '${transaction.type == 'Income' ? '+' : '-'} ${_selectedAccount!.currency} ${transaction.amount.toString()}',
                                             color: transaction.type == 'Income'
                                                 ? Colors.green
                                                 : Colors.red,

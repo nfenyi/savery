@@ -68,6 +68,8 @@ class Account extends HiveObject {
   HiveList<AccountTransaction>? transactions;
   @HiveField(4)
   HiveList<Budget>? budgets;
+  @HiveField(5)
+  String? currency;
 
   Account({
     required this.name,
@@ -75,6 +77,7 @@ class Account extends HiveObject {
     this.transactions,
     this.income = 0,
     this.budgets,
+    this.currency,
   });
 
   factory Account.fromJson(Map<String, dynamic> json) {
@@ -89,6 +92,7 @@ class Account extends HiveObject {
       budgets: json['budgets']
           .map((budgetJson) => Budget.fromJson(budgetJson))
           .toList(),
+      currency: json['currency'],
     );
   }
 
@@ -97,6 +101,7 @@ class Account extends HiveObject {
       'name': name,
       'income': income,
       'expenses': expenses,
+      'currency': currency,
       'transactions':
           transactions!.map((transaction) => transaction.toJson()).toList(),
       'budgets': budgets == null

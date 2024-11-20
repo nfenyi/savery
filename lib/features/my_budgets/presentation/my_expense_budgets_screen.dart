@@ -40,12 +40,13 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
   final _budgetNameController = TextEditingController();
   final _expenseAmountController = TextEditingController();
   final _expenseCoverageController = TextEditingController();
-
+  late final Iterable<Account> _accounts;
   final _userBox = Hive.box<AppUser>(AppBoxes.user);
   final _budgetBox = Hive.box<Budget>(AppBoxes.budgets);
   DateTime _currentDate = DateTime.now();
   String? _selectedAccountName;
   late List<double> _savingAmounts;
+  late Account _selectedAccount;
   final _accountsBox = Hive.box<Account>(AppBoxes.accounts);
   final _transactionCategories =
       Hive.box<TransactionCategory>(AppBoxes.transactionsCategories).values.map(
@@ -54,65 +55,58 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
 
   late final List<String> _accountNames;
   Set<String?>? _categoriess = {};
-  List<AccountTransaction> _fetchedTransactions = [];
   final Map<String, double> _mappedTransactions = {};
+  late String _currency;
 
   @override
   void initState() {
     super.initState();
-    _selectedAccountName = _accountsBox.values.first.name;
-    _accountNames = _accountsBox.values
+    _accounts = _accountsBox.values;
+
+    _selectedAccount = _accounts.first;
+    _currency = _selectedAccount.currency ?? 'GHS';
+    _selectedAccountName = _selectedAccount.name;
+    _accountNames = _accounts
         .map(
           (e) => e.name,
         )
         .toList();
 
-    _expenseBudgets = _accountsBox.values.first.budgets
+    _expenseBudgets = _selectedAccount.budgets
         ?.where(
           (element) => element.type == BudgetType.expenseBudget,
         )
         .toList();
-    _categoriess = _accountsBox.values.first.transactions!.map(
+    _categoriess = _selectedAccount.transactions?.map(
       (e) {
         if (e.type == 'Expense') {
           return e.category!;
         }
       },
     ).toSet();
-
-    for (var budget in _budgetBox.values) {
-      _mappedTransactions[budget.category!] = 0;
-    }
-
-    //
-    for (final transaction
-        in _accountsBox.values.first.transactions!.reversed) {
-      // if (_categoriess!.contains(transaction.category)) {
-      //   _fetchedTransactions.add(transaction);
-      // }
-
-      //the assignment is not necessary. I just put something there so the IDE stops saying i did not assign
-      //assignedBudget at the line with //*
-      Budget assignedBudget = Budget(
-          amount: 0,
-          type: BudgetType.goal,
-          duration: 0,
-          createdAt: DateTime.now());
-      if (transaction.type == 'Expense' &&
-          _budgetBox.values.any(
-            (element) {
-              assignedBudget = element;
-              return element.category == transaction.category!;
-            },
-          )) {
-        if (transaction.date.difference(_currentDate).inDays <
-            assignedBudget.duration) {
-          //*
-          // if (transaction.type == 'Expense')
-          _mappedTransactions[transaction.category!] =
-              _mappedTransactions[transaction.category]! + transaction.amount;
-        } else {
-          break;
+    if (_selectedAccount.transactions != null) {
+      for (final transaction in _selectedAccount.transactions!.reversed) {
+        // if (_categoriess!.contains(transaction.category)) {
+        //   _fetchedTransactions.add(transaction);
+        // }
+        late Budget assignedBudget;
+        if (transaction.type == 'Expense' &&
+            _expenseBudgets != null &&
+            _expenseBudgets!.any(
+              (element) {
+                assignedBudget =
+                    element; //will be used if any is true to execute the body
+                return element.category == transaction.category!;
+              },
+            )) {
+          if (transaction.date.difference(_currentDate).inDays <
+              assignedBudget.duration) {
+            _mappedTransactions[transaction.category!] =
+                (_mappedTransactions[transaction.category] ?? 0) +
+                    transaction.amount;
+          } else {
+            break;
+          }
         }
       }
     }
@@ -134,6 +128,7 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
   @override
   Widget build(BuildContext context) {
     _currentDate = DateTime.now();
+
     _savingAmounts = Hive.box<Budget>(AppBoxes.budgets)
         .values
         .map(
@@ -221,46 +216,66 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                     .toList(),
                 value: _selectedAccountName,
                 onChanged: (value) {
-                  setState(() {
-                    _selectedAccountName = value;
-                    _expenseBudgets = _accountsBox.values
-                        .firstWhere(
-                            (element) => element.name == _selectedAccountName)
-                        .budgets
-                        ?.where(
-                          (element) => element.type == BudgetType.expenseBudget,
-                        )
-                        .toList();
-                    _categoriess = _accountsBox.values.first.transactions!.map(
-                      (e) {
-                        if (e.type == 'Expense') {
-                          return e.category!;
+                  if (_selectedAccountName != value) {
+                    setState(() {
+                      _selectedAccountName = value;
+                      _selectedAccount = _accounts.firstWhere(
+                          (element) => element.name == _selectedAccountName);
+                      _currency = _selectedAccount.currency ?? 'GHS';
+                      _expenseBudgets = _selectedAccount.budgets
+                          ?.where(
+                            (element) =>
+                                element.type == BudgetType.expenseBudget,
+                          )
+                          .toList();
+
+                      _categoriess = _selectedAccount.transactions?.map(
+                        (e) {
+                          if (e.type == 'Expense') {
+                            return e.category!;
+                          }
+                        },
+                      ).toSet();
+                      if (_selectedAccount.transactions != null) {
+                        //
+                        // for (final transaction
+                        //     in _accountsBox.values.first.transactions!) {
+                        //   if (_categoriess!.contains(transaction.category)) {
+                        //     _fetchedTransactions.add(transaction);
+                        //   }
+                        // }
+                        for (final transaction
+                            in _selectedAccount.transactions!.reversed) {
+                          // if (_categoriess!.contains(transaction.category)) {
+                          //   _fetchedTransactions.add(transaction);
+                          // }
+                          late Budget assignedBudget;
+                          if (transaction.type == 'Expense' &&
+                              _expenseBudgets != null &&
+                              _expenseBudgets!.any(
+                                (element) {
+                                  assignedBudget =
+                                      element; //will be used if any is true to execute the body
+                                  return element.category ==
+                                      transaction.category!;
+                                },
+                              )) {
+                            if (transaction.date
+                                    .difference(_currentDate)
+                                    .inDays <
+                                assignedBudget.duration) {
+                              _mappedTransactions[transaction.category!] =
+                                  (_mappedTransactions[transaction.category] ??
+                                          0) +
+                                      transaction.amount;
+                            } else {
+                              break;
+                            }
+                          }
                         }
-                      },
-                    ).toSet();
-
-                    //
-                    // for (final transaction
-                    //     in _accountsBox.values.first.transactions!) {
-                    //   if (_categoriess!.contains(transaction.category)) {
-                    //     _fetchedTransactions.add(transaction);
-                    //   }
-                    // }
-                    final selectedAccount = _accountsBox.values.firstWhere(
-                      (element) => element.name == _selectedAccountName,
-                    );
-
-                    for (final transaction in selectedAccount.transactions!) {
-                      // if (_categoriess!.contains(transaction.category)) {
-                      //   _fetchedTransactions.add(transaction);
-                      // }
-                      if (transaction.type == 'Expense') {
-                        _mappedTransactions[transaction.category!] =
-                            _mappedTransactions[transaction.category]! +
-                                transaction.amount;
                       }
-                    }
-                  });
+                    });
+                  }
                 },
                 buttonStyleData: ButtonStyleData(
                   height: AppSizes.dropDownBoxHeight,
@@ -368,6 +383,17 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                 itemCount: snapshot.data!.length,
                                 itemBuilder: (context, index) {
                                   final expenseBudget = snapshot.data![index];
+
+                                  final double value = _mappedTransactions[
+                                              expenseBudget.category] !=
+                                          null
+                                      ? _mappedTransactions[
+                                              expenseBudget.category]! /
+                                          expenseBudget.amount
+                                      : 0;
+                                  final formattedValue =
+                                      (value * 100).toStringAsFixed(1);
+
                                   return Container(
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 20, horizontal: 15),
@@ -423,8 +449,8 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                                             AppSizes.bodySmall,
                                                       ),
                                                       const Gap(4),
-                                                      const AppText(
-                                                        text: 'Ghc',
+                                                      AppText(
+                                                        text: _currency,
                                                         weight: FontWeight.bold,
                                                         size:
                                                             AppSizes.bodySmall,
@@ -444,7 +470,8 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                                     children: [
                                                       AppText(
                                                         text:
-                                                            'GHc${_savingAmounts[index]}  (${((_savingAmounts[index] / expenseBudget.amount) * 100).floor()}%)',
+                                                            // '$_currency ${_savingAmounts[index]}  (${((_savingAmounts[index] / expenseBudget.amount) * 100).floor()}%)',
+                                                            '$_currency ${_mappedTransactions[expenseBudget.category!] ?? 0}  ($formattedValue %)',
                                                         color: Colors.green,
                                                       ),
                                                       AppText(
@@ -460,25 +487,18 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                                     width: Adaptive.w(70),
                                                     child:
                                                         LinearProgressIndicator(
-                                                      backgroundColor:
-                                                          Colors.grey[200],
-                                                      color: AppColors.primary,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5),
-                                                      value: _mappedTransactions[
-                                                                      expenseBudget
-                                                                          .category]! /
-                                                                  expenseBudget
-                                                                      .amount <
-                                                              1
-                                                          ? _mappedTransactions[
-                                                                  expenseBudget
-                                                                      .category]! /
-                                                              expenseBudget
-                                                                  .amount
-                                                          : 1,
-                                                    ),
+                                                            backgroundColor:
+                                                                Colors.grey[
+                                                                    200],
+                                                            color: AppColors
+                                                                .primary,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5),
+                                                            value: value < 1
+                                                                ? value
+                                                                : 1),
                                                   ),
                                                 ],
                                               ),
@@ -623,8 +643,8 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                       hintText: '50.05',
                       keyboardType:
                           const TextInputType.numberWithOptions(decimal: true),
-                      suffixIcon: const AppText(
-                        text: 'GHc',
+                      suffixIcon: AppText(
+                        text: _currency,
                         color: Colors.grey,
                       ),
                       validator: FormBuilderValidators.compose([
@@ -777,8 +797,8 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                       hintText: '50.05',
                       keyboardType:
                           const TextInputType.numberWithOptions(decimal: true),
-                      suffixIcon: const AppText(
-                        text: 'GHc',
+                      suffixIcon: AppText(
+                        text: _currency,
                         color: Colors.grey,
                       ),
                       validator: FormBuilderValidators.compose([

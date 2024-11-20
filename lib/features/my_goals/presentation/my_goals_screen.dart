@@ -37,6 +37,8 @@ class _MyGoalsScreenState extends State<MyGoalsScreen> {
   final _userBox = Hive.box<AppUser>(AppBoxes.user);
   final _budgetBox = Hive.box<Budget>(AppBoxes.budgets);
   late DateTime _currentDate;
+  late Account _selectedAccount;
+  late String _currency;
 
   final _goalNameController = TextEditingController();
   final _goalAmountController = TextEditingController();
@@ -45,7 +47,9 @@ class _MyGoalsScreenState extends State<MyGoalsScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedAccountName = _accounts.values.first.name;
+    _selectedAccount = _accounts.values.first;
+    _selectedAccountName = _selectedAccount.name;
+    _currency = _selectedAccount.currency ?? 'GHS';
     _accountNames = _accounts.values
         .map(
           (e) => e.name,
@@ -111,10 +115,11 @@ class _MyGoalsScreenState extends State<MyGoalsScreen> {
                 onChanged: (value) {
                   setState(() {
                     _selectedAccountName = value;
-                    _goals = _accounts.values
-                        .firstWhere(
-                            (element) => element.name == _selectedAccountName)
-                        .budgets
+                    _selectedAccount = _accounts.values.firstWhere(
+                      (element) => element.name == _selectedAccountName,
+                    );
+                    _currency = _selectedAccount.currency ?? 'GHS';
+                    _goals = _selectedAccount.budgets
                         ?.where(
                           (element) => element.type == BudgetType.expenseBudget,
                         )
@@ -320,8 +325,8 @@ class _MyGoalsScreenState extends State<MyGoalsScreen> {
                                                             AppSizes.bodySmall,
                                                       ),
                                                       const Gap(4),
-                                                      const AppText(
-                                                        text: 'Ghc',
+                                                      AppText(
+                                                        text: _currency,
                                                         weight: FontWeight.bold,
                                                         size:
                                                             AppSizes.bodySmall,
@@ -429,8 +434,8 @@ class _MyGoalsScreenState extends State<MyGoalsScreen> {
                     controller: _goalAmountController,
                     hintText: '50.05',
                     keyboardType: TextInputType.number,
-                    suffixIcon: const AppText(
-                      text: 'GHc',
+                    suffixIcon: AppText(
+                      text: _currency,
                       color: Colors.grey,
                     ),
                     validator: FormBuilderValidators.compose([
@@ -490,8 +495,8 @@ class _MyGoalsScreenState extends State<MyGoalsScreen> {
                       controller: _goalAmountController,
                       hintText: '50.05',
                       keyboardType: TextInputType.number,
-                      suffixIcon: const AppText(
-                        text: 'GHc',
+                      suffixIcon: AppText(
+                        text: _currency,
                         color: Colors.grey,
                       ),
                       validator: FormBuilderValidators.compose([

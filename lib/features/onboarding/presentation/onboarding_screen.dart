@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconify_flutter/icons/akar_icons.dart';
@@ -10,11 +9,9 @@ import 'package:iconify_flutter/icons/mdi_light.dart';
 import 'package:iconify_flutter/icons/ph.dart';
 import 'package:iconify_flutter/icons/tabler.dart';
 import 'package:iconify_flutter_plus/icons/ic.dart';
-import 'package:iconify_flutter_plus/icons/ion.dart';
 import 'package:iconify_flutter_plus/icons/la.dart';
 import 'package:iconify_flutter_plus/icons/material_symbols.dart';
 import 'package:iconify_flutter_plus/icons/teenyicons.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_assets.dart';
 import 'package:savery/app_constants/app_constants.dart';
@@ -77,7 +74,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           AppTextButton(
             text: 'Skip',
             callback: () async {
-              await _appStateBox.put('onboarded', true);
+              await _appStateBox.putAll({
+                'onboarded': true,
+                'ratesAccessKey': 'HnNsFpw2Om2KmajL2lcpMUdlPv6TM2EF'
+              });
               await _transactionCategoriesBox.addAll([
                 TransactionCategory(
                     icon: Teenyicons.gift_outline, name: 'Gifts'),
@@ -267,7 +267,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           duration: const Duration(seconds: 1),
                           curve: Curves.easeIn);
                     } else {
-                      await _appStateBox.put('onboarded', true);
+                      await _appStateBox.putAll({
+                        'onboarded': true,
+                        'ratesAccessKey': 'HnNsFpw2Om2KmajL2lcpMUdlPv6TM2EF'
+                      });
                       await _transactionCategoriesBox.addAll([
                         TransactionCategory(
                             icon: Teenyicons.gift_outline, name: 'Gifts'),

@@ -4,7 +4,7 @@ Future<dynamic> showAppInfoDialog(BuildContext context,
     {required String title,
     String? description,
     String confirmText = 'OK',
-    String cancelText = 'Cancel',
+    String? cancelText,
     void Function()? confirmCallbackFunction,
     void Function()? cancelCallbackFunction,
     bool dismissible = true}) {
@@ -43,17 +43,18 @@ Future<dynamic> showAppInfoDialog(BuildContext context,
                 weight: FontWeight.w600,
               ),
             ),
-            CupertinoDialogAction(
-              onPressed: cancelCallbackFunction ??
-                  () {
-                    navigatorKey.currentState!.pop();
-                  },
-              child: AppText(
-                text: cancelText,
-                color: Colors.red,
-                weight: FontWeight.w600,
+            if (cancelText != null)
+              CupertinoDialogAction(
+                onPressed: cancelCallbackFunction ??
+                    () {
+                      navigatorKey.currentState!.pop();
+                    },
+                child: AppText(
+                  text: cancelText,
+                  color: Colors.red,
+                  weight: FontWeight.w600,
+                ),
               ),
-            ),
           ],
         );
       } else {
@@ -87,17 +88,18 @@ Future<dynamic> showAppInfoDialog(BuildContext context,
                 weight: FontWeight.w600,
               ),
             ),
-            TextButton(
-              onPressed: cancelCallbackFunction ??
-                  () {
-                    navigatorKey.currentState!.pop();
-                  },
-              child: AppText(
-                text: cancelText,
-                color: AppColors.primary,
-                weight: FontWeight.w600,
+            if (cancelText != null)
+              TextButton(
+                onPressed: cancelCallbackFunction ??
+                    () {
+                      navigatorKey.currentState!.pop();
+                    },
+                child: AppText(
+                  text: cancelText,
+                  color: Colors.red,
+                  weight: FontWeight.w600,
+                ),
               ),
-            ),
           ],
         );
       }

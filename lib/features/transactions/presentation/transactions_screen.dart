@@ -39,6 +39,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
   String _selectedTransactionTypeFilter = 'All';
   final DateTime dateTimeNow = DateTime.now();
   late DateTime? _dateHolder;
+  late String? _currency;
 
   @override
   void initState() {
@@ -46,7 +47,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     _selectedAccount = widget.initAccount;
     _selectedAccountName = _selectedAccount.name;
     _reversedTransactions = _selectedAccount.transactions?.reversed;
-
+    _currency = _selectedAccount.currency ?? 'GHS';
     _transactionsHolder = _reversedTransactions
         ?.where((element) =>
             (element.date.day == dateTimeNow.day) &&
@@ -119,6 +120,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                         _userBox.values.first.accounts!.firstWhere(
                       (element) => element.name == value,
                     );
+
                     _reversedTransactions =
                         _selectedAccount.transactions!.reversed;
 
@@ -665,7 +667,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                               children: [
                                 AppText(
                                   text:
-                                      '${transaction.type == 'Income' ? '+' : '-'} GHc ${transaction.amount.toString()}',
+                                      '${transaction.type == 'Income' ? '+' : '-'} $_currency ${transaction.amount.toString()}',
                                   color: transaction.type == 'Income'
                                       ? Colors.green
                                       : Colors.red,
