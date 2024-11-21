@@ -17,6 +17,7 @@ import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/main_screen/presentation/widgets.dart';
 
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
+import 'package:savery/main.dart';
 
 class MySavingsScreen extends ConsumerStatefulWidget {
   const MySavingsScreen({super.key});
@@ -130,19 +131,21 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                     .toList(),
                 value: _selectedAccountName,
                 onChanged: (value) {
-                  setState(() {
-                    _selectedAccountName = value;
+                  if (_selectedAccountName != value) {
+                    setState(() {
+                      _selectedAccountName = value;
 
-                    _selectedAccount = _accounts.firstWhere(
-                      (element) => element.name == value,
-                    );
-                    _currency = _selectedAccount.currency ?? 'GHS';
-                    _savings = _selectedAccount.budgets
-                        ?.where(
-                          (element) => element.type == BudgetType.savings,
-                        )
-                        .toList();
-                  });
+                      _selectedAccount = _accounts.firstWhere(
+                        (element) => element.name == value,
+                      );
+                      _currency = _selectedAccount.currency ?? 'GHS';
+                      _savings = _selectedAccount.budgets
+                          ?.where(
+                            (element) => element.type == BudgetType.savings,
+                          )
+                          .toList();
+                    });
+                  }
                 },
                 buttonStyleData: ButtonStyleData(
                   height: AppSizes.dropDownBoxHeight,
@@ -237,11 +240,12 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                                                           .numberWithOptions(
                                                           decimal: true),
                                                   onChanged: (value) async {
-                                                    _budgetBox.values
-                                                            .toList()[index]
-                                                            .amount =
-                                                        double.parse(
-                                                            value ?? '0');
+                                                    _savings![index].amount =
+                                                        double.parse(value !=
+                                                                    null &&
+                                                                value.isNotEmpty
+                                                            ? value
+                                                            : '0');
                                                     // Hive.box<Account>(AppBoxes
                                                     //             .accounts)
                                                     //         .values
@@ -269,18 +273,16 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                                                     //     .values
                                                     //     .first
                                                     //     .save();
-                                                    await _budgetBox.values
-                                                        .toList()[index]
+                                                    await _savings![index]
                                                         .save();
+                                                    logger.d(_savings![index]
+                                                        .amount);
                                                     _selectedAccount.budgets =
                                                         HiveList(_budgetBox);
                                                     _selectedAccount.budgets!
-                                                        .addAll(_savings!.map(
-                                                      (e) => e,
-                                                    ));
+                                                        .addAll(
+                                                            _budgetBox.values);
                                                     await _selectedAccount
-                                                        .budgets!
-                                                        .toList()[index]
                                                         .save();
                                                   },
                                                   radius: 5,

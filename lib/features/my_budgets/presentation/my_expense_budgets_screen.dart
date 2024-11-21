@@ -135,7 +135,7 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
           (e) => e.amount,
         )
         .toList();
-    // logger.d(_accounts.values.last.budgets);
+    // logger.d(_accounts.first.budgets);
     // logger.d(_expenseBudgets);
     return Scaffold(
       appBar: AppBar(
@@ -368,6 +368,7 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const AppLoader();
                   } else {
+                    logger.d(snapshot);
                     if (snapshot.data != null && snapshot.data!.isNotEmpty) {
                       return Expanded(
                         child: Column(
