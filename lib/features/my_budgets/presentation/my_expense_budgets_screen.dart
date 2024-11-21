@@ -138,9 +138,7 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
     // logger.d(_accounts.values.last.budgets);
     // logger.d(_expenseBudgets);
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         title: const AppText(
           text: 'My Expense Budgets',
           weight: FontWeight.bold,

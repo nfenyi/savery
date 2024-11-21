@@ -8,8 +8,9 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
-import 'package:savery/features/accounts_&_currencies/presentation/accounts_&_currencies_screen.dart';
+import 'package:savery/features/accounts_&_currencies/presentation/accounts_n_currencies_screen.dart';
 import 'package:savery/features/accounts_&_currencies/services/api_services.dart';
+import 'package:savery/features/app_settings/presentation/app_settings.dart';
 import 'package:savery/features/main_screen/models/settings.dart';
 import 'package:savery/features/sign_in/notifiers/providers/providers.dart';
 import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
@@ -28,15 +29,18 @@ class UserScreen extends ConsumerStatefulWidget {
 
 class _UserScreenState extends ConsumerState<UserScreen> {
   final _userBox = Hive.box<AppUser>(AppBoxes.user);
-  final List<Setting> _settings = [
+  final List<Setting> _personalSettings = [
     Setting(
       icon: Iconsax.notification,
       name: "Notifications",
     ),
     Setting(
-      icon: Icons.settings_outlined,
-      name: "Settings",
-    ),
+        icon: Icons.settings_outlined,
+        name: "Settings",
+        callback: () {
+          navigatorKey.currentState!.push(
+              MaterialPageRoute(builder: (context) => const AppSettings()));
+        }),
     Setting(
       icon: Iconsax.grid_2,
       name: "Categories",
@@ -129,9 +133,9 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                 ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  itemCount: _settings.length,
+                  itemCount: _personalSettings.length,
                   itemBuilder: (context, index) {
-                    final setting = _settings[index];
+                    final setting = _personalSettings[index];
                     return ListTile(
                       contentPadding: const EdgeInsets.all(0),
                       onTap: setting.callback,

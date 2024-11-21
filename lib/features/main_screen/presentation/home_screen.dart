@@ -534,7 +534,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             actionsPadding: const EdgeInsets.only(bottom: 5),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.0)),
-            backgroundColor: Colors.white,
+            // backgroundColor: Colors.white,
             content: Form(
               key: _accountNameFormKey,
               child: Column(

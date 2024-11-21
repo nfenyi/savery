@@ -67,11 +67,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     // _selectedAccountName = _selectedAccount.name;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
         centerTitle: true,
         title: const AppText(text: 'Transactions'),
       ),
-      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.symmetric(
             horizontal: AppSizes.horizontalPaddingSmall),

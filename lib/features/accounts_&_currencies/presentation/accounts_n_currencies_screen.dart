@@ -50,9 +50,7 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         title: const AppText(
           text: 'Accounts & Currencies',
           weight: FontWeight.bold,

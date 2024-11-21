@@ -22,7 +22,7 @@ class AppText extends StatelessWidget {
       this.weight,
       this.style = FontStyle.normal,
       this.decoration = TextDecoration.none,
-      this.color = Colors.black,
+      this.color,
       this.textAlign = TextAlign.start,
       this.softWrap = true,
       this.overflow = TextOverflow.clip,

@@ -76,9 +76,7 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
       // logger.d(_savings![i].amount.toString());
     }
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         title: const AppText(
           text: 'My Savings',
           weight: FontWeight.bold,

@@ -15,6 +15,7 @@ import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 
 import 'features/onboarding/presentation/onboarding_screen.dart';
 import 'firebase_options.dart';
+import 'themes/themes.dart';
 
 final Logger logger = Logger();
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -57,55 +58,19 @@ class Savery extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveSizer(builder:
         (BuildContext context, Orientation orientation, ScreenType screenType) {
-      return GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-        builder: FToastBuilder(),
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          fontFamily: GoogleFonts.manrope(fontSize: 13).fontFamily,
-          // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-          scrollbarTheme: ScrollbarThemeData(
-            // This is the theme of your application.
-            //
-            // TRY THIS: Try running your application with "flutter run". You'll see
-            // the application has a purple toolbar. Then, without quitting the app,
-            // try changing the seedColor in the colorScheme below to Colors.green
-            // and then invoke "hot reload" (save your changes or press the "hot
-            // reload" button in a Flutter-supported IDE, or press "r" if you used
-            // the command line to start the app).
-            //
-            // Notice that the counter didn't reset back to zero; the application
-            // state is not lost during the reload. To reset the state, use hot
-            // restart instead.
-            //
-            // This works for code too, not just values: Most code changes can be
-            // tested with just a hot reload.
-            crossAxisMargin: 5,
-            // thickness: 5,
-            thumbColor: WidgetStateProperty.all(Colors.grey[400]),
+      return Consumer(
+        builder: (context, ref, child) => GetMaterialApp(
+          debugShowCheckedModeBanner: false,
+          builder: FToastBuilder(),
+          title: 'Flutter Demo',
+          themeMode: ref.watch(themeProvider),
+          // themeMode: ThemeMode.light,
+          theme: AppThemes.lightTheme,
+          darkTheme: AppThemes.darkTheme,
+          navigatorKey: navigatorKey,
 
-            radius: const Radius.circular(10),
-          ),
+          home: const Wrapper(),
         ),
-        navigatorKey: navigatorKey,
-        // home: Consumer(builder: (context, ref, child) {
-        //   //take care of displaying the loading screen
-        //   ref.listen<bool>(isLoadingProvider, (_, isLoading) {
-        //     if (isLoading) {
-        //       LoadingScreen.instance().show(context: context);
-        //     } else {
-        //       LoadingScreen.instance().hide();
-        //     }
-        //   });
-        home: const Wrapper(),
-        // final isLoggedIn =
-        //     ref.watch(authStateProvider).result == AuthResult.success;
-        // if (isLoggedIn) {
-        //   return const MainView();
-        // } else {
-        //   return const LoginView();
-        // }
       );
     });
   }

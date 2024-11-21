@@ -58,7 +58,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     final int bottomNavIndex = ref.watch(bottomNavIndexProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: ElevatedButton(
         onPressed: () async {

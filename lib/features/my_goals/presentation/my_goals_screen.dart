@@ -61,9 +61,7 @@ class _MyGoalsScreenState extends State<MyGoalsScreen> {
   Widget build(BuildContext context) {
     _currentDate = DateTime.now();
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         title: const AppText(
           text: 'My Goals',
           weight: FontWeight.bold,
