@@ -71,6 +71,11 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<Budget>? expenseBudgets = _selectedAccount.budgets
+        ?.where(
+          (element) => element.type == BudgetType.expenseBudget,
+        )
+        .toList();
     for (var i = 0; i < (_savings?.length ?? 0); i++) {
       _controllers
           .add(TextEditingController(text: _savings![i].amount.toString()));
@@ -240,39 +245,22 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                                                           .numberWithOptions(
                                                           decimal: true),
                                                   onChanged: (value) async {
-                                                    _savings![index].amount =
-                                                        double.parse(value !=
-                                                                    null &&
-                                                                value.isNotEmpty
-                                                            ? value
-                                                            : '0');
-                                                    // Hive.box<Account>(AppBoxes
-                                                    //             .accounts)
-                                                    //         .values
-                                                    //         .firstWhere(
-                                                    //           (element) =>
-                                                    //               element
-                                                    //                   .name ==
-                                                    //               _selectedAccountName,
-                                                    //         )
-                                                    //         .budgets =
-                                                    //     HiveList(_budgetBox);
-                                                    // Hive.box<Account>(
-                                                    //         AppBoxes.accounts)
-                                                    //     .values
-                                                    //     .firstWhere(
-                                                    //       (element) =>
-                                                    //           element.name ==
-                                                    //           _selectedAccountName,
-                                                    //     )
-                                                    //     .budgets!
-                                                    //     .addAll(
-                                                    //         _budgetBox.values);
-                                                    // await Hive.box<Account>(
-                                                    //         AppBoxes.accounts)
-                                                    //     .values
-                                                    //     .first
-                                                    //     .save();
+                                                    if (value != null &&
+                                                        value.isNotEmpty) {
+                                                      final parsedValue =
+                                                          double.parse(value);
+                                                      if (parsedValue <
+                                                          expenseBudgets![index]
+                                                              .amount) {
+                                                        _savings![index]
+                                                                .amount =
+                                                            parsedValue;
+                                                      } else {
+                                                        showInfoToast(
+                                                            "The value you've entered is above the budget you set.",
+                                                            context: context);
+                                                      }
+                                                    }
                                                     await _savings![index]
                                                         .save();
                                                     logger.d(_savings![index]

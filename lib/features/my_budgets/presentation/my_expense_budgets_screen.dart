@@ -45,7 +45,7 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
   final _budgetBox = Hive.box<Budget>(AppBoxes.budgets);
   DateTime _currentDate = DateTime.now();
   String? _selectedAccountName;
-  late List<double> _savingAmounts;
+  late List<double> _savingsAmounts;
   late Account _selectedAccount;
   final _accountsBox = Hive.box<Account>(AppBoxes.accounts);
   final _transactionCategories =
@@ -129,8 +129,11 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
   Widget build(BuildContext context) {
     _currentDate = DateTime.now();
 
-    _savingAmounts = Hive.box<Budget>(AppBoxes.budgets)
+    _savingsAmounts = Hive.box<Budget>(AppBoxes.budgets)
         .values
+        .where(
+          (element) => element.type == BudgetType.savings,
+        )
         .map(
           (e) => e.amount,
         )
@@ -392,10 +395,20 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                       : 0;
                                   final formattedValue =
                                       (value * 100).toStringAsFixed(1);
+                                  final savingsFraction =
+                                      _savingsAmounts[index] /
+                                          expenseBudget.amount;
+                                  final savingsRegionWidth =
+                                      ((savingsFraction * 100) * 70) / 100;
 
                                   return Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 20, horizontal: 15),
+                                    padding: EdgeInsets.only(
+                                        top: 20,
+                                        left: 15,
+                                        right: 15,
+                                        bottom: _savingsAmounts[index] != 0
+                                            ? 10
+                                            : 20),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
                                       border: Border.all(
@@ -469,7 +482,6 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                                     children: [
                                                       AppText(
                                                         text:
-                                                            // '$_currency ${_savingAmounts[index]}  (${((_savingAmounts[index] / expenseBudget.amount) * 100).floor()}%)',
                                                             '$_currency ${_mappedTransactions[expenseBudget.category!] ?? 0}  ($formattedValue %)',
                                                         color: Colors.green,
                                                       ),
@@ -484,21 +496,71 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                                   const Gap(5),
                                                   SizedBox(
                                                     width: Adaptive.w(70),
-                                                    child:
-                                                        LinearProgressIndicator(
-                                                            backgroundColor:
-                                                                Colors.grey[
-                                                                    200],
-                                                            color: AppColors
-                                                                .primary,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        5),
-                                                            value: value < 1
-                                                                ? value
-                                                                : 1),
+                                                    height: 4,
+                                                    child: Stack(children: [
+                                                      SizedBox(
+                                                          width: Adaptive.w(70),
+                                                          child: Row(children: [
+                                                            Container(
+                                                              width: Adaptive.w(70 -
+                                                                  savingsRegionWidth),
+                                                              decoration:
+                                                                  const BoxDecoration(
+                                                                color: Colors
+                                                                    .transparent,
+                                                              ),
+                                                            ),
+                                                            Container(
+                                                              width: Adaptive.w(
+                                                                  savingsRegionWidth),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                borderRadius:
+                                                                    const BorderRadius
+                                                                        .only(
+                                                                  topRight: Radius
+                                                                      .circular(
+                                                                          20),
+                                                                  bottomRight: Radius
+                                                                      .circular(
+                                                                          20),
+                                                                ),
+                                                                color: Colors
+                                                                    .yellow
+                                                                    .shade900,
+                                                              ),
+                                                            )
+                                                          ])),
+                                                      LinearProgressIndicator(
+                                                          backgroundColor:
+                                                              Colors
+                                                                  .grey.shade100
+                                                                  .withOpacity(
+                                                                      0.5),
+                                                          color: AppColors
+                                                              .primary
+                                                              .withOpacity(0.7),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(5),
+                                                          value: value < 1
+                                                              ? value
+                                                              : 1),
+                                                    ]),
                                                   ),
+                                                  if (_savingsAmounts[index] !=
+                                                      0)
+                                                    Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .end,
+                                                        children: [
+                                                          (value <
+                                                                  (1 -
+                                                                      savingsFraction))
+                                                              ? const Text('🙂')
+                                                              : const Text('🙁')
+                                                        ])
                                                 ],
                                               ),
                                             ],
