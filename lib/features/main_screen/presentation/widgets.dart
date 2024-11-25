@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/features/my_budgets/presentation/my_expense_budgets_screen.dart';
+import 'package:savery/features/my_goals/presentation/my_goals_screen.dart';
 import 'package:savery/features/sign_in/user_info/providers/providers.dart';
 import 'package:savery/main.dart';
 
@@ -23,9 +24,12 @@ class AccountCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     double popupMenuHeight = 15;
-    var consumerAccount = ref.watch(userProvider).user.accounts!.firstWhere(
+    final consumerAccount = ref.watch(userProvider).user.accounts!.firstWhere(
           (element) => element.name == account.name,
         );
+    final consumerGoals = ref.watch(userProvider).goals(consumerAccount);
+    final consumerExpenseBudgets =
+        ref.watch(userProvider).expenseBudgets(consumerAccount);
     return Container(
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.symmetric(horizontal: 5),
@@ -86,7 +90,10 @@ class AccountCard extends ConsumerWidget {
                         const Text('👍'),
                       if (consumerAccount.balance > 0)
                         PopupMenuButton<int>(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          color: Colors.white.withOpacity(0.9),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 5,
+                          ),
                           elevation: 1,
 
                           // surfaceTintColor: Colors.black.withOpacity(0.05),
@@ -149,14 +156,73 @@ class AccountCard extends ConsumerWidget {
                           ),
                         ),
                       if (consumerAccount.balance < 0)
-                        InkWell(
-                          onTap: () {},
-                          child: Ink(
-                            child: AppText(
-                              text: 'Adjust',
-                              color: Colors.red[200],
-                              decoration: TextDecoration.underline,
+                        PopupMenuButton<int>(
+                          color: Colors.white.withOpacity(0.9),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 5,
+                          ),
+                          elevation: 1,
+
+                          // surfaceTintColor: Colors.black.withOpacity(0.05),
+                          // color: Colors.black.withOpacity(0.05),
+                          offset: Offset.fromDirection(180, -30),
+                          onSelected: (value) async {
+                            switch (value) {
+                              case 0:
+                                navigatorKey.currentState!
+                                    .push(MaterialPageRoute(
+                                  builder: (context) => MyExpenseBudgetScreen(
+                                    account: consumerAccount,
+                                  ),
+                                ));
+                                break;
+                              default:
+                                navigatorKey.currentState!
+                                    .push(MaterialPageRoute(
+                                  builder: (context) => MyGoalsScreen(
+                                    account: consumerAccount,
+                                  ),
+                                ));
+                                break;
+                            }
+                          },
+                          itemBuilder: (context) =>
+
+                              // menuWidth: 150,
+                              // menuItemExtent: 40,
+                              // blurSize: 0,
+                              // blurBackgroundColor:
+                              //     Colors.black.withOpacity(0.00000000005),
+                              // openWithTap: true,
+                              // onPressed: () {},
+                              [
+                            PopupMenuItem<int>(
+                              height: popupMenuHeight,
+                              value: 0,
+                              child: const AppText(
+                                text: 'Budget',
+                                color: AppColors.primary,
+                              ),
                             ),
+                            const PopupMenuDivider(),
+                            PopupMenuItem(
+                              height: popupMenuHeight,
+                              value: 1,
+
+                              child: const AppText(
+                                text: 'Goal milestones',
+                                color: Colors.green,
+                              ),
+                              // onPressed: () {
+
+                              // },
+                            ),
+                          ],
+
+                          child: AppText(
+                            text: 'Adjust',
+                            color: Colors.red[200],
+                            decoration: TextDecoration.underline,
                           ),
                         ),
                     ],

@@ -1,7 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:savery/app_constants/app_constants.dart';
+import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
+import 'package:get/get_utils/get_utils.dart';
+import 'package:savery/main.dart';
 
 class UserNotifier extends ChangeNotifier {
   final Box<AppUser> _userBox;
@@ -138,7 +141,7 @@ class UserNotifier extends ChangeNotifier {
       selectedAccount.balance += double.parse(amount);
     } else {
       double amountHolder = double.parse(amount);
-      Budget? budget = selectedAccount.budgets?.firstWhere(
+      Budget? budget = selectedAccount.budgets?.firstWhereOrNull(
         (element) => element.category == selectedCategory,
       );
       if (budget != null) {
@@ -146,14 +149,18 @@ class UserNotifier extends ChangeNotifier {
         if (budget.amount >= amountHolder) {
           //TODO: later do calculations here instead of in the expense budget screen
         } else {
-          amountHolder = amountHolder - budget.amount;
-
           if (selectedAccount.savingsBucket >= amountHolder) {
+            showInfoToast('Deducting from your savings bucket...',
+                context: navigatorKey.currentContext);
             selectedAccount.savingsBucket -= amountHolder;
           } else {
+            showInfoToast('Deducting from your savings bucket...',
+                context: navigatorKey.currentContext);
             amountHolder = amountHolder - selectedAccount.savingsBucket;
             selectedAccount.savingsBucket = 0;
             //the excess is subtracted from the balance. balance remains same if amountHolder is 0
+            showInfoToast('Deducting from ${selectedAccount.name} balance',
+                context: navigatorKey.currentContext);
             selectedAccount.balance -= amountHolder;
           }
         }

@@ -11,8 +11,6 @@ import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/my_goals/presentation/my_goals_screen.dart';
 import 'package:savery/main.dart';
-
-import '../../../app_functions/app_functions.dart';
 import '../../my_budgets/presentation/my_expense_budgets_screen.dart';
 import '../../my_savings/presentation/my_savings_screen.dart';
 import '../../sign_in/user_info/models/user_model.dart';
@@ -26,7 +24,7 @@ class BudgetsScreen extends ConsumerStatefulWidget {
 }
 
 class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
-  DateTime? _dateHolder;
+  // DateTime? _dateHolder;
 
   final List<Budget> _budgets = Hive.box<Budget>(AppBoxes.budgets)
       .values
@@ -41,7 +39,7 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
   @override
   void initState() {
     super.initState();
-    if (_budgets.isNotEmpty) _dateHolder = _budgets.first.createdAt;
+    // if (_budgets.isNotEmpty) _dateHolder = _budgets.first.createdAt;
   }
 
   @override

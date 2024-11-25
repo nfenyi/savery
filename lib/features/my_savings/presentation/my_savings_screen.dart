@@ -41,7 +41,7 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
 
   late final List<String> _accountNames;
 
-  List<bool> _canPops = [];
+  final List<bool> _canPops = [];
 
   @override
   void initState() {
@@ -321,12 +321,12 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                                                         // });
                                                       }
                                                     }
-                                                    logger.d(null ==
-                                                        _canPops
-                                                            .firstWhereOrNull(
-                                                          (element) =>
-                                                              element == false,
-                                                        ));
+                                                    // logger.d(null ==
+                                                    //     _canPops
+                                                    //         .firstWhereOrNull(
+                                                    //       (element) =>
+                                                    //           element == false,
+                                                    //     ));
                                                   },
                                                   radius: 5,
                                                 )),

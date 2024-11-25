@@ -509,8 +509,10 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                                       backgroundColor: Colors
                                                           .grey.shade100
                                                           .withOpacity(0.5),
-                                                      color: AppColors.primary
-                                                          .withOpacity(0.7),
+                                                      color: value >= 1
+                                                          ? Colors.red
+                                                          : AppColors.primary
+                                                              .withOpacity(0.7),
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               5),

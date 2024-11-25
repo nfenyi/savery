@@ -19,7 +19,7 @@ class RequiredText extends StatelessWidget {
             text: text,
             weight: FontWeight.bold,
           ),
-          Gap(10),
+          const Gap(10),
           const FaIcon(
             FontAwesomeIcons.asterisk,
             color: Colors.red,

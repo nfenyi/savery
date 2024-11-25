@@ -11,7 +11,6 @@ import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/sign_up/presentation/terms_and_condition_webview.dart';
-import 'package:savery/features/sign_up/presentation/verify_phone_number_screen.dart';
 import 'package:savery/main.dart';
 
 import '../../main_screen/presentation/main_screen.dart';

@@ -24,7 +24,8 @@ import '../../sign_in/user_info/models/user_model.dart';
 import '../../sign_in/user_info/providers/providers.dart';
 
 class MyGoalsScreen extends ConsumerStatefulWidget {
-  const MyGoalsScreen({super.key});
+  final Account? account;
+  const MyGoalsScreen({this.account, super.key});
 
   @override
   ConsumerState<MyGoalsScreen> createState() => _MyGoalsScreenState();
@@ -38,7 +39,7 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
   late final List<String>? _accountNames;
   late HiveList<Goal>? consumerGoals;
   final _formKey = GlobalKey<FormState>();
-  late final AppUser _user = ref.read(userProvider).user;
+
   // final _userBox = Hive.box<AppUser>(AppBoxes.user);
 
   // final _goalsBox = Hive.box<Goal>(AppBoxes.goals);
@@ -58,7 +59,7 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
   void initState() {
     super.initState();
 
-    _selectedAccount = _accounts?.first;
+    _selectedAccount = widget.account ?? _accounts!.first;
     _selectedAccountName = _selectedAccount?.name;
     _currency = _selectedAccount?.currency ?? 'GHS';
     _accountNames = _accounts
@@ -82,6 +83,8 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
       _goalAmountList
           .add(ValueNotifier(_selectedAccount!.goals![i].raisedAmount));
     }
+    final double? bucketIndicatorThreshold = consumerGoals?.fold<double>(
+        0, (previousValue, element) => previousValue + element.raisedAmount);
 
     // _showDaysMoreList =
     //     List.filled(_selectedAccount.goals?.length ?? 0, ValueNotifier(true));
@@ -184,7 +187,13 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                       backgroundColor: Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(5),
                       color: Colors.green,
-                      value: consumerSavingsBucket,
+                      value: bucketIndicatorThreshold == null
+                          ? consumerSavingsBucket / 100000 < 1
+                              ? consumerSavingsBucket / 100000
+                              : 1
+                          : consumerSavingsBucket / bucketIndicatorThreshold < 1
+                              ? consumerSavingsBucket / bucketIndicatorThreshold
+                              : 1,
                       minHeight: 10,
                       // )
                       // : LinearProgressIndicator(

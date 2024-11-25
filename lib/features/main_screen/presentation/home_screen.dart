@@ -272,19 +272,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         return const SizedBox.shrink();
                       }
                       _dateHolder = value.transactions?.reversed.first.date;
-                      return Container(
-                        color: Colors.white,
-                        child: AppText(
-                            text: (DateTime.now().day == _dateHolder?.day)
-                                ? 'Today'
-                                : (DateTime.now().weekday -
-                                            _dateHolder!.weekday ==
-                                        1)
-                                    ? 'Yesterday'
-                                    : AppFunctions.formatDate(
-                                        _dateHolder.toString(),
-                                        format: r'g:i A')),
-                      );
+                      return AppText(
+                          text: (DateTime.now().day == _dateHolder?.day)
+                              ? 'Today'
+                              : (DateTime.now().weekday -
+                                          _dateHolder!.weekday ==
+                                      1)
+                                  ? 'Yesterday'
+                                  : AppFunctions.formatDate(
+                                      _dateHolder.toString(),
+                                      format: r'g:i A'));
                     }),
                 const Gap(5)
               ],
@@ -382,11 +379,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               reversedTransactions[index].date.weekday;
 
                           if (_dateHolder!.weekday == transactionDay) {
-                            logger.d(reversedTransactions[index].description);
+                            // logger.d(reversedTransactions[index].description);
                             return const Gap(10);
                           } else {
                             _dateHolder = reversedTransactions[index].date;
-                            logger.d(reversedTransactions[index].description);
+                            // logger.d(reversedTransactions[index].description);
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
