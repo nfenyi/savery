@@ -171,19 +171,27 @@ class UserNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addToBucket(
-      {required Account selectedAccount, double? difference}) async {
+  Future<void> reduceMilestone(
+      {required Account selectedAccount,
+      double? difference,
+      required Goal goal,
+      required double parsedInput}) async {
     selectedAccount.savingsBucket += selectedAccount.balance;
     if (difference == null) {
       selectedAccount.balance = 0;
     }
+    goal.raisedAmount = parsedInput;
     await selectedAccount.save();
     notifyListeners();
   }
 
-  Future<void> subtractFromBucket(
-      {required double difference, required Account selectedAccount}) async {
+  Future<void> increaseMilestone(
+      {required double difference,
+      required Account selectedAccount,
+      required Goal goal,
+      required double parsedInput}) async {
     selectedAccount.savingsBucket -= difference;
+    goal.raisedAmount = parsedInput;
     await selectedAccount.save();
     notifyListeners();
   }
@@ -255,6 +263,22 @@ class UserNotifier extends ChangeNotifier {
     await selectedAccount.save();
     // await user.save();
 
+    notifyListeners();
+  }
+
+  Future<void> deleteGoal(
+      {required Goal goal, required Account selectedAccount}) async {
+    await goal.delete();
+    await selectedAccount.save();
+    notifyListeners();
+  }
+
+  Future<void> addToBucket({
+    required Account selectedAccount,
+  }) async {
+    selectedAccount.savingsBucket += selectedAccount.balance;
+
+    await selectedAccount.save();
     notifyListeners();
   }
 }

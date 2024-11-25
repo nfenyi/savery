@@ -14,6 +14,7 @@ import 'package:lottie/lottie.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_assets.dart';
 import 'package:savery/app_constants/app_colors.dart';
+// import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_functions/app_functions.dart';
 import 'package:savery/app_widgets/widgets.dart';
@@ -37,7 +38,6 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
       ref.read(userProvider).user.accounts;
   // final _accounts = Hive.box<Account>('accounts');
   late final List<String>? _accountNames;
-  late HiveList<Goal>? consumerGoals;
   final _formKey = GlobalKey<FormState>();
 
   // final _userBox = Hive.box<AppUser>(AppBoxes.user);
@@ -70,10 +70,19 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
   }
 
   @override
+  void dispose() {
+    _goalFundController.dispose();
+    _goalNameController.dispose();
+    _milestoneController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     consumerSavingsBucket =
         ref.watch(userProvider).savingsBucket(_selectedAccount!);
-    consumerGoals = ref.watch(userProvider).goals(_selectedAccount!);
+    HiveList<Goal>? consumerGoals =
+        ref.watch(userProvider).goals(_selectedAccount!);
 
     _currentDate = DateTime.now();
     _showDaysMoreList = [];
@@ -101,78 +110,79 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                 horizontal: AppSizes.horizontalPaddingSmall),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              DropdownButtonHideUnderline(
-                child: DropdownButton2<String>(
-                  style: GoogleFonts.manrope(
-                    fontSize: AppSizes.bodySmaller,
-                    fontWeight:
-                        _selectedAccountName == null ? null : FontWeight.bold,
-                    color: _selectedAccountName == null
-                        ? Colors.grey
-                        : Colors.black,
-                  ),
-                  isExpanded: true,
-                  hint: const AppText(
-                    text: 'Select an account',
-                    overflow: TextOverflow.ellipsis,
-                    color: Colors.grey,
-                  ),
-                  iconStyleData: const IconStyleData(
-                    icon: FaIcon(
-                      FontAwesomeIcons.chevronDown,
-                      color: AppColors.primary,
+              if (widget.account == null)
+                DropdownButtonHideUnderline(
+                  child: DropdownButton2<String>(
+                    style: GoogleFonts.manrope(
+                      fontSize: AppSizes.bodySmaller,
+                      fontWeight:
+                          _selectedAccountName == null ? null : FontWeight.bold,
+                      color: _selectedAccountName == null
+                          ? Colors.grey
+                          : Colors.black,
                     ),
-                    iconSize: 12.0,
-                  ),
-                  items: _accountNames
-                      ?.map((item) => DropdownMenuItem(
-                            value: item,
-                            child: Text(
-                              item,
-                              style: const TextStyle(
-                                fontSize: AppSizes.bodySmaller,
-                                fontWeight: FontWeight.w500,
-                                // color: Colors.grey,
-                              ),
-                            ),
-                          ))
-                      .toList(),
-                  value: _selectedAccountName,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedAccountName = value;
-                      _selectedAccount = _accounts!.firstWhere(
-                        (element) => element.name == _selectedAccountName,
-                      );
-                      _currency = _selectedAccount?.currency ?? 'GHS';
-                      consumerGoals = _selectedAccount?.goals;
-                    });
-                  },
-                  buttonStyleData: ButtonStyleData(
-                    height: AppSizes.dropDownBoxHeight,
-                    padding: const EdgeInsets.only(right: 10.0),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      border: Border.all(
-                        width: 1.0,
-                        color: AppColors.neutral300,
+                    isExpanded: true,
+                    hint: const AppText(
+                      text: 'Select an account',
+                      overflow: TextOverflow.ellipsis,
+                      color: Colors.grey,
+                    ),
+                    iconStyleData: const IconStyleData(
+                      icon: FaIcon(
+                        FontAwesomeIcons.chevronDown,
+                        color: AppColors.primary,
                       ),
-                      borderRadius: BorderRadius.circular(20.0),
+                      iconSize: 12.0,
                     ),
-                  ),
-                  dropdownStyleData: DropdownStyleData(
-                    maxHeight: 350,
-                    elevation: 1,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5.0),
-                      color: Colors.white,
+                    items: _accountNames
+                        ?.map((item) => DropdownMenuItem(
+                              value: item,
+                              child: Text(
+                                item,
+                                style: const TextStyle(
+                                  fontSize: AppSizes.bodySmaller,
+                                  fontWeight: FontWeight.w500,
+                                  // color: Colors.grey,
+                                ),
+                              ),
+                            ))
+                        .toList(),
+                    value: _selectedAccountName,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedAccountName = value;
+                        _selectedAccount = _accounts!.firstWhere(
+                          (element) => element.name == _selectedAccountName,
+                        );
+                        _currency = _selectedAccount?.currency ?? 'GHS';
+                        consumerGoals = _selectedAccount?.goals;
+                      });
+                    },
+                    buttonStyleData: ButtonStyleData(
+                      height: AppSizes.dropDownBoxHeight,
+                      padding: const EdgeInsets.only(right: 10.0),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        border: Border.all(
+                          width: 1.0,
+                          color: AppColors.neutral300,
+                        ),
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
                     ),
-                  ),
-                  menuItemStyleData: const MenuItemStyleData(
-                    height: 40.0,
+                    dropdownStyleData: DropdownStyleData(
+                      maxHeight: 350,
+                      elevation: 1,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5.0),
+                        color: Colors.white,
+                      ),
+                    ),
+                    menuItemStyleData: const MenuItemStyleData(
+                      height: 40.0,
+                    ),
                   ),
                 ),
-              ),
               const Gap(20),
               Expanded(
                 child: Column(
@@ -187,7 +197,8 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                       backgroundColor: Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(5),
                       color: Colors.green,
-                      value: bucketIndicatorThreshold == null
+                      value: (bucketIndicatorThreshold == null ||
+                              bucketIndicatorThreshold == 0)
                           ? consumerSavingsBucket / 100000 < 1
                               ? consumerSavingsBucket / 100000
                               : 1
@@ -283,65 +294,49 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                                     .difference(_currentDate)
                                     .inDays;
 //TODO: add delete and update functionality to container
-                                return Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 20, horizontal: 15),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                      width: 1.0,
-                                      color: AppColors.neutral300,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      ClipRRect(
+                                return Stack(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 20, horizontal: 15),
+                                      decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(10),
-                                        child: Container(
-                                          padding: const EdgeInsets.all(10),
-                                          width: 50,
-                                          color: Colors.red.withOpacity(0.1),
-                                          child: const Icon(
-                                            FontAwesomeIcons.circleCheck,
-                                            color: Colors.red,
-                                          ),
+                                        border: Border.all(
+                                          width: 1.0,
+                                          color: AppColors.neutral300,
                                         ),
                                       ),
-                                      const Gap(10),
-                                      Expanded(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                AppText(
-                                                  text: goal.name,
-                                                  weight: FontWeight.bold,
-                                                  size: AppSizes.bodySmall,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    AppText(
-                                                      text:
-                                                          goal.fund.toString(),
-                                                      weight: FontWeight.bold,
-                                                      size: AppSizes.bodySmall,
-                                                    ),
-                                                    const Gap(4),
-                                                    AppText(
-                                                      text: _currency,
-                                                      weight: FontWeight.bold,
-                                                      size: AppSizes.bodySmall,
-                                                    ),
-                                                  ],
-                                                )
-                                              ],
+                                      child: Row(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            child: Container(
+                                              padding: const EdgeInsets.all(10),
+                                              width: 50,
+                                              color:
+                                                  Colors.red.withOpacity(0.1),
+                                              child: Icon(
+                                                FontAwesomeIcons.circleCheck,
+                                                color: consumerGoals![index]
+                                                            .raisedAmount >=
+                                                        consumerGoals![index]
+                                                            .fund
+                                                    ? Colors.green
+                                                    : consumerGoals![index]
+                                                                .raisedAmount <
+                                                            consumerGoals![
+                                                                        index]
+                                                                    .fund /
+                                                                2
+                                                        ? Colors.red
+                                                        : Colors.amber,
+                                              ),
                                             ),
-                                            Column(
+                                          ),
+                                          const Gap(10),
+                                          Expanded(
+                                            child: Column(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.start,
                                               children: [
@@ -350,109 +345,181 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                                                       MainAxisAlignment
                                                           .spaceBetween,
                                                   children: [
-                                                    InkWell(
-                                                      onTap: () async {
-                                                        await showUpdateDialog(
-                                                            context: context,
-                                                            goal: goal,
-                                                            consumerSavingsBucket:
-                                                                consumerSavingsBucket);
-                                                      },
-                                                      child: Ink(
-                                                        child: AppText(
-                                                          text:
-                                                              '$_currency ${_goalAmountList[index].value}',
-                                                          decoration:
-                                                              TextDecoration
-                                                                  .underline,
-                                                          //  ${_mappedTransactions[goal.category!] ?? 0}  ($formattedValue
-
-                                                          color: Colors.green,
-                                                        ),
-                                                      ),
+                                                    AppText(
+                                                      text: goal.name,
+                                                      weight: FontWeight.bold,
+                                                      size: AppSizes.bodySmall,
                                                     ),
-                                                    ValueListenableBuilder(
-                                                        valueListenable:
-                                                            _showDaysMoreList[
-                                                                index],
-                                                        builder: (context,
-                                                            value, child) {
-                                                          return InkWell(
-                                                            onTap: () {
-                                                              _showDaysMoreList[
-                                                                          index]
-                                                                      .value =
-                                                                  !_showDaysMoreList[
-                                                                          index]
-                                                                      .value;
-                                                            },
-                                                            child: Ink(
-                                                              child: AppText(
-                                                                decoration:
-                                                                    TextDecoration
-                                                                        .underline,
-                                                                text: value
-                                                                    ? '$daysMore days more'
-                                                                    : AppFunctions.formatDate(
-                                                                        goal.estimatedDate
-                                                                            .toString(),
-                                                                        format:
-                                                                            'j M Y'),
-                                                              ),
-                                                            ),
-                                                          );
-                                                        }),
+                                                    Row(
+                                                      children: [
+                                                        AppText(
+                                                          text: goal.fund
+                                                              .toString(),
+                                                          weight:
+                                                              FontWeight.bold,
+                                                          size: AppSizes
+                                                              .bodySmall,
+                                                        ),
+                                                        const Gap(4),
+                                                        AppText(
+                                                          text: _currency,
+                                                          weight:
+                                                              FontWeight.bold,
+                                                          size: AppSizes
+                                                              .bodySmall,
+                                                        ),
+                                                      ],
+                                                    )
                                                   ],
                                                 ),
-                                                const Gap(5),
-                                                SizedBox(
-                                                  width: Adaptive.w(70),
-                                                  child: ValueListenableBuilder<
-                                                          double>(
-                                                      valueListenable:
-                                                          _goalAmountList[
-                                                              index],
-                                                      builder: (context, value,
-                                                          child) {
-                                                        return LinearProgressIndicator(
-                                                          backgroundColor:
-                                                              Colors
-                                                                  .grey.shade100
-                                                                  .withOpacity(
-                                                                      0.5),
-                                                          color: AppColors
-                                                              .primary
-                                                              .withOpacity(0.7),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(5),
-                                                          value: value < 1
-                                                              ? (value /
-                                                                  goal.fund)
-                                                              : 1,
-                                                        );
-                                                      }),
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        AppText(
+                                                          text:
+                                                              '$_currency ${_goalAmountList[index].value}',
+
+                                                          //  ${_mappedTransactions[goal.category!] ?? 0}  ($formattedValue
+
+                                                          color: consumerGoals![
+                                                                          index]
+                                                                      .raisedAmount >=
+                                                                  consumerGoals![
+                                                                          index]
+                                                                      .fund
+                                                              ? Colors.green
+                                                              : consumerGoals![
+                                                                              index]
+                                                                          .raisedAmount <
+                                                                      consumerGoals![index]
+                                                                              .fund /
+                                                                          2
+                                                                  ? Colors.red
+                                                                  : Colors
+                                                                      .amber,
+                                                        ),
+                                                        ValueListenableBuilder(
+                                                            valueListenable:
+                                                                _showDaysMoreList[
+                                                                    index],
+                                                            builder: (context,
+                                                                value, child) {
+                                                              return InkWell(
+                                                                onTap: () {
+                                                                  _showDaysMoreList[
+                                                                          index]
+                                                                      .value = !_showDaysMoreList[
+                                                                          index]
+                                                                      .value;
+                                                                },
+                                                                child: Ink(
+                                                                  child:
+                                                                      AppText(
+                                                                    decoration:
+                                                                        TextDecoration
+                                                                            .underline,
+                                                                    text: value
+                                                                        ? '$daysMore days more'
+                                                                        : AppFunctions.formatDate(
+                                                                            goal.estimatedDate
+                                                                                .toString(),
+                                                                            format:
+                                                                                'j M Y'),
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            }),
+                                                      ],
+                                                    ),
+                                                    const Gap(5),
+                                                    SizedBox(
+                                                      width: Adaptive.w(70),
+                                                      child:
+                                                          ValueListenableBuilder<
+                                                                  double>(
+                                                              valueListenable:
+                                                                  _goalAmountList[
+                                                                      index],
+                                                              builder: (context,
+                                                                  value,
+                                                                  child) {
+                                                                return LinearProgressIndicator(
+                                                                  backgroundColor: Colors
+                                                                      .grey
+                                                                      .shade100
+                                                                      .withOpacity(
+                                                                          0.5),
+                                                                  color: consumerGoals![index]
+                                                                              .raisedAmount >=
+                                                                          consumerGoals![index]
+                                                                              .fund
+                                                                      ? Colors
+                                                                          .green
+                                                                      : consumerGoals![index].raisedAmount <
+                                                                              consumerGoals![index].fund /
+                                                                                  2
+                                                                          ? Colors
+                                                                              .red
+                                                                          : Colors
+                                                                              .amber,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              5),
+                                                                  value: value <
+                                                                          1
+                                                                      ? (value /
+                                                                          goal.fund)
+                                                                      : 1,
+                                                                );
+                                                              }),
+                                                    ),
+                                                    // if (_savingsAmounts[index] !=
+                                                    //     0)
+                                                    //   Row(
+                                                    //       mainAxisAlignment:
+                                                    //           MainAxisAlignment
+                                                    //               .end,
+                                                    //       children: [
+                                                    //         (value <
+                                                    //                 (1 -
+                                                    //                     savingsFraction))
+                                                    //             ? const Text('🙂')
+                                                    //             : const Text('🙁')
+                                                    //       ])
+                                                  ],
                                                 ),
-                                                // if (_savingsAmounts[index] !=
-                                                //     0)
-                                                //   Row(
-                                                //       mainAxisAlignment:
-                                                //           MainAxisAlignment
-                                                //               .end,
-                                                //       children: [
-                                                //         (value <
-                                                //                 (1 -
-                                                //                     savingsFraction))
-                                                //             ? const Text('🙂')
-                                                //             : const Text('🙁')
-                                                //       ])
                                               ],
                                             ),
-                                          ],
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () async {
+                                            await showUpdateDialog(
+                                                context: context,
+                                                goal: goal,
+                                                consumerSavingsBucket:
+                                                    consumerSavingsBucket);
+                                          },
+                                          child: Container(
+                                            color: Colors.transparent,
+                                            width: Adaptive.w(68),
+                                            height: 90,
+                                          ),
                                         ),
-                                      )
-                                    ],
-                                  ),
+                                      ],
+                                    )
+                                  ],
                                 );
                               },
                             ),
@@ -640,7 +707,7 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                     const Gap(12),
                     AppTextFormField(
                       controller: _goalFundController,
-                      hintText: '50.05',
+                      hintText: '10000',
                       keyboardType:
                           const TextInputType.numberWithOptions(decimal: true),
                       suffixIcon: AppText(
@@ -749,7 +816,8 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
       {required BuildContext context,
       required Goal goal,
       required double consumerSavingsBucket}) {
-    _milestoneController.text = goal.raisedAmount.toString();
+    _milestoneController.text =
+        goal.raisedAmount != 0 ? goal.raisedAmount.toString() : '';
     return showDialog(
       context: context,
       barrierDismissible: true,
@@ -892,11 +960,30 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const RequiredText('Milestone'),
-                    const Gap(12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const RequiredText('Milestone'),
+                        InkWell(
+                          onTap: () async => await _showDeleteDialog(goal),
+                          child: Ink(
+                            //wrapping with a bigger sizedbox to make the delete button easier to tap
+                            child: const SizedBox(
+                              width: 18,
+                              child: Icon(
+                                FontAwesomeIcons.trashCan,
+                                color: Colors.red,
+                                size: 15,
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    const Gap(25),
                     AppTextFormField(
                       controller: _milestoneController,
-                      hintText: '50.05',
+                      hintText: '0.0',
                       keyboardType:
                           const TextInputType.numberWithOptions(decimal: true),
                       suffixIcon: AppText(
@@ -920,19 +1007,21 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                     final double difference = parsedInput - goal.raisedAmount;
                     if (difference <= consumerSavingsBucket) {
                       if (parsedInput > goal.raisedAmount) {
-                        await ref
-                            .read(userProvider.notifier)
-                            .subtractFromBucket(
+                        await ref.read(userProvider.notifier).increaseMilestone(
+                              goal: goal,
+                              parsedInput: parsedInput,
                               difference: difference,
                               selectedAccount: _selectedAccount!,
                             );
                       } else {
-                        await ref.read(userProvider.notifier).addToBucket(
+                        await ref.read(userProvider.notifier).reduceMilestone(
+                            goal: goal,
+                            parsedInput: parsedInput,
                             difference: difference,
                             selectedAccount: _selectedAccount!);
                       }
-                      goal.raisedAmount = parsedInput;
-                      await goal.save();
+                      // goal.raisedAmount = parsedInput;
+                      // await goal.save();
 
                       // _selectedAccount.goals = HiveList(_goalsBox);
 
@@ -945,10 +1034,8 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                       //   (element) => element.name == _selectedAccountName,
                       // );
 
-                      _goalNameController.clear();
-                      // _goalAmountController.clear();
                       _selectedDate = null;
-                      navigatorKey.currentState!.pop(true);
+                      navigatorKey.currentState!.pop();
                     } else {
                       if (consumerSavingsBucket == 0) {
                         showInfoToast('Your savings bucket is currently empty',
@@ -972,6 +1059,22 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
             ],
           );
         }
+      },
+    );
+  }
+
+  Future<void> _showDeleteDialog(Goal goal) async {
+    await showAppInfoDialog(
+      context,
+      title: 'Are you sure you want to delete this goal?',
+      confirmText: 'No',
+      cancelText: 'Yes',
+      cancelCallbackFunction: () async {
+        await ref
+            .read(userProvider.notifier)
+            .deleteGoal(goal: goal, selectedAccount: _selectedAccount!);
+        navigatorKey.currentState!.pop();
+        navigatorKey.currentState!.pop();
       },
     );
   }

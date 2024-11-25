@@ -18,7 +18,7 @@ Future<dynamic> showAppInfoDialog(BuildContext context,
             text: title,
             size: AppSizes.bodySmall,
             color: AppColors.neutral900,
-            weight: FontWeight.w600,
+            // weight: FontWeight.w600,
           ),
           content: description != null
               ? Padding(
@@ -40,7 +40,7 @@ Future<dynamic> showAppInfoDialog(BuildContext context,
               child: AppText(
                 text: confirmText,
                 color: AppColors.primary,
-                weight: FontWeight.w600,
+                // weight: FontWeight.w600,
               ),
             ),
             if (cancelText != null)
@@ -52,13 +52,15 @@ Future<dynamic> showAppInfoDialog(BuildContext context,
                 child: AppText(
                   text: cancelText,
                   color: Colors.red,
-                  weight: FontWeight.w600,
+                  // weight: FontWeight.w600,
                 ),
               ),
           ],
         );
       } else {
         return AlertDialog(
+          contentPadding: const EdgeInsets.only(),
+          actionsPadding: const EdgeInsets.only(bottom: 4),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
           backgroundColor: Colors.white,
@@ -66,7 +68,7 @@ Future<dynamic> showAppInfoDialog(BuildContext context,
             text: title,
             size: AppSizes.bodySmall,
             color: title == 'Success' ? Colors.green : AppColors.neutral900,
-            weight: FontWeight.w600,
+            // weight: FontWeight.w600,
           ),
           content: description != null
               ? AppText(
@@ -85,7 +87,7 @@ Future<dynamic> showAppInfoDialog(BuildContext context,
               child: AppText(
                 text: confirmText,
                 color: AppColors.primary,
-                weight: FontWeight.w600,
+                // weight: FontWeight.w600,
               ),
             ),
             if (cancelText != null)
@@ -97,7 +99,7 @@ Future<dynamic> showAppInfoDialog(BuildContext context,
                 child: AppText(
                   text: cancelText,
                   color: Colors.red,
-                  weight: FontWeight.w600,
+                  // weight: FontWeight.w600,
                 ),
               ),
           ],
