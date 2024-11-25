@@ -355,19 +355,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         );
                       },
                       separatorBuilder: (context, index) {
-                        if (reversedTransactions[index]
+                        if (reversedTransactions[index + 1]
                                 .date
                                 .difference(_dateHolder!) >
                             const Duration(days: 7)) {
-                          // _dateHolder =
-                          //     value.transactions?[index].date;
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Gap(5),
                               AppText(
                                   text: AppFunctions.formatDate(
-                                      reversedTransactions[index]
+                                      reversedTransactions[index + 1]
                                           .date
                                           .toString(),
                                       format: r'j M Y')),
@@ -376,13 +374,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           );
                         } else {
                           final transactionDay =
-                              reversedTransactions[index].date.weekday;
+                              reversedTransactions[index + 1].date.weekday;
 
                           if (_dateHolder!.weekday == transactionDay) {
                             // logger.d(reversedTransactions[index].description);
                             return const Gap(10);
                           } else {
-                            _dateHolder = reversedTransactions[index].date;
+                            _dateHolder = reversedTransactions[index + 1].date;
                             // logger.d(reversedTransactions[index].description);
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -390,7 +388,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 const Gap(5),
                                 AppText(
                                     text: AppFunctions.formatDate(
-                                        reversedTransactions[index]
+                                        reversedTransactions[index + 1]
                                             .date
                                             .toString(),
                                         format: 'l')),

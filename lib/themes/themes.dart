@@ -15,7 +15,7 @@ class AppThemes {
       fontFamily: GoogleFonts.manrope(fontSize: 13).fontFamily,
       // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       useMaterial3: true,
-      dividerTheme: const DividerThemeData(color: AppColors.neutral200),
+      dividerTheme: const DividerThemeData(color: AppColors.neutral300),
       scrollbarTheme: ScrollbarThemeData(
         crossAxisMargin: 5,
         // thickness: 5,
@@ -29,7 +29,7 @@ class AppThemes {
       iconTheme: const IconThemeData(color: Colors.black),
       scaffoldBackgroundColor: Colors.white,
       splashColor: Colors.white,
-      dividerTheme: const DividerThemeData(color: AppColors.neutral200),
+      dividerTheme: const DividerThemeData(color: AppColors.neutral300),
       // dividerColor: AppColors.neutral100,
       // hoverColor: Colors.white,
       appBarTheme: const AppBarTheme(

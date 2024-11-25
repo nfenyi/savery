@@ -1,13 +1,13 @@
-import 'package:dropdown_button2/dropdown_button2.dart';
+// import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:lottie/lottie.dart';
-import 'package:savery/app_constants/app_assets.dart';
+// import 'package:hive_flutter/hive_flutter.dart';
+// import 'package:lottie/lottie.dart';
+// import 'package:savery/app_constants/app_assets.dart';
 import 'package:savery/app_constants/app_colors.dart';
-import 'package:savery/app_constants/app_constants.dart';
+// import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 
@@ -25,12 +25,12 @@ class TransactionsScreen extends ConsumerStatefulWidget {
 }
 
 class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
-  late String _selectedAccountName;
+  // late String _selectedAccountName;
   // String? _selectedSortBy = 'Sort by date';
   late Account _selectedAccount;
-  final _userBox = Hive.box<AppUser>(AppBoxes.user);
-  late Iterable<AccountTransaction>? _reversedTransactions;
-  late List<AccountTransaction>? _transactionsHolder;
+  // final _userBox = Hive.box<AppUser>(AppBoxes.user);
+  late List<AccountTransaction>? _reversedTransactions;
+  // late List<AccountTransaction>? _transactionsHolder;
 
   // int? _periodFilter = 1;
   // String _selectedTransactionTypeFilter = 'All';
@@ -42,23 +42,18 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
   void initState() {
     super.initState();
     _selectedAccount = widget.initAccount;
-    _selectedAccountName = _selectedAccount.name;
-    _reversedTransactions = _selectedAccount.transactions?.reversed;
+    // _selectedAccountName = _selectedAccount.name;
+    _reversedTransactions = _selectedAccount.transactions?.reversed.toList();
     _currency = _selectedAccount.currency ?? 'GHS';
-    _transactionsHolder = _reversedTransactions
-        ?.where((element) =>
-            (element.date.day == dateTimeNow.day) &&
-            (element.date.difference(dateTimeNow) < const Duration(days: 1)))
-        .toList();
+    // _transactionsHolder = _reversedTransactions
+    //     ?.where((element) =>
+    //         (element.date.day == dateTimeNow.day) &&
+    //         (element.date.difference(dateTimeNow) < const Duration(days: 1)))
+    //     .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    //put at a better place:
-
-    // logger.d(_reversedTransactions);
-    // logger.d(_transactionsHolder);
-
     _dateHolder = _selectedAccount.transactions?.reversed.first.date;
     //  _selectedAccount = _userBox.values.first.accounts?.first;
     // _selectedAccountName = _selectedAccount.name;
@@ -159,15 +154,15 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
             //   ),
             // ),
             // const Gap(10),
-            if (_transactionsHolder != null && _transactionsHolder!.isNotEmpty)
-              AppText(
-                  textAlign: TextAlign.left,
-                  text: (DateTime.now().day == _dateHolder?.day)
-                      ? 'Today'
-                      : (DateTime.now().weekday - _dateHolder!.weekday == 1)
-                          ? 'Yesterday'
-                          : AppFunctions.formatDate(_dateHolder.toString(),
-                              format: r'g:i A')),
+
+            AppText(
+                textAlign: TextAlign.left,
+                text: (DateTime.now().day == _dateHolder?.day)
+                    ? 'Today'
+                    : (DateTime.now().weekday - _dateHolder!.weekday == 1)
+                        ? 'Yesterday'
+                        : AppFunctions.formatDate(_dateHolder.toString(),
+                            format: r'g:i A')),
             const Gap(10),
             // (_transactionsHolder != null && _transactionsHolder!.isNotEmpty)
             //     ?
@@ -177,7 +172,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                   //and remove cacheExtent property
                   cacheExtent: 1000000,
                   itemBuilder: (context, index) {
-                    final transaction = _transactionsHolder![index];
+                    final transaction = _reversedTransactions![index];
                     return Container(
                       decoration: BoxDecoration(
                           color: Colors.grey.shade100,
@@ -228,7 +223,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                     );
                   },
                   separatorBuilder: (context, index) {
-                    if (_transactionsHolder![index]
+                    if (_reversedTransactions![index + 1]
                             .date
                             .difference(_dateHolder!) >
                         const Duration(days: 7)) {
@@ -240,20 +235,22 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                           const Gap(5),
                           AppText(
                               text: AppFunctions.formatDate(
-                                  _transactionsHolder![index].date.toString(),
+                                  _reversedTransactions![index + 1]
+                                      .date
+                                      .toString(),
                                   format: r'j M Y')),
                           const Gap(5),
                         ],
                       );
                     } else {
                       final transactionDay =
-                          _transactionsHolder![index].date.weekday;
+                          _reversedTransactions![index + 1].date.weekday;
 
                       if (_dateHolder!.weekday == transactionDay) {
                         // logger.d(reversedTransactions[index].description);
                         return const Gap(10);
                       } else {
-                        _dateHolder = _transactionsHolder![index].date;
+                        _dateHolder = _reversedTransactions![index + 1].date;
                         // logger.d(reversedTransactions[index].description);
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,7 +258,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                             const Gap(5),
                             AppText(
                                 text: AppFunctions.formatDate(
-                                    _transactionsHolder![index].date.toString(),
+                                    _reversedTransactions![index + 1]
+                                        .date
+                                        .toString(),
                                     format: 'l')),
                             const Gap(5),
                           ],
@@ -269,7 +268,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                       }
                     }
                   },
-                  itemCount: _transactionsHolder!.length),
+                  itemCount: _reversedTransactions!.length),
             )
             // : Center(
             //     child: Column(
