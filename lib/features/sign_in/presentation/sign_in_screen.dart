@@ -17,7 +17,7 @@ import 'package:savery/features/sign_up/presentation/create_account_screen.dart'
 import 'package:savery/main.dart';
 
 import '../../main_screen/presentation/main_screen.dart';
-import '../notifiers/providers/providers.dart';
+import '../providers/providers.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
@@ -26,6 +26,8 @@ class SignInScreen extends ConsumerStatefulWidget {
   ConsumerState<SignInScreen> createState() => _SignInScreenState();
 }
 
+//TODO: at this moment, someone who creates a new account can access the initial user's hive data as
+//user.values.first is always taken
 class _SignInScreenState extends ConsumerState<SignInScreen> {
   // late final StateNotifier _authStateProvider;
   final _emailController = TextEditingController();

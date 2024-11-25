@@ -5,17 +5,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_assets.dart';
 import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:savery/features/sign_in/user_info/providers/providers.dart';
 
-import '../../../app_constants/app_constants.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../sign_in/user_info/models/user_model.dart';
 import 'widgets.dart';
 
@@ -32,8 +30,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
   int? _periodFilter = 1;
   String? _selectedAccountName;
   String? _selectedSortBy = 'Sort by date';
-  Account? _selectedAccount;
-  final Box<AppUser> _userBox = Hive.box(AppBoxes.user);
+  late Account? _selectedAccount;
 
   //income
   Map<String, Map<String, dynamic>> _yearIncomeMap = {};
@@ -73,51 +70,34 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
   void initState() {
     super.initState();
 
-    _selectedAccount = _userBox.values.first.accounts?.first;
+    _selectedAccount = ref.read(userProvider.notifier).user.accounts?.first;
     _selectedAccountName = _selectedAccount?.name;
     _reversedTransactions = _selectedAccount?.transactions?.reversed;
     _animationController =
         AnimationController(vsync: this, duration: const Duration(seconds: 5));
-    // _periodFiltered = _reversedTransactions;
-    {
-      if (_reversedTransactions != null) {
-        for (final transaction in _reversedTransactions!) {
-          if ((transaction.date.day == _dateTimeNow.day)
-              //  &&
-              //     (transaction.date.difference(dateTimeNow) <
-              //         const Duration(days: 1)
-              //         )
-              ) {
-            final hour = _getTransactionHour(transaction);
-            final amount = transaction.amount;
-            final type = transaction.type;
 
-            if (type == 'Income') {
-              _dayIncomeMap[hour] = {
-                _amountString:
-                    (_dayIncomeMap[hour]?[_amountString] ?? 0) + amount,
-                _descriptionString: transaction.description
-              };
-            } else {
-              _dayExpenseMap[hour] = {
-                _amountString:
-                    _dayExpenseMap[hour]?[transaction.category!] ?? 0 + amount,
-                _descriptionString: transaction.description,
-                _categoryString: transaction.category,
-              };
-            }
-            if (transaction == _reversedTransactions?.last) {
-              _overallDayIncome = _dayIncomeMap.values.fold(
-                0,
-                (previousValue, element) =>
-                    previousValue + element[_amountString],
-              );
-              _overallDayExpense = _dayExpenseMap.values.fold(
-                  0,
-                  (previousValue, element) =>
-                      previousValue + element[_amountString]);
-            }
+    if (_reversedTransactions != null) {
+      for (final transaction in _reversedTransactions!) {
+        if ((transaction.date.day == _dateTimeNow.day)) {
+          final hour = _getTransactionHour(transaction.date);
+          final amount = transaction.amount;
+          final type = transaction.type;
+
+          if (type == 'Income') {
+            _dayIncomeMap[hour] = {
+              _amountString:
+                  (_dayIncomeMap[hour]?[_amountString] ?? 0) + amount,
+              _descriptionString: transaction.description
+            };
           } else {
+            _dayExpenseMap[hour] = {
+              _amountString:
+                  _dayExpenseMap[hour]?[transaction.category!] ?? 0 + amount,
+              _descriptionString: transaction.description,
+              _categoryString: transaction.category,
+            };
+          }
+          if (transaction == _reversedTransactions?.last) {
             _overallDayIncome = _dayIncomeMap.values.fold(
               0,
               (previousValue, element) =>
@@ -127,28 +107,40 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                 0,
                 (previousValue, element) =>
                     previousValue + element[_amountString]);
-            break;
           }
+        } else {
+          _overallDayIncome = _dayIncomeMap.values.fold(
+            0,
+            (previousValue, element) => previousValue + element[_amountString],
+          );
+          _overallDayExpense = _dayExpenseMap.values.fold(
+              0,
+              (previousValue, element) =>
+                  previousValue + element[_amountString]);
+          break;
         }
       }
     }
+
     _transactionsHolder = _dayIncomeMap;
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final AppUser user = ref.watch(userProvider).user;
+    _selectedAccount = ref.watch(userProvider.notifier).user.accounts?.first;
     return Padding(
       padding: const EdgeInsets.symmetric(
           horizontal: AppSizes.horizontalPaddingSmall),
       child: Visibility(
-        visible: _userBox.values.first.accounts != null &&
-            _userBox.values.first.accounts!.isNotEmpty,
+        visible: user.accounts != null && user.accounts!.isNotEmpty,
         replacement: Expanded(
           child: Column(
             mainAxisSize: MainAxisSize.max,
@@ -194,7 +186,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                   ),
                   iconSize: 12.0,
                 ),
-                items: _userBox.values.first.accounts
+                items: user.accounts
                     ?.map(
                       (e) => e.name,
                     )
@@ -216,8 +208,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                   if (value != _selectedAccountName) {
                     setState(() {
                       _selectedAccountName = value;
-                      _selectedAccount =
-                          _userBox.values.first.accounts?.firstWhere(
+                      _selectedAccount = user.accounts?.firstWhere(
                         (element) => element.name == value,
                       );
                       _periodFilter = 1;
@@ -253,7 +244,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                               //         const Duration(days: 1)
                               //         )
                               ) {
-                            final hour = _getTransactionHour(transaction);
+                            final hour = _getTransactionHour(transaction.date);
                             final amount = transaction.amount;
                             final type = transaction.type;
                             if (type == 'Income') {
@@ -381,7 +372,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                               for (final transaction
                                   in _reversedTransactions!) {
                                 if (transaction.date.day == _dateTimeNow.day) {
-                                  final hour = _getTransactionHour(transaction);
+                                  final hour =
+                                      _getTransactionHour(transaction.date);
                                   final amount = transaction.amount;
                                   final type = transaction.type;
                                   if (type == 'Income') {
@@ -436,7 +428,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                     // (transaction.date.day == dateTimeNow.day) &&
                                     (transaction.date.difference(_dateTimeNow) <
                                         const Duration(days: 7))) {
-                                  final day = _getTransactionDay(transaction);
+                                  final day =
+                                      _getTransactionDay(transaction.date);
                                   final amount = transaction.amount;
                                   final type = transaction.type;
                                   if (type == 'Income') {
@@ -506,7 +499,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                   in _reversedTransactions!) {
                                 if (transaction.date.month ==
                                     _dateTimeNow.month) {
-                                  final week = _getTransactionWeek(transaction);
+                                  final week =
+                                      _getTransactionWeek(transaction.date);
                                   final amount = transaction.amount;
                                   final type = transaction.type;
                                   if (type == 'Income') {
@@ -586,7 +580,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                     (transaction.date.year ==
                                         _dateTimeNow.year)) {
                                   final month =
-                                      _getTransactionMonth(transaction);
+                                      _getTransactionMonth(transaction.date);
                                   final amount = transaction.amount;
                                   final type = transaction.type;
                                   if (type == 'Income') {
@@ -681,14 +675,13 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                   }
                                   if (transaction ==
                                       _reversedTransactions?.last) {
-                                    _overallIncome =
-                                        _monthIncomeMap.values.fold(
+                                    _overallIncome = _allIncomeMap.values.fold(
                                       0,
                                       (previousValue, element) =>
                                           previousValue +
                                           element[_amountString],
                                     );
-                                    _overallExpense = _monthExpenseMap.values
+                                    _overallExpense = _allExpenseMap.values
                                         .fold(
                                             0,
                                             (previousValue, element) =>
@@ -724,132 +717,140 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
               ],
             ),
             const Gap(10),
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton(
-                      style: TextButton.styleFrom(
-                          padding: const EdgeInsets.all(15),
-                          backgroundColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                  color: _inIncomeView
-                                      ? AppColors.primary
-                                      : AppColors.neutral100),
-                              borderRadius: BorderRadius.circular(20))),
-                      onPressed: () {
-                        if (!_inIncomeView) {
-                          setState(() {
-                            _inIncomeView = true;
-                            if (_periodFilter == 0) {
-                              _transactionsHolder = _allIncomeMap;
-                            } else if (_periodFilter == 1) {
-                              _transactionsHolder = _dayIncomeMap;
-                            } else if (_periodFilter == 2) {
-                              _transactionsHolder = _weekIncomeMap;
-                            } else if (_periodFilter == 3) {
-                              _transactionsHolder = _monthIncomeMap;
-                            } else {
-                              _transactionsHolder = _yearIncomeMap;
-                            }
-                          });
-                        }
-                      },
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Row(
-                            children: [
-                              Icon(
-                                Iconsax.arrow_down,
-                                color: AppColors.neutral500,
-                                size: 15,
-                              ),
-                              AppText(
-                                text: 'Income',
-                                color: AppColors.neutral500,
-                              )
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              AppText(
-                                text:
-                                    '+${_periodFilter == 0 ? _overallIncome : _periodFilter == 1 ? _overallDayIncome : _periodFilter == 2 ? _overallWeekIncome : _periodFilter == 3 ? _overallMonthIncome : _overallYearIncome} ${_selectedAccount?.currency ?? 'GHS'}',
-                                size: AppSizes.heading5,
-                                color: Colors.green,
-                                weight: FontWeight.w500,
-                              ),
-                            ],
-                          )
-                        ],
-                      )),
-                ),
-                const Gap(10),
-                Expanded(
-                  child: TextButton(
-                      style: TextButton.styleFrom(
-                          padding: const EdgeInsets.all(15),
-                          backgroundColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                  color: !_inIncomeView
-                                      ? AppColors.primary
-                                      : AppColors.neutral100),
-                              borderRadius: BorderRadius.circular(20))),
-                      onPressed: () {
-                        if (_inIncomeView) {
-                          setState(() {
-                            _inIncomeView = false;
 
-                            if (_periodFilter == 0) {
-                              _transactionsHolder = _allExpenseMap;
-                            } else if (_periodFilter == 1) {
-                              _transactionsHolder = _dayExpenseMap;
-                            } else if (_periodFilter == 2) {
-                              _transactionsHolder = _weekExpenseMap;
-                            } else if (_periodFilter == 3) {
-                              _transactionsHolder = _monthExpenseMap;
-                            } else {
-                              _transactionsHolder = _yearExpenseMap;
-                            }
-                          });
-                        }
-                      },
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Row(
-                            children: [
-                              Icon(
-                                Iconsax.arrow_up_3,
-                                size: 15,
-                                color: AppColors.neutral500,
-                              ),
-                              AppText(
-                                text: 'Expenses',
-                                color: AppColors.neutral500,
-                              )
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              AppText(
-                                text:
-                                    '-${_periodFilter == 0 ? _overallExpense : _periodFilter == 1 ? _overallDayExpense : _periodFilter == 2 ? _overallWeekExpense : _periodFilter == 3 ? _overallMonthExpense : _overallYearExpense} ${_selectedAccount?.currency ?? 'GHS'}',
-                                size: AppSizes.heading5,
-                                color: Colors.red.shade300,
-                                weight: FontWeight.w500,
-                              ),
-                            ],
-                          )
-                        ],
-                      )),
-                ),
-              ],
-            ),
+            Consumer(builder: (context, ref, child) {
+              final account = ref.watch(userProvider).user.accounts?.firstWhere(
+                    (element) => element.name == _selectedAccount?.name,
+                  );
+              return Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                        style: TextButton.styleFrom(
+                            padding: const EdgeInsets.all(15),
+                            backgroundColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                                side: BorderSide(
+                                    color: _inIncomeView
+                                        ? AppColors.primary
+                                        : AppColors.neutral100),
+                                borderRadius: BorderRadius.circular(20))),
+                        onPressed: () {
+                          if (!_inIncomeView) {
+                            setState(() {
+                              _inIncomeView = true;
+                              if (_periodFilter == 0) {
+                                _transactionsHolder = _allIncomeMap;
+                              } else if (_periodFilter == 1) {
+                                _transactionsHolder = _dayIncomeMap;
+                              } else if (_periodFilter == 2) {
+                                _transactionsHolder = _weekIncomeMap;
+                              } else if (_periodFilter == 3) {
+                                _transactionsHolder = _monthIncomeMap;
+                              } else {
+                                _transactionsHolder = _yearIncomeMap;
+                              }
+                            });
+                          }
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Row(
+                              children: [
+                                Icon(
+                                  Iconsax.arrow_down,
+                                  color: AppColors.neutral500,
+                                  size: 15,
+                                ),
+                                AppText(
+                                  text: 'Income',
+                                  color: AppColors.neutral500,
+                                )
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                AppText(
+                                  text:
+                                      //use to test for reactivity
+                                      // '${account?.balance} +${_periodFilter == 0 ? _overallIncome : _periodFilter == 1 ? _overallDayIncome : _periodFilter == 2 ? _overallWeekIncome : _periodFilter == 3 ? _overallMonthIncome : _overallYearIncome} ${_selectedAccount?.currency ?? 'GHS'}',
+                                      '+${_periodFilter == 0 ? _overallIncome : _periodFilter == 1 ? _overallDayIncome : _periodFilter == 2 ? _overallWeekIncome : _periodFilter == 3 ? _overallMonthIncome : _overallYearIncome} ${_selectedAccount?.currency ?? 'GHS'}',
+                                  size: AppSizes.heading5,
+                                  color: Colors.green,
+                                  weight: FontWeight.w500,
+                                ),
+                              ],
+                            )
+                          ],
+                        )),
+                  ),
+                  const Gap(10),
+                  Expanded(
+                    child: TextButton(
+                        style: TextButton.styleFrom(
+                            padding: const EdgeInsets.all(15),
+                            backgroundColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                                side: BorderSide(
+                                    color: !_inIncomeView
+                                        ? AppColors.primary
+                                        : AppColors.neutral100),
+                                borderRadius: BorderRadius.circular(20))),
+                        onPressed: () {
+                          if (_inIncomeView) {
+                            setState(() {
+                              _inIncomeView = false;
+
+                              if (_periodFilter == 0) {
+                                _transactionsHolder = _allExpenseMap;
+                              } else if (_periodFilter == 1) {
+                                _transactionsHolder = _dayExpenseMap;
+                              } else if (_periodFilter == 2) {
+                                _transactionsHolder = _weekExpenseMap;
+                              } else if (_periodFilter == 3) {
+                                _transactionsHolder = _monthExpenseMap;
+                              } else {
+                                _transactionsHolder = _yearExpenseMap;
+                              }
+                            });
+                          }
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Row(
+                              children: [
+                                Icon(
+                                  Iconsax.arrow_up_3,
+                                  size: 15,
+                                  color: AppColors.neutral500,
+                                ),
+                                AppText(
+                                  text: 'Expenses',
+                                  color: AppColors.neutral500,
+                                )
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                AppText(
+                                  text:
+                                      '-${_periodFilter == 0 ? _overallExpense : _periodFilter == 1 ? _overallDayExpense : _periodFilter == 2 ? _overallWeekExpense : _periodFilter == 3 ? _overallMonthExpense : _overallYearExpense} ${_selectedAccount?.currency ?? 'GHS'}',
+                                  size: AppSizes.heading5,
+                                  color: Colors.red.shade300,
+                                  weight: FontWeight.w500,
+                                ),
+                              ],
+                            )
+                          ],
+                        )),
+                  ),
+                ],
+              );
+            }),
             const Gap(10),
             if (_inIncomeView)
               // if (_transactionsList != null && _transactionsList!.isNotEmpty)
@@ -876,7 +877,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                         xValueMapper: (MapEntry data, index) => data.key,
                         yValueMapper: (MapEntry data, index) =>
                             data.value[_amountString],
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(5),
+                            topRight: Radius.circular(5)),
                         // name: 'Gold',
                         color: Colors.deepPurple[200])
                   ],
@@ -1054,15 +1057,16 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                               xValueMapper: (MapEntry data, index) => data.key,
                               yValueMapper: (MapEntry data, index) =>
                                   data.value[_amountString],
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(5),
+                                  topRight: Radius.circular(5)),
                               // name: 'Gold',
                               color: Colors.deepPurple[200])
                         ],
                       ),
             const Gap(5),
             (_transactionsHolder.isNotEmpty)
-                ? SizedBox(
-                    height: Adaptive.h(22),
+                ? Expanded(
                     child: ListView.separated(
                         separatorBuilder: (context, index) => const Gap(5),
                         //TODO: find a better way to implement the implementation of timestamps
@@ -1071,52 +1075,54 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                         itemBuilder: (context, index) {
                           final transaction =
                               _transactionsHolder.entries.elementAt(index);
-                          return ListTile(
-                            shape: RoundedRectangleBorder(
+                          return Container(
+                            decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
                                 borderRadius: BorderRadius.circular(15)),
-                            tileColor: Colors.grey.shade100,
-                            contentPadding:
-                                const EdgeInsets.symmetric(horizontal: 10),
-                            leading: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Container(
-                                  padding: const EdgeInsets.all(10),
-                                  width: 50,
-                                  color: _inIncomeView
-                                      ? Colors.green.withOpacity(0.1)
-                                      : getCategoryColor(transaction
-                                              .value[_categoryString])!
-                                          .withOpacity(0.1),
-                                  child: Icon(
-                                    _inIncomeView
-                                        ? FontAwesomeIcons.coins
-                                        : getCategoryIcon(
-                                            transaction.value[_categoryString]),
+                            child: ListTile(
+                              // shape: RoundedRectangleBorder(
+                              //     borderRadius: BorderRadius.circular(15)),
+                              // tileColor: Colors.grey.shade100,
+                              contentPadding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              leading: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    width: 50,
                                     color: _inIncomeView
-                                        ? Colors.green
-                                        : getCategoryColor(
-                                            transaction.value[_categoryString]),
-                                  )),
-                            ),
-                            subtitle: AppText(
-                              text: _inIncomeView
-                                  ? "Income"
-                                  : transaction.value[_categoryString],
-                              color: Colors.grey,
-                            ),
-                            title: (_periodFilter == 1)
-                                ? AppText(
-                                    text: transaction.value[_descriptionString],
-                                  )
-                                : AppText(
-                                    text: _getTransactionDayFullName(
-                                        transaction.key),
-                                  ),
-                            trailing: AppText(
-                              text:
-                                  '${_inIncomeView ? '+' : '-'} ${_selectedAccount?.currency ?? 'GHS'} ${transaction.value[_amountString].toString()}',
-                              size: AppSizes.body,
-                              weight: FontWeight.bold,
+                                        ? Colors.green.withOpacity(0.1)
+                                        : getCategoryColor(transaction
+                                                .value[_categoryString])!
+                                            .withOpacity(0.1),
+                                    child: Icon(
+                                      _inIncomeView
+                                          ? FontAwesomeIcons.coins
+                                          : getCategoryIcon(transaction
+                                              .value[_categoryString]),
+                                      color: _inIncomeView
+                                          ? Colors.green
+                                          : getCategoryColor(transaction
+                                              .value[_categoryString]),
+                                    )),
+                              ),
+                              title: AppText(
+                                text: _inIncomeView
+                                    ? "Income"
+                                    : transaction.value[_categoryString],
+                              ),
+                              subtitle: AppText(
+                                text: transaction.key,
+                                //  (_periodFilter == 1) ?
+                                //     _getTransactionHour(transaction):  (_periodFilter == 2) ? _getTransactionDayFullName(transaction): ? (_periodFilter == 3)? _getTransactionWeek(transaction): (_periodFilter == 4)? _getTransactionMonth(transaction.key): transaction.value[_descriptionString],
+                                color: Colors.grey,
+                              ),
+                              trailing: AppText(
+                                text:
+                                    '${_inIncomeView ? '+' : '-'} ${_selectedAccount?.currency ?? 'GHS'} ${transaction.value[_amountString].toString()}',
+                                size: AppSizes.body,
+                                weight: FontWeight.bold,
+                              ),
                             ),
                           );
                         },
@@ -1195,18 +1201,18 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
     }
   }
 
-  String _getTransactionHour(AccountTransaction transaction) {
-    switch (transaction.date.hour) {
+  String _getTransactionHour(DateTime date) {
+    switch (date.hour) {
       case < 13:
-        return '${transaction.date.hour}am';
+        return '${date.hour}am';
 
       default:
-        return '${transaction.date.hour - 12}pm';
+        return '${date.hour - 12}pm';
     }
   }
 
-  String _getTransactionDay(AccountTransaction transaction) {
-    switch (transaction.date.weekday) {
+  String _getTransactionDay(DateTime date) {
+    switch (date.weekday) {
       case 1:
         return 'Mon';
       case 2:
@@ -1245,8 +1251,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
     }
   }
 
-  String _getTransactionWeek(AccountTransaction transaction) {
-    switch (transaction.date.day) {
+  String _getTransactionWeek(DateTime date) {
+    switch (date.day) {
       case < 8:
         return 'Week 1';
       case > 7 && < 15:
@@ -1261,8 +1267,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
     }
   }
 
-  String _getTransactionMonth(AccountTransaction transaction) {
-    switch (transaction.date.month) {
+  String _getTransactionMonth(DateTime date) {
+    switch (date.month) {
       case 1:
         return 'Jan';
       case 2:

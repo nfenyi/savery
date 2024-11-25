@@ -9,4 +9,5 @@ class AppBoxes {
   static const String budgets = 'budgets';
   static const String transactions = 'transactions';
   static const String transactionsCategories = 'transactions_categories';
+  static const String goals = 'goals';
 }

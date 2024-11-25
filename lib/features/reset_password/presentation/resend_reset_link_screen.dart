@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
-import 'package:savery/features/sign_in/notifiers/providers/providers.dart';
+import 'package:savery/features/sign_in/providers/providers.dart';
 import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
 import 'package:savery/main.dart';
 

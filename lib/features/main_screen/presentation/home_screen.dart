@@ -15,14 +15,13 @@ import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_functions/app_functions.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart' as widgets;
-import 'package:savery/features/main_screen/streams/streams.dart';
 import 'package:savery/features/transactions/presentation/transactions_screen.dart';
 import 'package:savery/main.dart';
 
 import '../../../app_constants/app_assets.dart';
-import '../../../app_constants/app_constants.dart';
 import '../../../app_widgets/widgets.dart';
 import '../../sign_in/user_info/models/user_model.dart';
+import '../../sign_in/user_info/providers/providers.dart';
 import 'widgets.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -33,23 +32,19 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  Account? _selectedAccount;
   late DateTime? _dateHolder;
 
   final GlobalKey<FormState> _accountNameFormKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final db = FirebaseFirestore.instance;
-  final _userBox = Hive.box<AppUser>(AppBoxes.user);
-  final _accountsBox = Hive.box<Account>(AppBoxes.accounts);
-  late final ValueNotifier<Account?> _valueNotifier;
+  bool showFirstCard = true;
+  late ValueNotifier<Account?> _valueNotifier;
 
   @override
   void initState() {
     super.initState();
-    if (_accountsBox.values.isNotEmpty) {
-      _selectedAccount = _accountsBox.values.first;
-    }
-    _valueNotifier = ValueNotifier(_selectedAccount);
+
+    _valueNotifier = ValueNotifier(ref.read(userProvider).user.accounts?.first);
 
     // _accounts.add(
     //   Account(
@@ -113,7 +108,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     // logger.d(db.doc(
     //     '${FirestoreFieldNames.users}/${FirebaseAuth.instance.currentUser!.uid}/${FirestoreFieldNames.accounts}/').get());
-
+    final AppUser user = ref.watch(userProvider).user;
+    final HiveList<Account>? accounts = ref.watch(accountsProvider);
+    // HiveList<Account>? accounts = ref.watch(accountsProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -128,50 +125,77 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
         const Gap(10),
-        //TODO: change to the use of changenotifier provider
-        StreamBuilder<List<Account>>(
-            stream: accountsStream(),
-            // .map(
-            //   (event) {
-            //     logger.d('not dele');
-            //     if (event.deleted) {
-            //       // Handle deletion (if needed)
-            //       // You might want to remove the item from your UI or perform other actions
-            //       return null;
-            //     } else {
-            //       logger.d('not dele');
-            //       return _accountsBox.get(event.key);
-            //     }
-            //   },
-            // )
 
-            builder: (context, snapshot) {
-              // logger.d(snapshot.connectionState);
-              // _accountsBox.listenable().add
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const widgets.AppLoader();
-              } else {
-                if (snapshot.data!.isEmpty) {
-                  return InkWell(
-                    onTap: () async {
-                      await showAccountDialog(context);
-                    },
-                    child: Ink(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: AppSizes.horizontalPaddingSmall),
-                        child: d_border.DottedBorder(
-                            color: AppColors.primary,
-                            borderType: d_border.BorderType.RRect,
-                            radius: const Radius.circular(10),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  width: Adaptive.w(90),
-                                  height: 200,
-                                  child: const Row(
+        (accounts == null || user.accounts!.isEmpty)
+            ? InkWell(
+                onTap: () async {
+                  await showAccountDialog(context);
+                },
+                child: Ink(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: AppSizes.horizontalPaddingSmall),
+                    child: d_border.DottedBorder(
+                        color: AppColors.primary,
+                        borderType: d_border.BorderType.RRect,
+                        radius: const Radius.circular(10),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: Adaptive.w(90),
+                              height: 200,
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.add_circle,
+                                    color: AppColors.primary,
+                                    // size: 5,
+                                  ),
+                                  Gap(10),
+                                  AppText(
+                                      text: 'Tap here to create an account.')
+                                ],
+                              ),
+                            ),
+                          ],
+                        )),
+                  ),
+                ),
+              )
+            : CarouselSlider.builder(
+                itemCount: user.accounts!.length,
+                itemBuilder: (context, index, realIndex) {
+                  final account = user.accounts![index];
+                  if (index != user.accounts!.length - 1) {
+                    return AccountCard(account: account);
+                  } else {
+                    return SizedBox(
+                      width: 380,
+                      height: 200,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          SizedBox(
+                            width: 320,
+                            child: AccountCard(
+                              account: account,
+                            ),
+                          ),
+                          const Gap(1),
+                          InkWell(
+                            onTap: () async {
+                              await showAccountDialog(context);
+                            },
+                            child: Ink(
+                              child: d_border.DottedBorder(
+                                  color: AppColors.primary,
+                                  borderType: d_border.BorderType.RRect,
+                                  radius: const Radius.circular(10),
+                                  child: const Column(
+                                    mainAxisSize: MainAxisSize.max,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Icon(
@@ -179,85 +203,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         color: AppColors.primary,
                                         // size: 5,
                                       ),
-                                      Gap(10),
-                                      AppText(
-                                          text:
-                                              'Tap here to create an account.')
                                     ],
-                                  ),
-                                ),
-                              ],
-                            )),
-                      ),
-                    ),
-                  );
-                } else {
-                  return CarouselSlider.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index, realIndex) {
-                      final account = snapshot.data![index];
-                      if (index != snapshot.data!.length - 1) {
-                        return AccountCard(account: account);
-                      } else {
-                        return SizedBox(
-                          width: 380,
-                          height: 200,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              SizedBox(
-                                width: 320,
-                                child: AccountCard(
-                                  account: account,
-                                ),
-                              ),
-                              const Gap(1),
-                              InkWell(
-                                onTap: () async {
-                                  await showAccountDialog(context);
-                                },
-                                child: Ink(
-                                  child: d_border.DottedBorder(
-                                      color: AppColors.primary,
-                                      borderType: d_border.BorderType.RRect,
-                                      radius: const Radius.circular(10),
-                                      child: const Column(
-                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.add_circle,
-                                            color: AppColors.primary,
-                                            // size: 5,
-                                          ),
-                                        ],
-                                      )),
-                                ),
-                              ),
-                            ],
+                                  )),
+                            ),
                           ),
-                        );
-                      }
+                        ],
+                      ),
+                    );
+                  }
+                },
+                options: CarouselOptions(
+                    // enlargeCenterPage: true,
+                    height: 200,
+                    initialPage: _valueNotifier.value == null
+                        ? 0
+                        : _valueNotifier.value!.key,
+                    enableInfiniteScroll: false,
+                    onPageChanged: (index, reason) {
+                      _valueNotifier.value = user.accounts![index];
                     },
-                    options: CarouselOptions(
-                        // enlargeCenterPage: true,
-                        height: 200,
-                        initialPage: _selectedAccount == null
-                            ? 0
-                            : _accountsBox.values
-                                .firstWhere((element) =>
-                                    element.name == _selectedAccount!.name)
-                                .key,
-                        enableInfiniteScroll: false,
-                        onPageChanged: (index, reason) {
-                          _valueNotifier.value = snapshot.data![index];
-                        },
-                        viewportFraction: 0.85),
-                  );
-                }
-              }
-            }),
+                    viewportFraction: 0.85),
+              ),
+
         const Gap(20),
         Padding(
           padding: const EdgeInsets.symmetric(
@@ -326,155 +293,132 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         //TODO: fix streambuilder not listening to transaction addition
         ValueListenableBuilder(
-          valueListenable: _valueNotifier,
-          builder: (context, value, child) {
-            return StreamBuilder<List<AccountTransaction>>(
-                stream: transactionsStream(value),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const widgets.AppLoader();
-                  } else {
-                    if (value?.transactions != null) {
-                      final reversedTransactions =
-                          value!.transactions!.reversed.toList();
-                      return (snapshot.data!.isNotEmpty)
-                          ? Expanded(
-                              child: ListView.separated(
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal:
-                                          AppSizes.horizontalPaddingSmall),
-                                  itemBuilder: (context, index) {
-                                    final transaction =
-                                        reversedTransactions[index];
-                                    return ListTile(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15)),
-                                      tileColor: Colors.grey.shade100,
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                      leading: ClipRRect(
-                                        borderRadius: BorderRadius.circular(10),
-                                        child: Container(
-                                            padding: const EdgeInsets.all(10),
-                                            width: 50,
-                                            color: AppColors.primary
-                                                .withOpacity(0.1),
-                                            child: Icon(
-                                              getCategoryIcon(
-                                                  transaction.category),
-                                              color: AppColors.primary,
-                                            )),
-                                      ),
-                                      title: AppText(
-                                          text: transaction.type == 'Income'
-                                              ? "Income"
-                                              : transaction.category!),
-                                      subtitle: AppText(
-                                        text: transaction.description,
-                                        color: Colors.grey,
-                                      ),
-                                      trailing: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          AppText(
-                                            text:
-                                                '${transaction.type == 'Income' ? '+' : '-'} ${_selectedAccount!.currency} ${transaction.amount.toString()}',
-                                            color: transaction.type == 'Income'
-                                                ? Colors.green
-                                                : Colors.red,
-                                          ),
-                                          AppText(
-                                            text: AppFunctions.formatDate(
-                                                transaction.date.toString(),
-                                                format: r'g:i A'),
-                                            color: Colors.grey,
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                  separatorBuilder: (context, index) {
-                                    if (reversedTransactions[index]
-                                            .date
-                                            .difference(_dateHolder!) >
-                                        const Duration(days: 6)) {
-                                      // _dateHolder =
-                                      //     value.transactions?[index].date;
-                                      return Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const Gap(5),
-                                          AppText(
-                                              text: AppFunctions.formatDate(
-                                                  reversedTransactions[index]
-                                                      .date
-                                                      .toString(),
-                                                  format: r'j M Y')),
-                                          const Gap(5),
-                                        ],
-                                      );
-                                    } else {
-                                      final transactionDay =
-                                          reversedTransactions[index].date.day;
-
-                                      if (_dateHolder!.day == transactionDay) {
-                                        return const Gap(10);
-                                      } else {
-                                        _dateHolder =
-                                            reversedTransactions[index].date;
-                                        return Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const Gap(5),
-                                            AppText(
-                                                text: AppFunctions.formatDate(
-                                                    reversedTransactions[index]
-                                                        .date
-                                                        .toString(),
-                                                    format: 'l')),
-                                            const Gap(5),
-                                          ],
-                                        );
-                                      }
-                                    }
-                                  },
-                                  itemCount: snapshot.data!.length < 5
-                                      ? snapshot.data!.length
-                                      : 5),
-                            )
-                          : Center(
-                              child: Column(
-                              mainAxisSize: MainAxisSize.max,
+            valueListenable: _valueNotifier,
+            builder: (context, value, child) {
+              if (value?.transactions != null &&
+                  value!.transactions!.isNotEmpty) {
+                final reversedTransactions =
+                    value.transactions!.reversed.toList();
+                return Expanded(
+                  child: ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppSizes.horizontalPaddingSmall),
+                      itemBuilder: (context, index) {
+                        final transaction = reversedTransactions[index];
+                        return Container(
+                          decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(15)),
+                          child: ListTile(
+                            // shape: RoundedRectangleBorder(
+                            //     borderRadius: BorderRadius.circular(15)),
+                            // tileColor: Colors.grey.shade100,
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 10),
+                            leading: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  width: 50,
+                                  color: AppColors.primary.withOpacity(0.1),
+                                  child: Icon(
+                                    getCategoryIcon(transaction.category),
+                                    color: AppColors.primary,
+                                  )),
+                            ),
+                            title: AppText(
+                                text: transaction.type == 'Income'
+                                    ? "Income"
+                                    : transaction.category!),
+                            subtitle: AppText(
+                              text: transaction.description,
+                              color: Colors.grey,
+                            ),
+                            trailing: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Lottie.asset(AppAssets.emptyList, height: 200),
-                                const AppText(
-                                    text:
-                                        'Tap on the + button to add a  transaction.')
+                                AppText(
+                                  text:
+                                      '${transaction.type == 'Income' ? '+' : '-'} ${_valueNotifier.value!.currency ?? 'GHS'} ${transaction.amount.toString()}',
+                                  color: transaction.type == 'Income'
+                                      ? Colors.green
+                                      : Colors.red,
+                                ),
+                                AppText(
+                                  text: AppFunctions.formatDate(
+                                      transaction.date.toString(),
+                                      format: r'g:i A'),
+                                  color: Colors.grey,
+                                ),
                               ],
-                            ));
-                    } else {
-                      return Center(
-                          child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Lottie.asset(AppAssets.emptyList, height: 200),
-                          const AppText(
-                              text:
-                                  'Tap on the + button to add a  transaction.')
-                        ],
-                      ));
-                    }
-                  }
-                });
-          },
-        )
+                            ),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        if (reversedTransactions[index]
+                                .date
+                                .difference(_dateHolder!) >
+                            const Duration(days: 7)) {
+                          // _dateHolder =
+                          //     value.transactions?[index].date;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Gap(5),
+                              AppText(
+                                  text: AppFunctions.formatDate(
+                                      reversedTransactions[index]
+                                          .date
+                                          .toString(),
+                                      format: r'j M Y')),
+                              const Gap(5),
+                            ],
+                          );
+                        } else {
+                          final transactionDay =
+                              reversedTransactions[index].date.weekday;
+
+                          if (_dateHolder!.weekday == transactionDay) {
+                            logger.d(reversedTransactions[index].description);
+                            return const Gap(10);
+                          } else {
+                            _dateHolder = reversedTransactions[index].date;
+                            logger.d(reversedTransactions[index].description);
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Gap(5),
+                                AppText(
+                                    text: AppFunctions.formatDate(
+                                        reversedTransactions[index]
+                                            .date
+                                            .toString(),
+                                        format: 'l')),
+                                const Gap(5),
+                              ],
+                            );
+                          }
+                        }
+                      },
+                      itemCount: value.transactions!.length < 5
+                          ? value.transactions!.length
+                          : 5),
+                );
+              } else {
+                return Center(
+                    child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Lottie.asset(AppAssets.emptyList, height: 200),
+                    const AppText(
+                        text: 'Tap on the + button to add a  transaction.')
+                  ],
+                ));
+              }
+            })
       ],
     );
   }
@@ -507,19 +451,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             actions: <Widget>[
               CupertinoDialogAction(
                 onPressed: () async {
-                  if (_accountNameFormKey.currentState!.validate()) {
-                    final user = _userBox.values.first;
+                  // if (_accountNameFormKey.currentState!.validate()) {
+                  //   final user = _userBox.values.first;
 
-                    await _accountsBox.add(Account(name: _nameController.text));
+                  //   await _accountsBox.add(Account(name: _nameController.text));
 
-                    user.accounts = HiveList(_accountsBox);
+                  //   user.accounts = HiveList(_accountsBox);
 
-                    user.accounts!.addAll(_accountsBox.values);
+                  //   accounts.addAll(_accountsBox.values);
 
-                    await user.save();
-                    navigatorKey.currentState!.pop();
-                    _nameController.clear();
-                  }
+                  //   await user.save();
+
+                  //   navigatorKey.currentState!.pop();
+                  //   _nameController.clear();
+                  // }
                 },
                 child: const AppText(
                   text: 'OK',
@@ -557,67 +502,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               TextButton(
                 onPressed: () async {
                   if (_accountNameFormKey.currentState!.validate()) {
-                    final user = _userBox.values.first;
-
-                    await _accountsBox.add(Account(name: _nameController.text));
-                    // logger.d(HiveList(_accountsBox));
-
-                    user.accounts = HiveList(_accountsBox);
-
-                    user.accounts!.addAll(_accountsBox.values);
-
-                    await user.save();
-
-                    // _accounts.isEmpty
-                    //     ? await db
-                    //         // .collection(FirestoreFieldNames.users)
-                    //         .collection(FirestoreFieldNames.users)
-                    //         // /${FirebaseAuth.instance.currentUser!.uid}/${FirestoreFieldNames.accounts}
-
-                    //         .doc(FirebaseAuth.instance.currentUser!.uid)
-                    //         .set({
-                    //         FirestoreFieldNames.accounts: {
-                    //           _nameController.text.trim(): {}
-                    //         }
-                    //       }).then((doc) {
-                    //         widgets.showInfoToast('Account added!',
-                    //             context: navigatorKey.currentContext!);
-                    //       }).onError((error, _) {
-                    //         widgets.showInfoToast(error.toString(),
-                    //             context: navigatorKey.currentContext!);
-                    //       })
-                    //     : await db
-                    //         .doc(
-                    //             '${FirestoreFieldNames.users}/${FirebaseAuth.instance.currentUser!.uid}')
-                    //         .update({
-                    //         '${FirestoreFieldNames.accounts}.${_nameController.text.trim()}':
-                    //             {}
-                    //       }).then((doc) {
-                    //         widgets.showInfoToast('Account added!',
-                    //             context: navigatorKey.currentContext!);
-                    //       }).onError((error, _) {
-                    //         widgets.showInfoToast(error.toString(),
-                    //             context: navigatorKey.currentContext!);
-                    //       });
-                    // _accounts.add(Account(
-                    //     name: _nameController.text,
-                    //     // availableBalance: 0,
-                    //     expenses: 0,
-                    //     income: 0,
-                    //     transactions: []));
-
-                    // await _accountsBox.add(Account(
-                    //     name: _nameController.text,
-                    //     // availableBalance: 0,
-                    //     expenses: 0,
-                    //     income: 0,
-                    //     transactions: []));
-
+                    await ref
+                        .read(userProvider.notifier)
+                        .addAccount(_nameController.text);
                     navigatorKey.currentState!.pop();
                     _nameController.clear();
-                    // setState(() {
-                    //   valueNotifier.value = _accountsBox.values.last;
-                    // });
                   }
                 },
                 child: const AppText(

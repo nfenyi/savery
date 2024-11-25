@@ -11,7 +11,7 @@ void showLoadingDialog({required String description}) async {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Gap(10.0),
-              const AppLoader(color: AppColors.primary),
+              const AppLoader(),
               const Gap(20.0),
               AppText(
                 text: description,
@@ -31,7 +31,7 @@ void showLoadingDialog({required String description}) async {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Gap(10.0),
-              const AppLoader(color: AppColors.primary),
+              const AppLoader(),
               const Gap(20.0),
               AppText(
                 text: description,

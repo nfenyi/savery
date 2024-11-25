@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
-import 'package:iconify_flutter_plus/icons/ic.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:savery/app_widgets/widgets.dart';
-import 'package:savery/features/sign_in/user_info/models/user_model.dart';
+import 'package:savery/app_constants/app_colors.dart';
+import 'package:savery/features/my_budgets/presentation/my_expense_budgets_screen.dart';
+import 'package:savery/features/sign_in/user_info/providers/providers.dart';
+import 'package:savery/main.dart';
 
 import '../../../app_constants/app_sizes.dart';
 import '../../../app_widgets/app_text.dart';
+import '../../sign_in/user_info/models/user_model.dart';
 
-class AccountCard extends StatelessWidget {
+class AccountCard extends ConsumerWidget {
   const AccountCard({
     super.key,
     required this.account,
@@ -18,8 +21,11 @@ class AccountCard extends StatelessWidget {
   final Account account;
 
   @override
-  Widget build(BuildContext context) {
-    double availableBalance = account.income - account.expenses;
+  Widget build(BuildContext context, ref) {
+    double popupMenuHeight = 15;
+    var consumerAccount = ref.watch(userProvider).user.accounts!.firstWhere(
+          (element) => element.name == account.name,
+        );
     return Container(
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.symmetric(horizontal: 5),
@@ -38,7 +44,7 @@ class AccountCard extends StatelessWidget {
             children: [
               const SizedBox(),
               AppText(
-                text: account.name,
+                text: consumerAccount.name,
                 isWhite: true,
                 weight: FontWeight.bold,
                 size: AppSizes.heading6,
@@ -54,37 +60,100 @@ class AccountCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const AppText(
-                text: 'Available Balance',
-                isWhite: true,
-              ),
+              if (consumerAccount.balance >= 0)
+                const AppText(
+                  text: 'Unbudgeted Balance',
+                  isWhite: true,
+                ),
+              if (consumerAccount.balance < 0)
+                const AppText(
+                  text: 'Deficit',
+                  isWhite: true,
+                ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AppText(
-                    text: '${account.currency ?? 'GHS'} $availableBalance',
+                    text:
+                        '${consumerAccount.currency ?? 'GHS'} ${consumerAccount.balance}',
                     isWhite: true,
                   ),
                   Row(
                     children: [
                       const Gap(10),
-                      if (availableBalance > 0)
-                        InkWell(
-                          onTap: () {},
-                          child: Ink(
-                            child: AppText(
-                              text: 'Save 💰',
-                              color: Colors.green[200],
-                              decoration: TextDecoration.underline,
+                      if (consumerAccount.balance == 0 &&
+                          consumerAccount.income != 0)
+                        const Text('👍'),
+                      if (consumerAccount.balance > 0)
+                        PopupMenuButton<int>(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          elevation: 1,
+
+                          // surfaceTintColor: Colors.black.withOpacity(0.05),
+                          // color: Colors.black.withOpacity(0.05),
+                          offset: Offset.fromDirection(180, -30),
+                          onSelected: (value) async {
+                            switch (value) {
+                              case 0:
+                                navigatorKey.currentState!
+                                    .push(MaterialPageRoute(
+                                  builder: (context) => MyExpenseBudgetScreen(
+                                    account: consumerAccount,
+                                  ),
+                                ));
+                                break;
+                              default:
+                                await ref
+                                    .read(userProvider.notifier)
+                                    .addToBucket(
+                                        selectedAccount: consumerAccount);
+                                break;
+                            }
+                          },
+                          itemBuilder: (context) =>
+
+                              // menuWidth: 150,
+                              // menuItemExtent: 40,
+                              // blurSize: 0,
+                              // blurBackgroundColor:
+                              //     Colors.black.withOpacity(0.00000000005),
+                              // openWithTap: true,
+                              // onPressed: () {},
+                              [
+                            PopupMenuItem<int>(
+                              height: popupMenuHeight,
+                              value: 0,
+                              child: const AppText(
+                                text: 'Budget',
+                                color: AppColors.primary,
+                              ),
                             ),
+                            const PopupMenuDivider(),
+                            PopupMenuItem(
+                              height: popupMenuHeight,
+                              value: 1,
+
+                              child: const AppText(
+                                text: 'Add to Bucket',
+                                color: Colors.green,
+                              ),
+                              // onPressed: () {
+
+                              // },
+                            ),
+                          ],
+                          child: AppText(
+                            text: 'Delegate',
+                            color: Colors.green[200],
+                            decoration: TextDecoration.underline,
                           ),
                         ),
-                      if (availableBalance < 0)
+                      if (consumerAccount.balance < 0)
                         InkWell(
                           onTap: () {},
                           child: Ink(
                             child: AppText(
-                              text: 'TODO',
+                              text: 'Adjust',
                               color: Colors.red[200],
                               decoration: TextDecoration.underline,
                             ),
@@ -129,7 +198,7 @@ class AccountCard extends StatelessWidget {
                             ),
                             AppText(
                               text:
-                                  '${account.currency ?? 'GHS'} ${account.income.toString()}',
+                                  '${consumerAccount.currency ?? 'GHS'} ${consumerAccount.income.toString()}',
                               isWhite: true,
                             ),
                           ],
@@ -169,7 +238,7 @@ class AccountCard extends StatelessWidget {
                             ),
                             AppText(
                               text:
-                                  '${account.currency ?? 'GHS'} ${account.expenses.toString()}',
+                                  '${consumerAccount.currency ?? 'GHS'} ${consumerAccount.expenses.toString()}',
                               isWhite: true,
                             ),
                           ],

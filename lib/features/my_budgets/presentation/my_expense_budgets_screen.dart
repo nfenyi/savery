@@ -3,6 +3,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -17,15 +18,22 @@ import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/features/main_screen/presentation/main_screen.dart';
 import 'package:savery/features/main_screen/presentation/widgets.dart';
 import 'package:savery/features/new_transaction/models/transaction_category_model.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'package:savery/main.dart';
 
-import '../../main_screen/streams/streams.dart';
+import '../../sign_in/user_info/providers/providers.dart';
+
+// import '../../main_screen/streams/streams.dart';
 
 class MyExpenseBudgetScreen extends ConsumerStatefulWidget {
-  const MyExpenseBudgetScreen({super.key});
+  final Account? account;
+  const MyExpenseBudgetScreen({
+    this.account,
+    super.key,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -40,55 +48,47 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
   final _budgetNameController = TextEditingController();
   final _expenseAmountController = TextEditingController();
   final _expenseCoverageController = TextEditingController();
-  late final Iterable<Account> _accounts;
-  final _userBox = Hive.box<AppUser>(AppBoxes.user);
-  final _budgetBox = Hive.box<Budget>(AppBoxes.budgets);
+
+  // final _userBox = Hive.box<AppUser>(AppBoxes.user);
+  // final _budgetBox = Hive.box<Budget>(AppBoxes.budgets);
+  // late HiveList<Budget> _budgets;
   DateTime _currentDate = DateTime.now();
   String? _selectedAccountName;
-  late List<double> _savingsAmounts;
   late Account _selectedAccount;
-  final _accountsBox = Hive.box<Account>(AppBoxes.accounts);
+  // final _accountsBox = Hive.box<Account>(AppBoxes.accounts);
+
   final _transactionCategories =
       Hive.box<TransactionCategory>(AppBoxes.transactionsCategories).values.map(
             (e) => e.name,
           );
 
   late final List<String> _accountNames;
-  Set<String?>? _categoriess = {};
+
   final Map<String, double> _mappedTransactions = {};
   late String _currency;
 
   @override
   void initState() {
     super.initState();
-    _accounts = _accountsBox.values;
-
-    _selectedAccount = _accounts.first;
+    final accounts = ref.read(userProvider).user.accounts;
+    _selectedAccount = widget.account ?? accounts!.first;
     _currency = _selectedAccount.currency ?? 'GHS';
     _selectedAccountName = _selectedAccount.name;
-    _accountNames = _accounts
-        .map(
-          (e) => e.name,
-        )
-        .toList();
 
     _expenseBudgets = _selectedAccount.budgets
         ?.where(
           (element) => element.type == BudgetType.expenseBudget,
         )
         .toList();
-    _categoriess = _selectedAccount.transactions?.map(
-      (e) {
-        if (e.type == 'Expense') {
-          return e.category!;
-        }
-      },
-    ).toSet();
+
+    _accountNames = accounts!
+        .map(
+          (e) => e.name,
+        )
+        .toList();
+
     if (_selectedAccount.transactions != null) {
       for (final transaction in _selectedAccount.transactions!.reversed) {
-        // if (_categoriess!.contains(transaction.category)) {
-        //   _fetchedTransactions.add(transaction);
-        // }
         late Budget assignedBudget;
         if (transaction.type == 'Expense' &&
             _expenseBudgets != null &&
@@ -110,13 +110,6 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
         }
       }
     }
-    // if (_categoriess != null) {
-    //   for (final category in _categoriess!) {
-    //     for (final transaction in _fetchedTransactions) {
-    //       _mappedTransactions[transaction.category!] = transaction;
-    //     }
-    //   }
-    // }
   }
 
   @override
@@ -127,58 +120,58 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final HiveList<Account>? accounts = ref.watch(userProvider).user.accounts;
     _currentDate = DateTime.now();
-
-    _savingsAmounts = Hive.box<Budget>(AppBoxes.budgets)
-        .values
-        .where(
-          (element) => element.type == BudgetType.savings,
-        )
-        .map(
-          (e) => e.amount,
-        )
-        .toList();
-    // logger.d(_accounts.first.budgets);
-    // logger.d(_expenseBudgets);
-    return Scaffold(
-      appBar: AppBar(
-        title: const AppText(
-          text: 'My Expense Budgets',
-          weight: FontWeight.bold,
-          size: AppSizes.bodySmall,
+    List<Budget>? consumerSavingsBudget =
+        ref.watch(userProvider).savings(_selectedAccount)?.toList();
+    List<Budget>? consumerExpenseBudgets =
+        ref.watch(userProvider).expenseBudgets(_selectedAccount)?.toList();
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) async {
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          navigatorKey.currentState!.pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const MainScreen()), (r) {
+            return false;
+          });
+        });
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const AppText(
+            text: 'My Expense Budgets',
+            weight: FontWeight.bold,
+            size: AppSizes.bodySmall,
+          ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: AppSizes.horizontalPaddingSmall),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (_budgetBox.values.isEmpty)
+        body: Padding(
+          padding: const EdgeInsets.symmetric(
+              horizontal: AppSizes.horizontalPaddingSmall),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            if (consumerExpenseBudgets == null)
               Container(
-                padding: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(7),
-                  color: Colors.grey[100],
-                ),
-                child: const Row(
-                  children: [
-                    Icon(
-                      Icons.warning_amber_rounded,
-                      color: Colors.amber,
-                      size: 18,
-                    ),
-                    Gap(7),
-                    AppText(
-                      text: 'These reset after the set duration is past',
-                      size: AppSizes.bodySmallest,
-                      // weight: FontWeight.bold,
-                      // style: FontStyle.italic,
-                    ),
-                  ],
-                ),
-              ),
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(7),
+                    color: Colors.grey[100],
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(
+                        Icons.warning_amber_rounded,
+                        color: Colors.amber,
+                        size: 18,
+                      ),
+                      Gap(7),
+                      AppText(
+                        text: 'These reset after the set duration is past',
+                        size: AppSizes.bodySmallest,
+                        // weight: FontWeight.bold,
+                        // style: FontStyle.italic,
+                      ),
+                    ],
+                  )),
             const Gap(10),
             DropdownButtonHideUnderline(
               child: DropdownButton2<String>(
@@ -220,7 +213,7 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                   if (_selectedAccountName != value) {
                     setState(() {
                       _selectedAccountName = value;
-                      _selectedAccount = _accounts.firstWhere(
+                      _selectedAccount = accounts!.firstWhere(
                           (element) => element.name == _selectedAccountName);
                       _currency = _selectedAccount.currency ?? 'GHS';
                       _expenseBudgets = _selectedAccount.budgets
@@ -230,13 +223,6 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                           )
                           .toList();
 
-                      _categoriess = _selectedAccount.transactions?.map(
-                        (e) {
-                          if (e.type == 'Expense') {
-                            return e.category!;
-                          }
-                        },
-                      ).toSet();
                       if (_selectedAccount.transactions != null) {
                         //
                         // for (final transaction
@@ -306,8 +292,8 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
             const Gap(30),
             InkWell(
               onTap: () async {
-                final setState =
-                    await showCreateBudgetDialog(context, _expenseBudgets);
+                final setState = await showCreateBudgetDialog(
+                    context, consumerExpenseBudgets);
                 if (setState == true) {
                   // logger.d('in setstate');
                   // logger.d('hello');
@@ -322,7 +308,7 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                   //     .toList());
                   //TODO: make page refresh after creating new budget
                   // setState(() {
-                  _expenseBudgets = _userBox.values.first.accounts
+                  _expenseBudgets = accounts
                       ?.firstWhere(
                         (element) => element.name == _selectedAccountName,
                       )
@@ -362,80 +348,101 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                     )),
               ),
             ),
-            StreamBuilder<List<Budget>>(
-                stream: budgetStream(
-                  selectedAccount: _selectedAccountName,
-                  type: BudgetType.expenseBudget,
-                ),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const AppLoader();
-                  } else {
-                    logger.d(snapshot);
-                    if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-                      return Expanded(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            const Gap(20),
-                            Expanded(
-                              child: ListView.separated(
-                                separatorBuilder: (context, index) =>
-                                    const Gap(10),
-                                itemCount: snapshot.data!.length,
-                                itemBuilder: (context, index) {
-                                  final expenseBudget = snapshot.data![index];
+            (consumerExpenseBudgets != null &&
+                    consumerExpenseBudgets.isNotEmpty)
+                ? Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        const Gap(20),
+                        Expanded(
+                          child: ListView.separated(
+                            separatorBuilder: (context, index) => const Gap(10),
+                            itemCount: consumerExpenseBudgets.length,
+                            itemBuilder: (context, index) {
+                              final expenseBudget =
+                                  consumerExpenseBudgets[index];
 
-                                  final double value = _mappedTransactions[
-                                              expenseBudget.category] !=
+                              final double value =
+                                  _mappedTransactions[expenseBudget.category] !=
                                           null
                                       ? _mappedTransactions[
                                               expenseBudget.category]! /
                                           expenseBudget.amount
                                       : 0;
-                                  final formattedValue =
-                                      (value * 100).toStringAsFixed(1);
-                                  final savingsFraction =
-                                      _savingsAmounts[index] /
-                                          expenseBudget.amount;
-                                  final savingsRegionWidth =
-                                      ((savingsFraction * 100) * 70) / 100;
+                              final formattedValue =
+                                  (value * 100).toStringAsFixed(1);
+                              final savingsFraction =
+                                  consumerSavingsBudget![index].amount /
+                                      expenseBudget.amount;
+                              final savingsRegionWidth = savingsFraction * 70;
 
-                                  return Container(
-                                    padding: EdgeInsets.only(
-                                        top: 20,
-                                        left: 15,
-                                        right: 15,
-                                        bottom: _savingsAmounts[index] != 0
+                              return Container(
+                                padding: EdgeInsets.only(
+                                    top: 20,
+                                    left: 15,
+                                    right: 15,
+                                    bottom:
+                                        consumerSavingsBudget[index].amount != 0
                                             ? 10
                                             : 20),
-                                    decoration: BoxDecoration(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    width: 1.0,
+                                    color: AppColors.neutral300,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        width: 1.0,
-                                        color: AppColors.neutral300,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(10),
+                                        width: 50,
+                                        color:
+                                            AppColors.primary.withOpacity(0.1),
+                                        child: Icon(
+                                          getCategoryIcon(
+                                              expenseBudget.category),
+                                          color: AppColors.primary,
+                                        ),
                                       ),
                                     ),
-                                    child: Row(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          child: Container(
-                                            padding: const EdgeInsets.all(10),
-                                            width: 50,
-                                            color: AppColors.primary
-                                                .withOpacity(0.1),
-                                            child: Icon(
-                                              getCategoryIcon(
-                                                  expenseBudget.category),
-                                              color: AppColors.primary,
-                                            ),
+                                    const Gap(10),
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              AppText(
+                                                text: expenseBudget.category!,
+                                                weight: FontWeight.bold,
+                                                size: AppSizes.bodySmall,
+                                              ),
+                                              Row(
+                                                children: [
+                                                  AppText(
+                                                    text: expenseBudget.amount
+                                                        .toString(),
+                                                    weight: FontWeight.bold,
+                                                    size: AppSizes.bodySmall,
+                                                  ),
+                                                  const Gap(4),
+                                                  AppText(
+                                                    text: _currency,
+                                                    weight: FontWeight.bold,
+                                                    size: AppSizes.bodySmall,
+                                                  ),
+                                                ],
+                                              )
+                                            ],
                                           ),
-                                        ),
-                                        const Gap(10),
-                                        Expanded(
-                                          child: Column(
+                                          Column(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
@@ -446,70 +453,37 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                                 children: [
                                                   AppText(
                                                     text:
-                                                        expenseBudget.category!,
-                                                    weight: FontWeight.bold,
-                                                    size: AppSizes.bodySmall,
+                                                        '$_currency ${_mappedTransactions[expenseBudget.category!] ?? 0}  ($formattedValue %)',
+                                                    color: Colors.green,
                                                   ),
-                                                  Row(
-                                                    children: [
-                                                      AppText(
-                                                        text: expenseBudget
-                                                            .amount
-                                                            .toString(),
-                                                        weight: FontWeight.bold,
-                                                        size:
-                                                            AppSizes.bodySmall,
-                                                      ),
-                                                      const Gap(4),
-                                                      AppText(
-                                                        text: _currency,
-                                                        weight: FontWeight.bold,
-                                                        size:
-                                                            AppSizes.bodySmall,
-                                                      ),
-                                                    ],
-                                                  )
+                                                  AppText(
+                                                    text:
+                                                        '${expenseBudget.createdAt.difference(_currentDate).inDays + 1}/${expenseBudget.duration} day',
+                                                    color: AppColors.primary,
+                                                  ),
                                                 ],
                                               ),
-                                              Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      AppText(
-                                                        text:
-                                                            '$_currency ${_mappedTransactions[expenseBudget.category!] ?? 0}  ($formattedValue %)',
-                                                        color: Colors.green,
-                                                      ),
-                                                      AppText(
-                                                        text:
-                                                            '${expenseBudget.createdAt.difference(_currentDate).inDays + 1}/${expenseBudget.duration} day',
-                                                        color:
-                                                            AppColors.primary,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const Gap(5),
+                                              const Gap(5),
+                                              SizedBox(
+                                                width: Adaptive.w(70),
+                                                height: 4,
+                                                child: Stack(children: [
                                                   SizedBox(
-                                                    width: Adaptive.w(70),
-                                                    height: 4,
-                                                    child: Stack(children: [
-                                                      SizedBox(
-                                                          width: Adaptive.w(70),
-                                                          child: Row(children: [
-                                                            Container(
-                                                              width: Adaptive.w(70 -
-                                                                  savingsRegionWidth),
-                                                              decoration:
-                                                                  const BoxDecoration(
-                                                                color: Colors
-                                                                    .transparent,
-                                                              ),
-                                                            ),
+                                                      width: Adaptive.w(70),
+                                                      child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .end,
+                                                          children: [
+                                                            // Container(
+                                                            //   width: Adaptive.w(70 -
+                                                            //       savingsRegionWidth),
+                                                            //   decoration:
+                                                            //       const BoxDecoration(
+                                                            //     color: Colors
+                                                            //         .transparent,
+                                                            //   ),
+                                                            // ),
                                                             Container(
                                                               width: Adaptive.w(
                                                                   savingsRegionWidth),
@@ -531,64 +505,57 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                                               ),
                                                             )
                                                           ])),
-                                                      LinearProgressIndicator(
-                                                          backgroundColor:
-                                                              Colors
-                                                                  .grey.shade100
-                                                                  .withOpacity(
-                                                                      0.5),
-                                                          color: AppColors
-                                                              .primary
-                                                              .withOpacity(0.7),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(5),
-                                                          value: value < 1
-                                                              ? value
-                                                              : 1),
-                                                    ]),
-                                                  ),
-                                                  if (_savingsAmounts[index] !=
-                                                      0)
-                                                    Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .end,
-                                                        children: [
-                                                          (value <
-                                                                  (1 -
-                                                                      savingsFraction))
-                                                              ? const Text('🙂')
-                                                              : const Text('🙁')
-                                                        ])
-                                                ],
+                                                  LinearProgressIndicator(
+                                                      backgroundColor: Colors
+                                                          .grey.shade100
+                                                          .withOpacity(0.5),
+                                                      color: AppColors.primary
+                                                          .withOpacity(0.7),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5),
+                                                      value: value < 1
+                                                          ? value
+                                                          : 1),
+                                                ]),
                                               ),
+                                              if (consumerSavingsBudget[index]
+                                                      .amount !=
+                                                  0)
+                                                Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.end,
+                                                    children: [
+                                                      (value <=
+                                                              (1 -
+                                                                  savingsFraction))
+                                                          ? const Text('🙂')
+                                                          : const Text('🙁')
+                                                    ])
                                             ],
                                           ),
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      );
-                    } else {
-                      return Center(
-                          child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Lottie.asset(AppAssets.emptyList, height: 200),
-                          const AppText(text: 'No expense budgets added yet')
-                        ],
-                      ));
-                    }
-                  }
-                })
-          ],
+                      ],
+                    ),
+                  )
+                : Center(
+                    child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Lottie.asset(AppAssets.emptyList, height: 200),
+                      const AppText(text: 'No expense budgets added yet')
+                    ],
+                  )),
+          ]),
         ),
       ),
     );
@@ -890,43 +857,17 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
               TextButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    final user = _userBox.values.first;
-
-                    await _budgetBox.add(Budget(
-                        category: selectedCategory!,
-                        amount: double.parse(_expenseAmountController.text),
-                        type: BudgetType.expenseBudget,
-                        createdAt: _currentDate,
-                        duration: int.parse(_expenseCoverageController.text)));
-
-                    await _budgetBox.add(Budget(
-                        category: selectedCategory!,
-                        amount: 0,
-                        createdAt: _currentDate,
-                        type: BudgetType.savings,
-                        duration: int.parse(_expenseCoverageController.text)));
-                    user.accounts
-                        ?.firstWhere(
-                            (element) => element.name == _selectedAccountName)
-                        .budgets = HiveList(_budgetBox);
-
-                    user.accounts
-                        ?.firstWhere(
-                            (element) => element.name == _selectedAccountName)
-                        .budgets
-                        ?.addAll(_budgetBox.values);
-
-                    await user.accounts
-                        ?.firstWhere(
-                            (element) => element.name == _selectedAccountName)
-                        .save();
-
-                    // await user.save();
+                    await ref.read(userProvider.notifier).addExpenseBudget(
+                        selectedAccount: _selectedAccount,
+                        currentDate: _currentDate,
+                        selectedCategory: selectedCategory!,
+                        expenseAmount: _expenseAmountController.text,
+                        expenseCoverage: _expenseCoverageController.text);
                     selectedCategory = null;
                     _budgetNameController.clear();
                     _expenseAmountController.clear();
                     _expenseCoverageController.clear();
-                    navigatorKey.currentState!.pop(true);
+                    navigatorKey.currentState!.pop();
 
                     //
                   }

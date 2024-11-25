@@ -9,6 +9,10 @@ class BottomNavIndexNotifier extends StateNotifier<int> {
       state = step;
     }
   }
+
+  void rebuildStatsScreen() {
+    state = 2;
+  }
 }
 
 final bottomNavIndexProvider =

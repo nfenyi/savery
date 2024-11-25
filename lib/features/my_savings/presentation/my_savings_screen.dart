@@ -4,13 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:gap/gap.dart';
+
+import 'package:get/get_utils/get_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lottie/lottie.dart';
 
 import 'package:savery/app_constants/app_assets.dart';
 import 'package:savery/app_constants/app_colors.dart';
-import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
@@ -28,20 +29,19 @@ class MySavingsScreen extends ConsumerStatefulWidget {
 }
 
 class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
-  List<Budget>? _budgets = [];
-  List<Budget>? _savings = [];
-
-  final _billNameController = TextEditingController();
-
-  final _budgetBox = Hive.box<Budget>(AppBoxes.budgets);
   late Account _selectedAccount;
 
   String? _selectedAccountName;
   final _accounts = Hive.box<Account>('accounts').values;
   late String _currency;
+  List<TextEditingController> _controllers = [];
+
+  List<Budget>? _savings = [];
+  List<Budget>? _expenseBudgets = [];
 
   late final List<String> _accountNames;
-  final List<TextEditingController> _controllers = [];
+
+  List<bool> _canPops = [];
 
   @override
   void initState() {
@@ -55,32 +55,50 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
           (e) => e.name,
         )
         .toList();
-    _budgets = _selectedAccount.budgets?.toList();
-    _savings = _budgets
+
+    _savings = _selectedAccount.budgets
         ?.where(
           (budget) => budget.type == BudgetType.savings,
         )
         .toList();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _billNameController.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    List<Budget>? expenseBudgets = _selectedAccount.budgets
+    _expenseBudgets = _selectedAccount.budgets
         ?.where(
           (element) => element.type == BudgetType.expenseBudget,
         )
         .toList();
     for (var i = 0; i < (_savings?.length ?? 0); i++) {
+      //killing two birds with one stone
       _controllers
           .add(TextEditingController(text: _savings![i].amount.toString()));
-      // logger.d(_savings![i].amount.toString());
+      _canPops.add(true);
+      // _textFormFieldColors.add(null);
     }
+  }
+
+  @override
+  void dispose() {
+    for (var i = 0; i < (_savings?.length ?? 0); i++) {
+      _controllers[i].dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    //  return PopScope(
+    //TODO: to implement this in another way
+//seems to not work because of canonicalization?
+// //try creating a button to handle the equality and pass the result to canPop
+//       canPop: (null ==
+//           _canPops.firstWhereOrNull(
+//             (element) => element == false,
+//           )),
+//       onPopInvokedWithResult: (didPop, result) {
+//         if (!didPop) {
+//           showInfoToast("Please adjust your figure(s) suitably.",
+//               context: context);
+//         }
+    // },child:
     return Scaffold(
       appBar: AppBar(
         title: const AppText(
@@ -138,6 +156,10 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                 onChanged: (value) {
                   if (_selectedAccountName != value) {
                     setState(() {
+                      //just in case there will be memory leak
+                      for (var i = 0; i < (_savings?.length ?? 0); i++) {
+                        _controllers[i].dispose();
+                      }
                       _selectedAccountName = value;
 
                       _selectedAccount = _accounts.firstWhere(
@@ -146,9 +168,23 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                       _currency = _selectedAccount.currency ?? 'GHS';
                       _savings = _selectedAccount.budgets
                           ?.where(
-                            (element) => element.type == BudgetType.savings,
+                            (budget) => budget.type == BudgetType.savings,
                           )
                           .toList();
+                      _expenseBudgets = _selectedAccount.budgets
+                          ?.where(
+                            (element) =>
+                                element.type == BudgetType.expenseBudget,
+                          )
+                          .toList();
+                      _controllers = [];
+                      for (var i = 0; i < (_savings?.length ?? 0); i++) {
+                        //killing two birds with one stone
+                        _controllers.add(TextEditingController(
+                            text: _savings![i].amount.toString()));
+                        _canPops.add(true);
+                        // _textFormFieldColors.add(null);
+                      }
                     });
                   }
                 },
@@ -224,17 +260,34 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                                           size: AppSizes.bodySmall,
                                         ),
                                         Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            AppText(
-                                              text: _currency,
-                                              weight: FontWeight.bold,
-                                              size: AppSizes.bodySmall,
+                                            Column(
+                                              children: [
+                                                const Gap(6),
+                                                AppText(
+                                                  text: _currency,
+                                                  weight: FontWeight.bold,
+                                                  size: AppSizes.bodySmall,
+                                                ),
+                                              ],
                                             ),
                                             const Gap(4),
                                             SizedBox(
                                                 width: 60,
                                                 child: AppTextFormField(
-                                                  // hintText: "0.0",
+                                                  validator: (value) {
+                                                    if (value == null ||
+                                                        double.parse(value) >
+                                                            _expenseBudgets![
+                                                                    index]
+                                                                .amount) {
+                                                      return '>${_expenseBudgets![index].amount}';
+                                                    }
+
+                                                    return null;
+                                                  },
                                                   textAlign: TextAlign.end,
                                                   paddingWidth: 0,
                                                   height: 6,
@@ -250,28 +303,30 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                                                       final parsedValue =
                                                           double.parse(value);
                                                       if (parsedValue <
-                                                          expenseBudgets![index]
+                                                          _expenseBudgets![
+                                                                  index]
                                                               .amount) {
                                                         _savings![index]
                                                                 .amount =
                                                             parsedValue;
+                                                        await _savings![index]
+                                                            .save();
+                                                        _canPops[index] = true;
                                                       } else {
-                                                        showInfoToast(
-                                                            "The value you've entered is above the budget you set.",
-                                                            context: context);
+                                                        _canPops[index] = false;
+                                                        // setState(() {
+                                                        //   _textFormFieldColors[
+                                                        //           index] =
+                                                        //       Colors.red;
+                                                        // });
                                                       }
                                                     }
-                                                    await _savings![index]
-                                                        .save();
-                                                    logger.d(_savings![index]
-                                                        .amount);
-                                                    _selectedAccount.budgets =
-                                                        HiveList(_budgetBox);
-                                                    _selectedAccount.budgets!
-                                                        .addAll(
-                                                            _budgetBox.values);
-                                                    await _selectedAccount
-                                                        .save();
+                                                    logger.d(null ==
+                                                        _canPops
+                                                            .firstWhereOrNull(
+                                                          (element) =>
+                                                              element == false,
+                                                        ));
                                                   },
                                                   radius: 5,
                                                 )),
@@ -279,15 +334,6 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                                         )
                                       ],
                                     ),
-                                    // Row(
-                                    //   mainAxisAlignment: MainAxisAlignment.end,
-                                    //   children: [
-                                    //     AppText(
-                                    //       text: '\$435 (43%)',
-                                    //       color: Colors.green,
-                                    //     ),
-                                    //   ],
-                                    // ),
                                   ],
                                 ),
                               )

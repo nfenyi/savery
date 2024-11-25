@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -38,7 +37,7 @@ Future<void> registerHiveAdpapters() async {
   Hive.registerAdapter(BudgetAdapter());
   Hive.registerAdapter(TransactionAdapter());
   Hive.registerAdapter(TransactionCategoryAdapter());
-  // Hive.registerAdapter(IconDataAdapter());
+  Hive.registerAdapter(GoalAdapter());
 }
 
 Future<void> openBoxes() async {
@@ -48,12 +47,14 @@ Future<void> openBoxes() async {
   await Hive.openBox<Budget>(AppBoxes.budgets);
   await Hive.openBox<AccountTransaction>(AppBoxes.transactions);
   await Hive.openBox<TransactionCategory>(AppBoxes.transactionsCategories);
+  await Hive.openBox<Goal>(AppBoxes.goals);
 }
 
 class Savery extends StatelessWidget {
   const Savery({super.key});
 
-  // This widget is the root of your application.
+  //TODO: there maybe an error when the device is not connected to the internet and is open for the
+  //first time (onboarding)
   @override
   Widget build(BuildContext context) {
     return ResponsiveSizer(builder:

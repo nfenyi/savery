@@ -15,8 +15,11 @@ import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_functions/app_functions.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/features/main_screen/state/bottom_nav_index_provider.dart';
+import 'package:savery/features/main_screen/state/rebuild_stats_screen_provider.dart';
 import 'package:savery/features/new_transaction/models/transaction_category_model.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
+import 'package:savery/features/sign_in/user_info/providers/providers.dart';
 import 'package:savery/main.dart';
 
 import '../../../app_constants/app_sizes.dart';
@@ -59,10 +62,6 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
   //   TransactionCategory(icon: Iconsax.truck, name: 'Transport'),
   // ];
 
-//
-  final _user = Hive.box<AppUser>(AppBoxes.user).values.first;
-  final _transactionsBox = Hive.box<AccountTransaction>(AppBoxes.transactions);
-
   String? _selectedAccountName;
 
   final List<String> _accountNames = Hive.box<Account>('accounts')
@@ -83,9 +82,8 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
   @override
   void initState() {
     super.initState();
-    final firstAccount = Hive.box<Account>(AppBoxes.accounts).values.first;
-    _selectedAccountName = firstAccount.name;
-    _currency = firstAccount.currency ?? 'GHS';
+
+    _currency = 'GHS';
   }
 
   @override
@@ -351,9 +349,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                           // fontWeight: _selectedAccountName == null
                           //     ? null
                           //     : FontWeight.bold,
-                          color: _selectedAccountName == null
-                              ? Colors.grey
-                              : Colors.black,
+                          color: Colors.black,
                         ),
                         isExpanded: true,
                         hint: const AppText(
@@ -452,8 +448,8 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                           },
                           showDragHandle: true,
                           options: const BoardDateTimeOptions(
-                            backgroundColor: Colors.white,
-                            foregroundColor: AppColors.neutral200,
+                            // backgroundColor: Colors.white,
+                            foregroundColor: AppColors.neutral100,
                             // boardTitle: "Select 'TODAY' or '",
                             // boardTitleTextStyle: TextStyle(fontWeight: FontWeight.w400),
                             inputable: false,
@@ -481,55 +477,29 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                   if (_formKey.currentState!.validate() &&
                       _selectedAccountName != null &&
                       _selectedDate != null) {
-                    if (_selectedTransactionType == 'Income') {
-                      // submit income transaction
-
-                      // logger.d(_user.accounts);
-                      final selectedAccount = _user.accounts!
-                          .where(
-                              (element) => element.name == _selectedAccountName)
-                          .first;
-                      // logger.d(_transactionsBox.values);
-                      await _transactionsBox.add((AccountTransaction(
-                          amount: double.parse(_amountController.text),
-                          date: _selectedDate!,
-                          description: _descriptionController.text,
-                          type: _selectedTransactionType)));
-                      // logger.d('word');
-                      selectedAccount.transactions = HiveList(_transactionsBox);
-                      selectedAccount.transactions!
-                          .addAll(_transactionsBox.values);
-                      selectedAccount.income +=
-                          double.parse(_amountController.text);
-                      await selectedAccount.save();
-                      navigatorKey.currentState!.pop(true);
+                    if (_selectedCategory == null &&
+                        _selectedTransactionType == 'Expense') {
+                      setState(() {
+                        _categoryColor = Colors.red;
+                      });
+                      showInfoToast('Please select a category',
+                          context: context);
                     } else {
-                      if (_selectedCategory != null) {
-                        //submit expense transaction
-                        final selectedAccount = _user.accounts!
-                            .where((element) =>
-                                element.name == _selectedAccountName)
-                            .first;
-                        await _transactionsBox.add((AccountTransaction(
-                            amount: double.parse(_amountController.text),
-                            date: _selectedDate!,
-                            category: _selectedCategory,
+                      await ref.read(userProvider.notifier).addTransaction(
+                            amount: _amountController.text,
                             description: _descriptionController.text,
-                            type: _selectedTransactionType)));
-                        selectedAccount.transactions =
-                            HiveList(_transactionsBox);
-                        selectedAccount.transactions!
-                            .addAll(_transactionsBox.values);
-                        selectedAccount.expenses +=
-                            double.parse(_amountController.text);
-                        await selectedAccount.save();
-                        navigatorKey.currentState!.pop(true);
-                      } else {
-                        setState(() {
-                          _categoryColor = Colors.red;
-                        });
-                        showInfoToast('Please select a category',
-                            context: context);
+                            selectedAccountName: _selectedAccountName!,
+                            selectedCategory: _selectedCategory,
+                            selectedDate: _selectedDate!,
+                            selectedTransactionType: _selectedTransactionType,
+                          );
+                      _amountController.clear();
+                      _descriptionController.clear();
+                      navigatorKey.currentState!.pop();
+                      if (ref.read(inStatsScreenProvider)) {
+                        ref
+                            .read(bottomNavIndexProvider.notifier)
+                            .rebuildStatsScreen();
                       }
                     }
                   } else {

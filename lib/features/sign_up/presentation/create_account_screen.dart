@@ -16,7 +16,7 @@ import 'package:savery/main.dart';
 
 import '../../main_screen/presentation/main_screen.dart';
 import '../../sign_in/models/auth_state.dart';
-import '../../sign_in/notifiers/providers/providers.dart';
+import '../../sign_in/providers/providers.dart';
 import '../../sign_in/presentation/sign_in_screen.dart';
 import '../../sign_in/user_info/models/user_model.dart';
 

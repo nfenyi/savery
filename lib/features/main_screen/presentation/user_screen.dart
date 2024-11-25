@@ -12,7 +12,7 @@ import 'package:savery/features/accounts_&_currencies/presentation/accounts_n_cu
 import 'package:savery/features/accounts_&_currencies/services/api_services.dart';
 import 'package:savery/features/app_settings/presentation/app_settings.dart';
 import 'package:savery/features/main_screen/models/settings.dart';
-import 'package:savery/features/sign_in/notifiers/providers/providers.dart';
+import 'package:savery/features/sign_in/providers/providers.dart';
 import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'package:savery/main.dart';

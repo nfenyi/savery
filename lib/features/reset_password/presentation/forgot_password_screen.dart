@@ -7,7 +7,7 @@ import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/reset_password/presentation/resend_reset_link_screen.dart';
-import 'package:savery/features/sign_in/notifiers/providers/providers.dart';
+import 'package:savery/features/sign_in/providers/providers.dart';
 import 'package:savery/main.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {

@@ -1,8 +1,10 @@
+import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:dotted_border/dotted_border.dart' as d_border;
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:gap/gap.dart';
@@ -12,46 +14,55 @@ import 'package:lottie/lottie.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_assets.dart';
 import 'package:savery/app_constants/app_colors.dart';
-import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
+import 'package:savery/app_functions/app_functions.dart';
 import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/main.dart';
 
 import '../../../app_widgets/app_text.dart';
-import '../../main_screen/streams/streams.dart';
 import '../../sign_in/user_info/models/user_model.dart';
+import '../../sign_in/user_info/providers/providers.dart';
 
-class MyGoalsScreen extends StatefulWidget {
+class MyGoalsScreen extends ConsumerStatefulWidget {
   const MyGoalsScreen({super.key});
 
   @override
-  State<MyGoalsScreen> createState() => _MyGoalsScreenState();
+  ConsumerState<MyGoalsScreen> createState() => _MyGoalsScreenState();
 }
 
-class _MyGoalsScreenState extends State<MyGoalsScreen> {
+class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
   String? _selectedAccountName;
-  final _accounts = Hive.box<Account>('accounts');
-  late final List<String> _accountNames;
-  List<Budget>? _goals = [];
+  late final HiveList<Account>? _accounts =
+      ref.read(userProvider).user.accounts;
+  // final _accounts = Hive.box<Account>('accounts');
+  late final List<String>? _accountNames;
+  late HiveList<Goal>? consumerGoals;
   final _formKey = GlobalKey<FormState>();
-  final _userBox = Hive.box<AppUser>(AppBoxes.user);
-  final _budgetBox = Hive.box<Budget>(AppBoxes.budgets);
-  late DateTime _currentDate;
-  late Account _selectedAccount;
-  late String _currency;
+  late final AppUser _user = ref.read(userProvider).user;
+  // final _userBox = Hive.box<AppUser>(AppBoxes.user);
 
+  // final _goalsBox = Hive.box<Goal>(AppBoxes.goals);
+  late DateTime _currentDate;
+  late Account? _selectedAccount;
+  late String _currency;
+  late double consumerSavingsBucket;
   final _goalNameController = TextEditingController();
-  final _goalAmountController = TextEditingController();
-  final _goalEstimationController = TextEditingController();
+  final _goalFundController = TextEditingController();
+  late List<ValueNotifier<bool>> _showDaysMoreList;
+  late List<ValueNotifier<double>> _goalAmountList;
+  final _milestoneController = TextEditingController();
+
+  DateTime? _selectedDate;
 
   @override
   void initState() {
     super.initState();
-    _selectedAccount = _accounts.values.first;
-    _selectedAccountName = _selectedAccount.name;
-    _currency = _selectedAccount.currency ?? 'GHS';
-    _accountNames = _accounts.values
-        .map(
+
+    _selectedAccount = _accounts?.first;
+    _selectedAccountName = _selectedAccount?.name;
+    _currency = _selectedAccount?.currency ?? 'GHS';
+    _accountNames = _accounts
+        ?.map(
           (e) => e.name,
         )
         .toList();
@@ -59,410 +70,530 @@ class _MyGoalsScreenState extends State<MyGoalsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    consumerSavingsBucket =
+        ref.watch(userProvider).savingsBucket(_selectedAccount!);
+    consumerGoals = ref.watch(userProvider).goals(_selectedAccount!);
+
     _currentDate = DateTime.now();
+    _showDaysMoreList = [];
+    _goalAmountList = [];
+    for (int i = 0; i < (_selectedAccount?.goals?.length ?? 0); i++) {
+      _showDaysMoreList.add(ValueNotifier(true));
+      _goalAmountList
+          .add(ValueNotifier(_selectedAccount!.goals![i].raisedAmount));
+    }
+
+    // _showDaysMoreList =
+    //     List.filled(_selectedAccount.goals?.length ?? 0, ValueNotifier(true));
     return Scaffold(
-      appBar: AppBar(
-        title: const AppText(
-          text: 'My Goals',
-          weight: FontWeight.bold,
-          size: AppSizes.bodySmall,
+        appBar: AppBar(
+          title: const AppText(
+            text: 'My Goals',
+            weight: FontWeight.bold,
+            size: AppSizes.bodySmall,
+          ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: AppSizes.horizontalPaddingSmall),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DropdownButtonHideUnderline(
-              child: DropdownButton2<String>(
-                style: GoogleFonts.manrope(
-                  fontSize: AppSizes.bodySmaller,
-                  fontWeight:
-                      _selectedAccountName == null ? null : FontWeight.bold,
-                  color:
-                      _selectedAccountName == null ? Colors.grey : Colors.black,
-                ),
-                isExpanded: true,
-                hint: const AppText(
-                  text: 'Select an account',
-                  overflow: TextOverflow.ellipsis,
-                  color: Colors.grey,
-                ),
-                iconStyleData: const IconStyleData(
-                  icon: FaIcon(
-                    FontAwesomeIcons.chevronDown,
-                    color: AppColors.primary,
+        body: Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppSizes.horizontalPaddingSmall),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              DropdownButtonHideUnderline(
+                child: DropdownButton2<String>(
+                  style: GoogleFonts.manrope(
+                    fontSize: AppSizes.bodySmaller,
+                    fontWeight:
+                        _selectedAccountName == null ? null : FontWeight.bold,
+                    color: _selectedAccountName == null
+                        ? Colors.grey
+                        : Colors.black,
                   ),
-                  iconSize: 12.0,
-                ),
-                items: _accountNames
-                    .map((item) => DropdownMenuItem(
-                          value: item,
-                          child: Text(
-                            item,
-                            style: const TextStyle(
-                              fontSize: AppSizes.bodySmaller,
-                              fontWeight: FontWeight.w500,
-                              // color: Colors.grey,
-                            ),
-                          ),
-                        ))
-                    .toList(),
-                value: _selectedAccountName,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedAccountName = value;
-                    _selectedAccount = _accounts.values.firstWhere(
-                      (element) => element.name == _selectedAccountName,
-                    );
-                    _currency = _selectedAccount.currency ?? 'GHS';
-                    _goals = _selectedAccount.budgets
-                        ?.where(
-                          (element) => element.type == BudgetType.expenseBudget,
-                        )
-                        .toList();
-                  });
-                },
-                buttonStyleData: ButtonStyleData(
-                  height: AppSizes.dropDownBoxHeight,
-                  padding: const EdgeInsets.only(right: 10.0),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    border: Border.all(
-                      width: 1.0,
-                      color: AppColors.neutral300,
+                  isExpanded: true,
+                  hint: const AppText(
+                    text: 'Select an account',
+                    overflow: TextOverflow.ellipsis,
+                    color: Colors.grey,
+                  ),
+                  iconStyleData: const IconStyleData(
+                    icon: FaIcon(
+                      FontAwesomeIcons.chevronDown,
+                      color: AppColors.primary,
                     ),
-                    borderRadius: BorderRadius.circular(20.0),
+                    iconSize: 12.0,
                   ),
-                ),
-                dropdownStyleData: DropdownStyleData(
-                  maxHeight: 350,
-                  elevation: 1,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5.0),
-                    color: Colors.white,
+                  items: _accountNames
+                      ?.map((item) => DropdownMenuItem(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: const TextStyle(
+                                fontSize: AppSizes.bodySmaller,
+                                fontWeight: FontWeight.w500,
+                                // color: Colors.grey,
+                              ),
+                            ),
+                          ))
+                      .toList(),
+                  value: _selectedAccountName,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedAccountName = value;
+                      _selectedAccount = _accounts!.firstWhere(
+                        (element) => element.name == _selectedAccountName,
+                      );
+                      _currency = _selectedAccount?.currency ?? 'GHS';
+                      consumerGoals = _selectedAccount?.goals;
+                    });
+                  },
+                  buttonStyleData: ButtonStyleData(
+                    height: AppSizes.dropDownBoxHeight,
+                    padding: const EdgeInsets.only(right: 10.0),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      border: Border.all(
+                        width: 1.0,
+                        color: AppColors.neutral300,
+                      ),
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
                   ),
-                ),
-                menuItemStyleData: const MenuItemStyleData(
-                  height: 40.0,
+                  dropdownStyleData: DropdownStyleData(
+                    maxHeight: 350,
+                    elevation: 1,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5.0),
+                      color: Colors.white,
+                    ),
+                  ),
+                  menuItemStyleData: const MenuItemStyleData(
+                    height: 40.0,
+                  ),
                 ),
               ),
-            ),
-            const Gap(20),
-            const AppText(text: 'Savings Bucket'),
-            const Gap(5),
-            LinearProgressIndicator(
-              backgroundColor: AppColors.neutral100,
-              borderRadius: BorderRadius.circular(5),
-              color: Colors.green,
-              value: 0.3,
-              minHeight: 10,
-            ),
-            const Gap(40),
-            Ink(
-              child: d_border.DottedBorder(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  color: AppColors.primary,
-                  borderType: d_border.BorderType.RRect,
-                  radius: const Radius.circular(10),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add_circle,
-                        color: AppColors.primary,
-                        // size: 5,
+              const Gap(20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    const AppText(text: 'Savings Bucket'),
+                    const Gap(5),
+                    // (consumerGoals != null && consumerGoals!.isNotEmpty)
+                    //     ?
+                    LinearProgressIndicator(
+                      backgroundColor: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(5),
+                      color: Colors.green,
+                      value: consumerSavingsBucket,
+                      minHeight: 10,
+                      // )
+                      // : LinearProgressIndicator(
+                      //     backgroundColor: Colors.green.shade100,
+                      //     borderRadius: BorderRadius.circular(5),
+                      //     value: 0.0,
+                      //     minHeight: 10,
+                    ),
+                    const Gap(40),
+                    InkWell(
+                      onTap: () async {
+                        await showCreateGoalDialog(context, consumerGoals);
+                        // if (setState == true) {
+                        //   // logger.d('in setstate');
+                        //   // logger.d('hello');
+                        //   // logger.d(_userBox.values.first.accounts
+                        //   //     ?.firstWhere(
+                        //   //       (element) => element.name == _selectedAccountName,
+                        //   //     )
+                        //   //     .budgets
+                        //   //     ?.where(
+                        //   //       (budget) => budget.type == BudgetType.expenseBudget,
+                        //   //     )
+                        //   //     .toList());
+                        //   //  TODO: buggy but works
+                        //   setState(() {
+                        //     consumerGoals = _user.accounts
+                        //         ?.firstWhere(
+                        //           (element) =>
+                        //               element.name == _selectedAccountName,
+                        //         )
+                        //         .goals;
+                        //   });
+                        // }
+                        // else {
+                        //   logger.d('not in setstate');
+                        // }
+                      },
+                      child: Ink(
+                        child: d_border.DottedBorder(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            color: AppColors.primary,
+                            borderType: d_border.BorderType.RRect,
+                            radius: const Radius.circular(10),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.add_circle,
+                                  color: AppColors.primary,
+                                  // size: 5,
+                                ),
+                                Gap(5),
+                                AppText(
+                                  text: 'Create New Goal',
+                                  weight: FontWeight.bold,
+                                  size: AppSizes.heading6,
+                                ),
+                              ],
+                            )),
                       ),
-                      Gap(5),
-                      AppText(
-                        text: 'Create New Goal',
-                        weight: FontWeight.bold,
-                        size: AppSizes.heading6,
-                      ),
-                    ],
-                  )),
-            ),
-            const Gap(30),
-            StreamBuilder<List<Budget>>(
-                stream: budgetStream(
-                    selectedAccount: _selectedAccountName,
-                    type: BudgetType.goal),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const AppLoader();
-                  } else {
-                    if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-                      return Expanded(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            InkWell(
-                              onTap: () async {
-                                final setState = await showCreateBudgetDialog(
-                                    context, snapshot.data!);
-                                if (setState) {
-                                  // logger.d('in setstate');
-                                  // logger.d('hello');
-                                  // logger.d(_userBox.values.first.accounts
-                                  //     ?.firstWhere(
-                                  //       (element) => element.name == _selectedAccountName,
-                                  //     )
-                                  //     .budgets
-                                  //     ?.where(
-                                  //       (budget) => budget.type == BudgetType.expenseBudget,
-                                  //     )
-                                  //     .toList());
-                                  setState(() {
-                                    _goals = _userBox.values.first.accounts
-                                        ?.firstWhere(
-                                          (element) =>
-                                              element.name ==
-                                              _selectedAccountName,
-                                        )
-                                        .budgets
-                                        ?.where(
-                                          (budget) =>
-                                              budget.type ==
-                                              BudgetType.expenseBudget,
-                                        )
-                                        .toList();
-                                  });
-                                }
-                                // else {
-                                //   logger.d('not in setstate');
-                                // }
-                              },
-                              child: Ink(
-                                child: d_border.DottedBorder(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10),
-                                    color: AppColors.primary,
-                                    borderType: d_border.BorderType.RRect,
-                                    radius: const Radius.circular(10),
-                                    child: const Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.add_circle,
-                                          color: AppColors.primary,
-                                          // size: 5,
+                    ),
+                    const Gap(20),
+                    (consumerGoals != null && consumerGoals!.isNotEmpty)
+                        ? Expanded(
+                            child: ListView.separated(
+                              separatorBuilder: (context, index) =>
+                                  const Gap(10),
+                              itemCount: consumerGoals!.length,
+                              itemBuilder: (context, index) {
+                                final goal = consumerGoals![index];
+
+                                // final double value =
+                                //     _mappedTransactions[goal.category] != null
+                                //         ? _mappedTransactions[
+                                //                 goal.category]! /
+                                //             goal.amount
+                                //         : 0;
+                                // final formattedValue =
+                                //     (value * 100).toStringAsFixed(1);
+                                // final savingsFraction =
+                                //     _savingsAmounts[index] / goal.amount;
+                                // final savingsRegionWidth =
+                                //     ((savingsFraction * 100) * 70) / 100;
+                                final daysMore = goal.estimatedDate
+                                    .difference(_currentDate)
+                                    .inDays;
+//TODO: add delete and update functionality to container
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 20, horizontal: 15),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      width: 1.0,
+                                      color: AppColors.neutral300,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Container(
+                                          padding: const EdgeInsets.all(10),
+                                          width: 50,
+                                          color: Colors.red.withOpacity(0.1),
+                                          child: const Icon(
+                                            FontAwesomeIcons.circleCheck,
+                                            color: Colors.red,
+                                          ),
                                         ),
-                                        Gap(5),
-                                        AppText(
-                                          text: 'Create New Budget',
-                                          weight: FontWeight.bold,
-                                          size: AppSizes.heading6,
-                                        ),
-                                      ],
-                                    )),
-                              ),
-                            ),
-                            const Gap(20),
-                            Expanded(
-                              child: ListView.separated(
-                                separatorBuilder: (context, index) =>
-                                    const Gap(10),
-                                itemCount: snapshot.data!.length,
-                                itemBuilder: (context, index) {
-                                  final expenseBudget = snapshot.data![index];
-                                  return Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 20, horizontal: 15),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        width: 1.0,
-                                        color: AppColors.neutral300,
                                       ),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          child: Container(
-                                            padding: const EdgeInsets.all(10),
-                                            width: 50,
-                                            color: AppColors.primary
-                                                .withOpacity(0.1),
-                                            child: const Icon(
-                                              FontAwesomeIcons.circleCheck,
-                                              color: AppColors.primary,
-                                            ),
-                                          ),
-                                        ),
-                                        const Gap(10),
-                                        Expanded(
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  // AppText(
-                                                  //   text:
-                                                  //       expenseBudget.category,
-                                                  //   weight: FontWeight.bold,
-                                                  //   size: AppSizes.bodySmall,
-                                                  // ),
-                                                  Row(
-                                                    children: [
-                                                      AppText(
-                                                        text: expenseBudget
-                                                            .amount
-                                                            .toString(),
-                                                        weight: FontWeight.bold,
-                                                        size:
-                                                            AppSizes.bodySmall,
-                                                      ),
-                                                      const Gap(4),
-                                                      AppText(
-                                                        text: _currency,
-                                                        weight: FontWeight.bold,
-                                                        size:
-                                                            AppSizes.bodySmall,
-                                                      ),
-                                                    ],
-                                                  )
-                                                ],
-                                              ),
-                                              Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  const Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      // AppText(
-                                                      //   text:
-                                                      //       'GHc${_savingAmounts[index]}  (${((_savingAmounts[index] / expenseBudget.amount) * 100).floor()}%)',
-                                                      //   color: Colors.green,
-                                                      // ),
-                                                      // AppText(
-                                                      //   text:
-                                                      //       '${expenseBudget.createdAt.difference(_currentDate).inDays}/${expenseBudget.duration} day',
-                                                      //   color:
-                                                      //       AppColors.primary,
-                                                      // ),
-                                                    ],
-                                                  ),
-                                                  const Gap(5),
-                                                  SizedBox(
-                                                    width: Adaptive.w(70),
-                                                    child:
-                                                        LinearProgressIndicator(
-                                                      backgroundColor:
-                                                          Colors.grey,
-                                                      color: AppColors.primary,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5),
-                                                      value: 0.5,
+                                      const Gap(10),
+                                      Expanded(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                AppText(
+                                                  text: goal.name,
+                                                  weight: FontWeight.bold,
+                                                  size: AppSizes.bodySmall,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    AppText(
+                                                      text:
+                                                          goal.fund.toString(),
+                                                      weight: FontWeight.bold,
+                                                      size: AppSizes.bodySmall,
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
+                                                    const Gap(4),
+                                                    AppText(
+                                                      text: _currency,
+                                                      weight: FontWeight.bold,
+                                                      size: AppSizes.bodySmall,
+                                                    ),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    InkWell(
+                                                      onTap: () async {
+                                                        await showUpdateDialog(
+                                                            context: context,
+                                                            goal: goal,
+                                                            consumerSavingsBucket:
+                                                                consumerSavingsBucket);
+                                                      },
+                                                      child: Ink(
+                                                        child: AppText(
+                                                          text:
+                                                              '$_currency ${_goalAmountList[index].value}',
+                                                          decoration:
+                                                              TextDecoration
+                                                                  .underline,
+                                                          //  ${_mappedTransactions[goal.category!] ?? 0}  ($formattedValue
+
+                                                          color: Colors.green,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    ValueListenableBuilder(
+                                                        valueListenable:
+                                                            _showDaysMoreList[
+                                                                index],
+                                                        builder: (context,
+                                                            value, child) {
+                                                          return InkWell(
+                                                            onTap: () {
+                                                              _showDaysMoreList[
+                                                                          index]
+                                                                      .value =
+                                                                  !_showDaysMoreList[
+                                                                          index]
+                                                                      .value;
+                                                            },
+                                                            child: Ink(
+                                                              child: AppText(
+                                                                decoration:
+                                                                    TextDecoration
+                                                                        .underline,
+                                                                text: value
+                                                                    ? '$daysMore days more'
+                                                                    : AppFunctions.formatDate(
+                                                                        goal.estimatedDate
+                                                                            .toString(),
+                                                                        format:
+                                                                            'j M Y'),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        }),
+                                                  ],
+                                                ),
+                                                const Gap(5),
+                                                SizedBox(
+                                                  width: Adaptive.w(70),
+                                                  child: ValueListenableBuilder<
+                                                          double>(
+                                                      valueListenable:
+                                                          _goalAmountList[
+                                                              index],
+                                                      builder: (context, value,
+                                                          child) {
+                                                        return LinearProgressIndicator(
+                                                          backgroundColor:
+                                                              Colors
+                                                                  .grey.shade100
+                                                                  .withOpacity(
+                                                                      0.5),
+                                                          color: AppColors
+                                                              .primary
+                                                              .withOpacity(0.7),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(5),
+                                                          value: value < 1
+                                                              ? (value /
+                                                                  goal.fund)
+                                                              : 1,
+                                                        );
+                                                      }),
+                                                ),
+                                                // if (_savingsAmounts[index] !=
+                                                //     0)
+                                                //   Row(
+                                                //       mainAxisAlignment:
+                                                //           MainAxisAlignment
+                                                //               .end,
+                                                //       children: [
+                                                //         (value <
+                                                //                 (1 -
+                                                //                     savingsFraction))
+                                                //             ? const Text('🙂')
+                                                //             : const Text('🙁')
+                                                //       ])
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              },
                             ),
-                          ],
-                        ),
-                      );
-                    } else {
-                      return Center(
-                          child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Lottie.asset(AppAssets.emptyGoalList, height: 200),
-                          const AppText(text: 'No goals created yet')
-                        ],
-                      ));
-                    }
-                  }
-                })
-          ],
-        ),
-      ),
-    );
+                          )
+                        : Center(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Lottie.asset(AppAssets.emptyGoalList,
+                                    fit: BoxFit.fitHeight, height: 250),
+                                const AppText(text: 'No goals created yet'),
+                              ],
+                            ),
+                          ),
+                  ],
+                ),
+              )
+            ])));
   }
 
-  Future<dynamic> showCreateBudgetDialog(
-      BuildContext context, List<Budget>? expenseBudgets) {
+  Future<dynamic> showCreateGoalDialog(
+      BuildContext context, List<Goal>? goals) {
+    //TODO: not using goals param, remove or refactor?
+    _goalFundController.clear();
     return showDialog(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
         if (defaultTargetPlatform == TargetPlatform.iOS) {
           return CupertinoAlertDialog(
-            content: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const RequiredText('Goal'),
-                  const Gap(12),
-                  AppTextFormField(
-                    controller: _goalNameController,
-                    hintText: '50.05',
-                    validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(),
-                    ]),
-                  ),
-                  const Gap(12),
-                  const RequiredText('Amount'),
-                  const Gap(12),
-                  AppTextFormField(
-                    controller: _goalAmountController,
-                    hintText: '50.05',
-                    keyboardType: TextInputType.number,
-                    suffixIcon: AppText(
-                      text: _currency,
-                      color: Colors.grey,
+            content: StatefulBuilder(builder: (context, setState) {
+              return Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const RequiredText('Goal'),
+                    const Gap(12),
+                    AppTextFormField(
+                      controller: _goalNameController,
+                      hintText: '50.05',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(),
+                      ]),
                     ),
-                    validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(),
-                    ]),
-                  ),
-                  const Gap(12),
-                  const RequiredText('Estimated Time'),
-                  const Gap(12),
-                  AppTextFormField(
-                    controller: _goalAmountController,
-                    hintText: '30',
-                    keyboardType: TextInputType.number,
-                    suffixIcon: const AppText(text: 'days', color: Colors.grey),
-                    validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(),
-                    ]),
-                  ),
-                ],
-              ),
-            ),
+                    const Gap(12),
+                    const RequiredText('Amount'),
+                    const Gap(12),
+                    AppTextFormField(
+                      controller: _goalFundController,
+                      hintText: '50.05',
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      suffixIcon: AppText(
+                        text: _currency,
+                        color: Colors.grey,
+                      ),
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(),
+                      ]),
+                    ),
+                    const Gap(12),
+                    const RequiredText('Estimated Date'),
+                    const Gap(12),
+                    Container(
+                      decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
+                          border: Border.all(
+                            color: Colors.grey.shade400,
+                          )),
+                      child: ListTile(
+                        title: Text(
+                          _selectedDate == null
+                              ? 'Date'
+                              : AppFunctions.formatDate(
+                                  _selectedDate.toString(),
+                                  format: 'j M Y, g:i A'),
+                          style: GoogleFonts.manrope(
+                            fontSize: AppSizes.bodySmaller,
+                            // fontWeight:
+                            //     _selectedDate == null ? null : FontWeight.bold,
+                            color: _selectedDate == null ? Colors.grey : null,
+                          ),
+                        ),
+                        trailing: const Icon(
+                          FontAwesomeIcons.calendar,
+                          color: AppColors.primary,
+                          size: 15,
+                        ),
+                        dense: true,
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 12),
+                        onTap: () async {
+                          await showBoardDateTimePicker(
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedDate = value;
+                              });
+                            },
+                            showDragHandle: true,
+                            options: const BoardDateTimeOptions(
+                              backgroundColor: Colors.white,
+                              foregroundColor: AppColors.neutral200,
+                              // boardTitle: "Select 'TODAY' or '",
+                              // boardTitleTextStyle: TextStyle(fontWeight: FontWeight.w400),
+                              inputable: false,
+                              pickerSubTitles: BoardDateTimeItemTitles(
+                                year: 'Year',
+                                // day: 'd',
+                                // hour: 'h',
+                                // minute: 'm',
+                              ),
+                            ),
+                            context: context,
+                            pickerType: DateTimePickerType.datetime,
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
             actions: <Widget>[
               CupertinoDialogAction(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    navigatorKey.currentState!.pop(true);
-                    _goalNameController.clear();
-                    _goalAmountController.clear();
-                    _goalEstimationController.clear();
+//                     await _goalsBox.add(Goal(
+//                         name: _goalNameController.text,
+//                         fund: double.parse(_goalFundController.text),
+//                         createdAt: _currentDate,
+//                         estimatedDate: _selectedDate!));
+
+//                     _selectedAccount.goals = HiveList(_goalsBox);
+
+//                     _selectedAccount.goals?.addAll(_goalsBox.values);
+
+//                     await _selectedAccount.save();
+// //TODO: check if this change trickles to the user box without explicitly adding this to the user box
+// //and calling the .save() method
+//                     // var temp = user.accounts!.firstWhere(
+//                     //   (element) => element.name == _selectedAccountName,
+//                     // );
+
+//                     _goalNameController.clear();
+
+//                     _selectedDate = null;
+//                     navigatorKey.currentState!.pop(true);
                   }
                 },
                 child: const AppText(
@@ -474,7 +605,6 @@ class _MyGoalsScreenState extends State<MyGoalsScreen> {
             ],
           );
         } else {
-          String? selectedCategory;
           return AlertDialog(
             actionsPadding: const EdgeInsets.only(bottom: 5),
             shape: RoundedRectangleBorder(
@@ -487,12 +617,160 @@ class _MyGoalsScreenState extends State<MyGoalsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const RequiredText('Bill Amount'),
+                    const RequiredText('Goal'),
                     const Gap(12),
                     AppTextFormField(
-                      controller: _goalAmountController,
+                      controller: _goalNameController,
+                      hintText: 'New Car, Pay Debt, etc',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(),
+                      ]),
+                    ),
+                    const Gap(12),
+                    const RequiredText('Fund'),
+                    const Gap(12),
+                    AppTextFormField(
+                      controller: _goalFundController,
                       hintText: '50.05',
-                      keyboardType: TextInputType.number,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      suffixIcon: AppText(
+                        text: _currency,
+                        color: Colors.grey,
+                      ),
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.positiveNumber(),
+                      ]),
+                    ),
+                    const Gap(12),
+                    const RequiredText('Estimated Date'),
+                    const Gap(12),
+                    Container(
+                      decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
+                          border: Border.all(
+                            color: Colors.grey.shade400,
+                          )),
+                      child: ListTile(
+                        title: Text(
+                          _selectedDate == null
+                              ? 'Date'
+                              : AppFunctions.formatDate(
+                                  _selectedDate.toString(),
+                                  format: 'j M Y, g:i A'),
+                          style: GoogleFonts.manrope(
+                            fontSize: AppSizes.bodySmaller,
+                            // fontWeight:
+                            //     _selectedDate == null ? null : FontWeight.bold,
+                            color: _selectedDate == null ? Colors.grey : null,
+                          ),
+                        ),
+                        trailing: const Icon(
+                          FontAwesomeIcons.calendar,
+                          color: AppColors.primary,
+                          size: 15,
+                        ),
+                        dense: true,
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 12),
+                        onTap: () async {
+                          await showBoardDateTimePicker(
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedDate = value;
+                              });
+                            },
+                            showDragHandle: true,
+                            options: const BoardDateTimeOptions(
+                              backgroundColor: Colors.white,
+                              foregroundColor: AppColors.neutral200,
+                              // boardTitle: "Select 'TODAY' or '",
+                              // boardTitleTextStyle: TextStyle(fontWeight: FontWeight.w400),
+                              inputable: false,
+                              pickerSubTitles: BoardDateTimeItemTitles(
+                                year: 'Year',
+                                // day: 'd',
+                                // hour: 'h',
+                                // minute: 'm',
+                              ),
+                            ),
+                            context: context,
+                            pickerType: DateTimePickerType.datetime,
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    await ref.read(userProvider.notifier).addGoal(
+                        selectedAccount: _selectedAccount!,
+                        goalName: _goalNameController.text,
+                        goalFund: _goalFundController.text,
+                        currentDate: _currentDate,
+                        selectedDate: _selectedDate!);
+                    _goalNameController.clear();
+
+                    _selectedDate = null;
+                    navigatorKey.currentState!.pop(true);
+
+                    //
+                  }
+                },
+                child: const AppText(
+                  text: 'OK',
+                  color: AppColors.primary,
+                  weight: FontWeight.w600,
+                ),
+              ),
+            ],
+          );
+        }
+      },
+    );
+  }
+
+  Future<dynamic> showUpdateDialog(
+      {required BuildContext context,
+      required Goal goal,
+      required double consumerSavingsBucket}) {
+    _milestoneController.text = goal.raisedAmount.toString();
+    return showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        if (defaultTargetPlatform == TargetPlatform.iOS) {
+          return CupertinoAlertDialog(
+            content: StatefulBuilder(builder: (context, setState) {
+              return Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const RequiredText('Goal'),
+                    const Gap(12),
+                    AppTextFormField(
+                      controller: _goalNameController,
+                      hintText: '50.05',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(),
+                      ]),
+                    ),
+                    const Gap(12),
+                    const RequiredText('Amount'),
+                    const Gap(12),
+                    AppTextFormField(
+                      controller: _milestoneController,
+                      hintText: '50.05',
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
                       suffixIcon: AppText(
                         text: _currency,
                         color: Colors.grey,
@@ -502,18 +780,122 @@ class _MyGoalsScreenState extends State<MyGoalsScreen> {
                       ]),
                     ),
                     const Gap(12),
-                    const RequiredText('Bill Coverage Duration'),
+                    const RequiredText('Estimated Date'),
+                    const Gap(12),
+                    Container(
+                      decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
+                          border: Border.all(
+                            color: Colors.grey.shade400,
+                          )),
+                      child: ListTile(
+                        title: Text(
+                          _selectedDate == null
+                              ? 'Date'
+                              : AppFunctions.formatDate(
+                                  _selectedDate.toString(),
+                                  format: 'j M Y, g:i A'),
+                          style: GoogleFonts.manrope(
+                            fontSize: AppSizes.bodySmaller,
+                            // fontWeight:
+                            //     _selectedDate == null ? null : FontWeight.bold,
+                            color: _selectedDate == null ? Colors.grey : null,
+                          ),
+                        ),
+                        trailing: const Icon(
+                          FontAwesomeIcons.calendar,
+                          color: AppColors.primary,
+                          size: 15,
+                        ),
+                        dense: true,
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 12),
+                        onTap: () async {
+                          await showBoardDateTimePicker(
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedDate = value;
+                              });
+                            },
+                            showDragHandle: true,
+                            options: const BoardDateTimeOptions(
+                              backgroundColor: Colors.white,
+                              foregroundColor: AppColors.neutral200,
+                              // boardTitle: "Select 'TODAY' or '",
+                              // boardTitleTextStyle: TextStyle(fontWeight: FontWeight.w400),
+                              inputable: false,
+                              pickerSubTitles: BoardDateTimeItemTitles(
+                                year: 'Year',
+                                // day: 'd',
+                                // hour: 'h',
+                                // minute: 'm',
+                              ),
+                            ),
+                            context: context,
+                            pickerType: DateTimePickerType.datetime,
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    // final user = _userBox.values.first;
+                    goal.raisedAmount = goal.raisedAmount +
+                        double.parse(_milestoneController.text);
+                    await goal.save();
+                    // _selectedAccount.goals = HiveList(_goalsBox);
+
+                    // _selectedAccount.goals?.addAll(_goalsBox.values);
+
+                    // await _selectedAccount.save();
+//TODO: check if this change trickles to the user box without explicitly adding this to the user box
+//and calling the .save() method
+                    // var temp = user.accounts!.firstWhere(
+                    //   (element) => element.name == _selectedAccountName,
+                    // );
+                  }
+                },
+                child: const AppText(
+                  text: 'Update',
+                  color: AppColors.primary,
+                  weight: FontWeight.w600,
+                ),
+              ),
+            ],
+          );
+        } else {
+          return AlertDialog(
+            actionsPadding: const EdgeInsets.only(bottom: 5),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0)),
+            backgroundColor: Colors.white,
+            content: StatefulBuilder(
+              builder: (context, setState) => Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const RequiredText('Milestone'),
                     const Gap(12),
                     AppTextFormField(
-                      controller: _goalEstimationController,
+                      controller: _milestoneController,
                       hintText: '50.05',
-                      keyboardType: TextInputType.number,
-                      suffixIcon: const AppText(
-                        text: 'days',
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      suffixIcon: AppText(
+                        text: _currency,
                         color: Colors.grey,
                       ),
                       validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(),
+                        FormBuilderValidators.positiveNumber(),
                       ]),
                     ),
                   ],
@@ -524,42 +906,56 @@ class _MyGoalsScreenState extends State<MyGoalsScreen> {
               TextButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    final user = _userBox.values.first;
+                    // final user = _userBox.values.first;
+                    final parsedInput = double.parse(_milestoneController.text);
+                    final double difference = parsedInput - goal.raisedAmount;
+                    if (difference <= consumerSavingsBucket) {
+                      if (parsedInput > goal.raisedAmount) {
+                        await ref
+                            .read(userProvider.notifier)
+                            .subtractFromBucket(
+                              difference: difference,
+                              selectedAccount: _selectedAccount!,
+                            );
+                      } else {
+                        await ref.read(userProvider.notifier).addToBucket(
+                            difference: difference,
+                            selectedAccount: _selectedAccount!);
+                      }
+                      goal.raisedAmount = parsedInput;
+                      await goal.save();
 
-                    await _budgetBox.add(Budget(
-                        amount: double.parse(_goalAmountController.text),
-                        type: BudgetType.goal,
-                        createdAt: _currentDate,
-                        duration: int.parse(_goalEstimationController.text)));
+                      // _selectedAccount.goals = HiveList(_goalsBox);
 
-                    user.accounts
-                        ?.firstWhere(
-                            (element) => element.name == _selectedAccountName)
-                        .budgets = HiveList(_budgetBox);
+                      // _selectedAccount.goals?.addAll(_goalsBox.values);
 
-                    user.accounts
-                        ?.firstWhere(
-                            (element) => element.name == _selectedAccountName)
-                        .budgets
-                        ?.addAll(_budgetBox.values);
+                      // await _selectedAccount.save();
+                      //TODO: check if this change trickles to the user box without explicitly adding this to the user box
+                      //and calling the .save() method
+                      // var temp = user.accounts!.firstWhere(
+                      //   (element) => element.name == _selectedAccountName,
+                      // );
 
-                    await user.accounts
-                        ?.firstWhere(
-                            (element) => element.name == _selectedAccountName)
-                        .save();
-
-                    // await user.save();
-                    selectedCategory = null;
-                    _goalNameController.clear();
-                    _goalAmountController.clear();
-                    _goalEstimationController.clear();
-                    navigatorKey.currentState!.pop(true);
+                      _goalNameController.clear();
+                      // _goalAmountController.clear();
+                      _selectedDate = null;
+                      navigatorKey.currentState!.pop(true);
+                    } else {
+                      if (consumerSavingsBucket == 0) {
+                        showInfoToast('Your savings bucket is currently empty',
+                            context: context);
+                      } else {
+                        showInfoToast(
+                            'Your increment is more than what the savings bucket can provide',
+                            context: context);
+                      }
+                    }
 
                     //
                   }
                 },
                 child: const AppText(
-                  text: 'OK',
+                  text: 'Update',
                   color: AppColors.primary,
                   weight: FontWeight.w600,
                 ),

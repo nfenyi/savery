@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:savery/app_constants/app_colors.dart';
 
 class AppThemes {
   static final darkTheme = ThemeData(
+      iconTheme: const IconThemeData(color: Colors.white),
       scaffoldBackgroundColor: Colors.grey.shade900,
       appBarTheme: const AppBarTheme(
+        surfaceTintColor: Colors.black,
         backgroundColor: Colors.black,
       ),
-      primaryColor: Colors.black,
+      primaryColor: AppColors.primary,
       fontFamily: GoogleFonts.manrope(fontSize: 13).fontFamily,
       // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       useMaterial3: true,
@@ -22,12 +25,17 @@ class AppThemes {
       colorScheme: const ColorScheme.dark());
 
   static final lightTheme = ThemeData(
+      iconTheme: const IconThemeData(color: Colors.black),
       scaffoldBackgroundColor: Colors.white,
+      splashColor: Colors.white,
+      dividerColor: AppColors.neutral100,
+      // hoverColor: Colors.white,
       appBarTheme: const AppBarTheme(
+        scrolledUnderElevation: 0,
         backgroundColor: Colors.white,
       ),
       fontFamily: GoogleFonts.manrope(fontSize: 13).fontFamily,
-      primaryColor: Colors.white,
+      primaryColor: AppColors.primary,
       // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       useMaterial3: true,
       scrollbarTheme: ScrollbarThemeData(
@@ -41,7 +49,7 @@ class AppThemes {
 }
 
 class ThemeProviderNotifier extends StateNotifier<ThemeMode> {
-  ThemeProviderNotifier() : super(ThemeMode.system);
+  ThemeProviderNotifier() : super(ThemeMode.light);
   // ThemeMode themeMode = ThemeMode.system;
   // ThemeMode get getThemeMode => themeMode;
 

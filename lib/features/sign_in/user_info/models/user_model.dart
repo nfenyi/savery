@@ -70,15 +70,23 @@ class Account extends HiveObject {
   HiveList<Budget>? budgets;
   @HiveField(5)
   String? currency;
+  @HiveField(6)
+  HiveList<Goal>? goals;
+  @HiveField(7)
+  double balance;
+  @HiveField(8)
+  double savingsBucket;
 
-  Account({
-    required this.name,
-    this.expenses = 0,
-    this.transactions,
-    this.income = 0,
-    this.budgets,
-    this.currency,
-  });
+  Account(
+      {required this.name,
+      this.expenses = 0,
+      this.transactions,
+      this.income = 0,
+      this.budgets,
+      this.currency,
+      this.balance = 0,
+      this.savingsBucket = 0,
+      this.goals});
 
   factory Account.fromJson(Map<String, dynamic> json) {
     return Account(
@@ -93,6 +101,11 @@ class Account extends HiveObject {
           .map((budgetJson) => Budget.fromJson(budgetJson))
           .toList(),
       currency: json['currency'],
+      goals: json['goals']
+          .map((budgetJson) => Budget.fromJson(budgetJson))
+          .toList(),
+      balance: json['balance'],
+      savingsBucket: json['savingsBucket'],
     );
   }
 
@@ -107,6 +120,10 @@ class Account extends HiveObject {
       'budgets': budgets == null
           ? []
           : budgets?.map((budget) => budget.toJson()).toList(),
+      'goals':
+          goals == null ? [] : goals?.map((goal) => goal.toJson()).toList(),
+      'balance': balance,
+      'savingsBucket': savingsBucket
     };
   }
 }
@@ -155,7 +172,7 @@ class Budget extends HiveObject {
 
 enum BudgetType { expenseBudget, savings, goal }
 
-@HiveType(typeId: 3, adapterName: 'TransactionAdapter')
+@HiveType(typeId: 5, adapterName: 'TransactionAdapter')
 class AccountTransaction extends HiveObject {
   @HiveField(0)
   String type;
@@ -193,6 +210,48 @@ class AccountTransaction extends HiveObject {
       'date': date.toIso8601String(),
       'description': description,
       'category': category,
+    };
+  }
+}
+
+@HiveType(typeId: 6, adapterName: 'GoalAdapter')
+class Goal extends HiveObject {
+  @HiveField(0)
+  double fund;
+
+  @HiveField(1)
+  DateTime estimatedDate;
+  @HiveField(2)
+  DateTime createdAt;
+  @HiveField(3)
+  String name;
+  @HiveField(4)
+  double raisedAmount;
+
+  Goal({
+    required this.fund,
+    required this.name,
+    required this.estimatedDate,
+    required this.createdAt,
+    this.raisedAmount = 0,
+  });
+
+  factory Goal.fromJson(Map<String, dynamic> json) {
+    return Goal(
+        name: json['name'],
+        fund: json['fund'],
+        estimatedDate: DateTime.parse(json['duration']),
+        createdAt: DateTime.parse(json['createdAt']),
+        raisedAmount: json['raisedAmount']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'fund': fund,
+      'duration': estimatedDate,
+      'createdAt': createdAt.toIso8601String(),
+      'raisedAmount': raisedAmount,
     };
   }
 }

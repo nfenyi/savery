@@ -72,13 +72,15 @@ class AccountAdapter extends TypeAdapter<Account> {
       income: fields[1] as double,
       budgets: (fields[4] as HiveList?)?.castHiveList(),
       currency: fields[5] as String?,
+      balance: fields[7] as double,
+      goals: (fields[6] as HiveList?)?.castHiveList(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Account obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -90,7 +92,11 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..writeByte(4)
       ..write(obj.budgets)
       ..writeByte(5)
-      ..write(obj.currency);
+      ..write(obj.currency)
+      ..writeByte(6)
+      ..write(obj.goals)
+      ..writeByte(7)
+      ..write(obj.balance);
   }
 
   @override
@@ -152,7 +158,7 @@ class BudgetAdapter extends TypeAdapter<Budget> {
 
 class TransactionAdapter extends TypeAdapter<AccountTransaction> {
   @override
-  final int typeId = 3;
+  final int typeId = 5;
 
   @override
   AccountTransaction read(BinaryReader reader) {
@@ -192,6 +198,52 @@ class TransactionAdapter extends TypeAdapter<AccountTransaction> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is TransactionAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class GoalAdapter extends TypeAdapter<Goal> {
+  @override
+  final int typeId = 6;
+
+  @override
+  Goal read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Goal(
+      fund: fields[0] as double,
+      name: fields[3] as String,
+      estimatedDate: fields[1] as DateTime,
+      createdAt: fields[2] as DateTime,
+      raisedAmount: fields[4] as double,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Goal obj) {
+    writer
+      ..writeByte(5)
+      ..writeByte(0)
+      ..write(obj.fund)
+      ..writeByte(1)
+      ..write(obj.estimatedDate)
+      ..writeByte(2)
+      ..write(obj.createdAt)
+      ..writeByte(3)
+      ..write(obj.name)
+      ..writeByte(4)
+      ..write(obj.raisedAmount);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GoalAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
