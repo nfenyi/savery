@@ -1,6 +1,7 @@
 part of 'widgets.dart';
 
-void showInfoToast(String message, {int seconds = 3, required context}) {
+void showInfoToast(String message,
+    {int seconds = 3, required context, Color color = AppColors.neutral900}) {
   FToast fToast = FToast();
   fToast.init(context);
   Widget toast = IntrinsicWidth(
@@ -8,7 +9,7 @@ void showInfoToast(String message, {int seconds = 3, required context}) {
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: AppColors.neutral900,
+        color: color,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

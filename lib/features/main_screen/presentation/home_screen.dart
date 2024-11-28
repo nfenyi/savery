@@ -5,9 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:gap/gap.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
 import 'package:lottie/lottie.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_colors.dart';
@@ -44,7 +46,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     super.initState();
 
-    _valueNotifier = ValueNotifier(ref.read(userProvider).user.accounts?.first);
+    _valueNotifier =
+        ValueNotifier(ref.read(userProvider).user.accounts?.firstOrNull);
 
     // _accounts.add(
     //   Account(
@@ -215,9 +218,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 options: CarouselOptions(
                     // enlargeCenterPage: true,
                     height: 200,
-                    initialPage: _valueNotifier.value == null
-                        ? 0
-                        : _valueNotifier.value!.key,
+                    initialPage: 0,
                     enableInfiniteScroll: false,
                     onPageChanged: (index, reason) {
                       _valueNotifier.value = user.accounts![index];
@@ -229,63 +230,59 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(
               horizontal: AppSizes.horizontalPaddingSmall),
-          child: Container(
-            color: Colors.white,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const AppText(
-                      text: 'Transactions',
-                      weight: FontWeight.bold,
-                      size: AppSizes.bodySmall,
-                    ),
-                    ValueListenableBuilder(
-                      valueListenable: _valueNotifier,
-                      builder: (context, value, child) {
-                        return Visibility(
-                            visible: value?.transactions != null &&
-                                value!.transactions!.isNotEmpty,
-                            child: child!);
-                      },
-                      child: widgets.AppTextButton(
-                          text: 'View All',
-                          callback: () async {
-                            await navigatorKey.currentState!
-                                .push(MaterialPageRoute(
-                              builder: (context) => TransactionsScreen(
-                                initAccount: _valueNotifier.value!,
-                              ),
-                            ));
-                          }),
-                    )
-                  ],
-                ),
-                const Gap(5),
-                ValueListenableBuilder(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const AppText(
+                    text: 'Transactions',
+                    weight: FontWeight.bold,
+                    size: AppSizes.bodySmall,
+                  ),
+                  ValueListenableBuilder(
                     valueListenable: _valueNotifier,
                     builder: (context, value, child) {
-                      if (value?.transactions == null ||
-                          value!.transactions!.isEmpty) {
-                        return const SizedBox.shrink();
-                      }
-                      _dateHolder = value.transactions?.reversed.first.date;
-                      return AppText(
-                          text: (DateTime.now().day == _dateHolder?.day)
-                              ? 'Today'
-                              : (DateTime.now().weekday -
-                                          _dateHolder!.weekday ==
-                                      1)
-                                  ? 'Yesterday'
-                                  : AppFunctions.formatDate(
-                                      _dateHolder.toString(),
-                                      format: r'g:i A'));
-                    }),
-                const Gap(5)
-              ],
-            ),
+                      return Visibility(
+                          visible: value?.transactions != null &&
+                              value!.transactions!.isNotEmpty,
+                          child: child!);
+                    },
+                    child: widgets.AppTextButton(
+                        text: 'View All',
+                        callback: () async {
+                          await navigatorKey.currentState!
+                              .push(MaterialPageRoute(
+                            builder: (context) => TransactionsScreen(
+                              initAccount: _valueNotifier.value!,
+                            ),
+                          ));
+                        }),
+                  )
+                ],
+              ),
+              const Gap(5),
+              ValueListenableBuilder(
+                  valueListenable: _valueNotifier,
+                  builder: (context, value, child) {
+                    if (value?.transactions == null ||
+                        value!.transactions!.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    _dateHolder = value.transactions?.reversed.first.date;
+                    return AppText(
+                        text: (DateTime.now().day == _dateHolder?.day)
+                            ? 'Today'
+                            : (DateTime.now().weekday - _dateHolder!.weekday ==
+                                    1)
+                                ? 'Yesterday'
+                                : AppFunctions.formatDate(
+                                    _dateHolder.toString(),
+                                    format: r'g:i A'));
+                  }),
+              const Gap(5)
+            ],
           ),
         ),
         //TODO: fix streambuilder not listening to transaction addition
@@ -319,15 +316,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   padding: const EdgeInsets.all(10),
                                   width: 50,
                                   color: AppColors.primary.withOpacity(0.1),
-                                  child: Icon(
-                                    getCategoryIcon(transaction.category),
-                                    color: AppColors.primary,
-                                  )),
+                                  child: transaction.category == null
+                                      ? const FaIcon(
+                                          FontAwesomeIcons.coins,
+                                          color: AppColors.primary,
+                                        )
+                                      : Iconify(
+                                          transaction.category!.icon,
+                                          color: AppColors.primary,
+                                        )),
                             ),
                             title: AppText(
                                 text: transaction.type == 'Income'
                                     ? "Income"
-                                    : transaction.category!),
+                                    : transaction.category!.name),
                             subtitle: AppText(
                               text: transaction.description,
                               color: Colors.grey,
@@ -403,15 +405,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           : 5),
                 );
               } else {
-                return Center(
+                return Expanded(
+                  // child: Column(
+                  //   children: [
+                  child: Center(
                     child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Lottie.asset(AppAssets.emptyList, height: 200),
-                    const AppText(
-                        text: 'Tap on the + button to add a  transaction.')
-                  ],
-                ));
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Lottie.asset(AppAssets.emptyList, height: 200),
+                        (value != null)
+                            ? const AppText(
+                                text:
+                                    'Tap on the + button to add a  transaction.')
+                            : const AppText(text: 'No transactions yet.'),
+                        Gap(Adaptive.h(20)),
+                      ],
+                    ),
+                  ),
+                  //   ],
+                  // ),
+                );
               }
             })
       ],
@@ -502,6 +515,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         .addAccount(_nameController.text);
                     navigatorKey.currentState!.pop();
                     _nameController.clear();
+                    _valueNotifier.value = ref
+                        .read(accountsProvider)!
+                        .elementAt((_valueNotifier.value == null)
+                            ? ref.read(accountsProvider)!.length - 1
+                            : ref.read(accountsProvider)!.length - 2);
                   }
                 },
                 child: const AppText(

@@ -1,5 +1,6 @@
 import 'package:hive_flutter/adapters.dart';
 import 'package:savery/app_constants/app_constants.dart';
+import 'package:savery/features/new_transaction/models/transaction_category_model.dart';
 
 part 'user_model.g.dart';
 
@@ -131,7 +132,7 @@ class Account extends HiveObject {
 @HiveType(typeId: 2, adapterName: 'BudgetAdapter')
 class Budget extends HiveObject {
   @HiveField(0)
-  String? category;
+  TransactionCategory? category;
   @HiveField(1)
   double amount;
   @HiveField(2)
@@ -151,7 +152,7 @@ class Budget extends HiveObject {
 
   factory Budget.fromJson(Map<String, dynamic> json) {
     return Budget(
-      category: json['name'] ?? AppConstants.na,
+      category: json['category'],
       amount: json['amount'],
       type: BudgetType.values[json['type']],
       duration: json['duration'],
@@ -161,7 +162,7 @@ class Budget extends HiveObject {
 
   Map<String, dynamic> toJson() {
     return {
-      'name': category,
+      'category': category,
       'amount': amount,
       'type': type.index,
       'duration': duration,
@@ -170,7 +171,10 @@ class Budget extends HiveObject {
   }
 }
 
-enum BudgetType { expenseBudget, savings, goal }
+enum BudgetType {
+  expenseBudget,
+  savings,
+}
 
 @HiveType(typeId: 5, adapterName: 'TransactionAdapter')
 class AccountTransaction extends HiveObject {
@@ -183,7 +187,7 @@ class AccountTransaction extends HiveObject {
   @HiveField(3)
   String description;
   @HiveField(4)
-  String? category;
+  TransactionCategory? category;
 
   AccountTransaction({
     required this.amount,

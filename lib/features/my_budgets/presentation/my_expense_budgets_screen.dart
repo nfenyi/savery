@@ -10,6 +10,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
 import 'package:lottie/lottie.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_assets.dart';
@@ -19,7 +20,6 @@ import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/main_screen/presentation/main_screen.dart';
-import 'package:savery/features/main_screen/presentation/widgets.dart';
 import 'package:savery/features/new_transaction/models/transaction_category_model.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'package:savery/main.dart';
@@ -56,11 +56,8 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
   String? _selectedAccountName;
   late Account _selectedAccount;
   // final _accountsBox = Hive.box<Account>(AppBoxes.accounts);
-
   final _transactionCategories =
-      Hive.box<TransactionCategory>(AppBoxes.transactionsCategories).values.map(
-            (e) => e.name,
-          );
+      Hive.box<TransactionCategory>(AppBoxes.transactionsCategories).values;
 
   late final List<String> _accountNames;
 
@@ -70,6 +67,7 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
   @override
   void initState() {
     super.initState();
+
     final accounts = ref.read(userProvider).user.accounts;
     _selectedAccount = widget.account ?? accounts!.first;
     _currency = _selectedAccount.currency ?? 'GHS';
@@ -96,16 +94,23 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
               (element) {
                 assignedBudget =
                     element; //will be used if any is true to execute the body
-                return element.category == transaction.category!;
+                return element.category!.name == transaction.category!.name;
               },
             )) {
           if (transaction.date.difference(_currentDate).inDays <
               assignedBudget.duration) {
-            _mappedTransactions[transaction.category!] =
-                (_mappedTransactions[transaction.category] ?? 0) +
+            _mappedTransactions[transaction.category!.name] =
+                (_mappedTransactions[transaction.category!.name] ?? 0) +
                     transaction.amount;
           } else {
             break;
+          }
+          if (assignedBudget.createdAt.difference(_currentDate).inDays !=
+              assignedBudget.duration) {
+            assignedBudget.createdAt = _currentDate;
+            //"these reset after the set duration is past"
+            //this is an async function though:
+            assignedBudget.save();
           }
         }
       }
@@ -243,16 +248,17 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                 (element) {
                                   assignedBudget =
                                       element; //will be used if any is true to execute the body
-                                  return element.category ==
-                                      transaction.category!;
+                                  return element.category!.name ==
+                                      transaction.category!.name;
                                 },
                               )) {
                             if (transaction.date
                                     .difference(_currentDate)
                                     .inDays <
                                 assignedBudget.duration) {
-                              _mappedTransactions[transaction.category!] =
-                                  (_mappedTransactions[transaction.category] ??
+                              _mappedTransactions[transaction.category!.name] =
+                                  (_mappedTransactions[
+                                              transaction.category!.name] ??
                                           0) +
                                       transaction.amount;
                             } else {
@@ -363,86 +369,72 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                               final expenseBudget =
                                   consumerExpenseBudgets[index];
 
-                              final double value =
-                                  _mappedTransactions[expenseBudget.category] !=
-                                          null
-                                      ? _mappedTransactions[
-                                              expenseBudget.category]! /
-                                          expenseBudget.amount
-                                      : 0;
+                              final double value = _mappedTransactions[
+                                          expenseBudget.category!.name] !=
+                                      null
+                                  ? _mappedTransactions[
+                                          expenseBudget.category!.name]! /
+                                      expenseBudget.amount
+                                  : 0;
                               final formattedValue =
                                   (value * 100).toStringAsFixed(1);
                               final savingsFraction =
                                   consumerSavingsBudget![index].amount /
                                       expenseBudget.amount;
                               final savingsRegionWidth = savingsFraction * 70;
+                              if (value > 1) {
+                                Future.delayed(const Duration(seconds: 3), () {
+                                  showInfoToast(
+                                      seconds: 5,
+                                      'Seems you have gone overbudget for ${expenseBudget.category!.name}. Please increase the ${expenseBudget.category!.name} budget so your balance can be tracked accordingly.',
+                                      context: navigatorKey.currentContext!);
+                                });
+                              }
 
-                              return Container(
-                                padding: EdgeInsets.only(
-                                    top: 20,
-                                    left: 15,
-                                    right: 15,
-                                    bottom:
-                                        consumerSavingsBudget[index].amount != 0
+                              return InkWell(
+                                onTap: () async {
+                                  await _showUpdateDialog(
+                                      context: context, budget: expenseBudget);
+                                },
+                                child: Ink(
+                                  child: Container(
+                                    padding: EdgeInsets.only(
+                                        top: 20,
+                                        left: 15,
+                                        right: 15,
+                                        bottom: consumerSavingsBudget[index]
+                                                    .amount !=
+                                                0
                                             ? 10
                                             : 20),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    width: 1.0,
-                                    color: AppColors.neutral300,
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    ClipRRect(
+                                    decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
-                                      child: Container(
-                                        padding: const EdgeInsets.all(10),
-                                        width: 50,
-                                        color:
-                                            AppColors.primary.withOpacity(0.1),
-                                        child: Icon(
-                                          getCategoryIcon(
-                                              expenseBudget.category),
-                                          color: AppColors.primary,
-                                        ),
+                                      border: Border.all(
+                                        width: 1.0,
+                                        color: AppColors.neutral300,
                                       ),
                                     ),
-                                    const Gap(10),
-                                    Expanded(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              AppText(
-                                                text: expenseBudget.category!,
-                                                weight: FontWeight.bold,
-                                                size: AppSizes.bodySmall,
-                                              ),
-                                              Row(
-                                                children: [
-                                                  AppText(
-                                                    text: expenseBudget.amount
-                                                        .toString(),
-                                                    weight: FontWeight.bold,
-                                                    size: AppSizes.bodySmall,
-                                                  ),
-                                                  const Gap(4),
-                                                  AppText(
-                                                    text: _currency,
-                                                    weight: FontWeight.bold,
-                                                    size: AppSizes.bodySmall,
-                                                  ),
-                                                ],
-                                              )
-                                            ],
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: Container(
+                                            padding: const EdgeInsets.all(10),
+                                            width: 50,
+                                            color: AppColors.primary
+                                                .withOpacity(0.1),
+                                            child: Iconify(
+                                              expenseBudget.category!.icon,
+                                              color: AppColors.primary,
+                                            ),
                                           ),
-                                          Column(
+                                        ),
+                                        const Gap(10),
+                                        Expanded(
+                                          child: Column(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
@@ -452,94 +444,146 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                                         .spaceBetween,
                                                 children: [
                                                   AppText(
-                                                    text:
-                                                        '$_currency ${_mappedTransactions[expenseBudget.category!] ?? 0}  ($formattedValue %)',
-                                                    color: Colors.green,
+                                                    text: expenseBudget
+                                                        .category!.name,
+                                                    weight: FontWeight.bold,
+                                                    size: AppSizes.bodySmall,
                                                   ),
-                                                  AppText(
-                                                    text:
-                                                        '${expenseBudget.createdAt.difference(_currentDate).inDays + 1}/${expenseBudget.duration} day',
-                                                    color: AppColors.primary,
-                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      AppText(
+                                                        text: expenseBudget
+                                                            .amount
+                                                            .toString(),
+                                                        weight: FontWeight.bold,
+                                                        size:
+                                                            AppSizes.bodySmall,
+                                                      ),
+                                                      const Gap(4),
+                                                      AppText(
+                                                        text: _currency,
+                                                        weight: FontWeight.bold,
+                                                        size:
+                                                            AppSizes.bodySmall,
+                                                      ),
+                                                    ],
+                                                  )
                                                 ],
                                               ),
-                                              const Gap(5),
-                                              SizedBox(
-                                                width: Adaptive.w(70),
-                                                height: 4,
-                                                child: Stack(children: [
-                                                  SizedBox(
-                                                      width: Adaptive.w(70),
-                                                      child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .end,
-                                                          children: [
-                                                            // Container(
-                                                            //   width: Adaptive.w(70 -
-                                                            //       savingsRegionWidth),
-                                                            //   decoration:
-                                                            //       const BoxDecoration(
-                                                            //     color: Colors
-                                                            //         .transparent,
-                                                            //   ),
-                                                            // ),
-                                                            Container(
-                                                              width: Adaptive.w(
-                                                                  savingsRegionWidth),
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    const BorderRadius
-                                                                        .only(
-                                                                  topRight: Radius
-                                                                      .circular(
-                                                                          20),
-                                                                  bottomRight: Radius
-                                                                      .circular(
-                                                                          20),
-                                                                ),
-                                                                color: Colors
-                                                                    .yellow
-                                                                    .shade900,
-                                                              ),
-                                                            )
-                                                          ])),
-                                                  LinearProgressIndicator(
-                                                      backgroundColor: Colors
-                                                          .grey.shade100
-                                                          .withOpacity(0.5),
-                                                      color: value >= 1
-                                                          ? Colors.red
-                                                          : AppColors.primary
-                                                              .withOpacity(0.7),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5),
-                                                      value: value < 1
-                                                          ? value
-                                                          : 1),
-                                                ]),
-                                              ),
-                                              if (consumerSavingsBudget[index]
-                                                      .amount !=
-                                                  0)
-                                                Row(
+                                              Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  Row(
                                                     mainAxisAlignment:
-                                                        MainAxisAlignment.end,
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
                                                     children: [
-                                                      (value <=
-                                                              (1 -
-                                                                  savingsFraction))
-                                                          ? const Text('🙂')
-                                                          : const Text('🙁')
-                                                    ])
+                                                      AppText(
+                                                        text:
+                                                            '$_currency ${_mappedTransactions[expenseBudget.category!.name] ?? 0}  ($formattedValue %)',
+                                                        color: Colors.green,
+                                                      ),
+                                                      AppText(
+                                                        text:
+                                                            '${expenseBudget.createdAt.difference(_currentDate).inDays + 1}/${expenseBudget.duration} day',
+                                                        color:
+                                                            AppColors.primary,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const Gap(5),
+                                                  SizedBox(
+                                                    width: Adaptive.w(70),
+                                                    height: 4,
+                                                    child: Stack(children: [
+                                                      SizedBox(
+                                                          width: Adaptive.w(70),
+                                                          child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .end,
+                                                              children: [
+                                                                // Container(
+                                                                //   width: Adaptive.w(70 -
+                                                                //       savingsRegionWidth),
+                                                                //   decoration:
+                                                                //       const BoxDecoration(
+                                                                //     color: Colors
+                                                                //         .transparent,
+                                                                //   ),
+                                                                // ),
+                                                                Container(
+                                                                  width: Adaptive.w(
+                                                                      savingsRegionWidth),
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    borderRadius:
+                                                                        const BorderRadius
+                                                                            .only(
+                                                                      topRight:
+                                                                          Radius.circular(
+                                                                              20),
+                                                                      bottomRight:
+                                                                          Radius.circular(
+                                                                              20),
+                                                                    ),
+                                                                    color: Colors
+                                                                        .yellow
+                                                                        .shade900,
+                                                                  ),
+                                                                )
+                                                              ])),
+                                                      LinearProgressIndicator(
+                                                          backgroundColor:
+                                                              Colors
+                                                                  .grey.shade100
+                                                                  .withOpacity(
+                                                                      0.5),
+                                                          color: value >= 1
+                                                              ? Colors.red
+                                                              : AppColors
+                                                                  .primary
+                                                                  .withOpacity(
+                                                                      0.7),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(5),
+                                                          value: value < 1
+                                                              ? value
+                                                              : 1),
+                                                    ]),
+                                                  ),
+                                                  if (consumerSavingsBudget[
+                                                              index]
+                                                          .amount !=
+                                                      0)
+                                                    Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .end,
+                                                        children: [
+                                                          (value <=
+                                                                  (1 -
+                                                                      savingsFraction))
+                                                              ? const AppText(
+                                                                  text:
+                                                                      'saving',
+                                                                  style: FontStyle
+                                                                      .italic,
+                                                                  color: Colors
+                                                                      .green,
+                                                                )
+                                                              : const Text('🙁')
+                                                        ])
+                                                ],
+                                              ),
                                             ],
                                           ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               );
                             },
@@ -607,9 +651,9 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                         ),
                         items: _transactionCategories
                             .map((item) => DropdownMenuItem(
-                                  value: item,
+                                  value: item.name,
                                   child: Text(
-                                    item,
+                                    item.name,
                                     style: const TextStyle(
                                       fontSize: AppSizes.bodySmaller,
                                       fontWeight: FontWeight.w500,
@@ -621,8 +665,8 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                         value: selectedCategory,
                         onChanged: (value) {
                           if (expenseBudgets != null) {
-                            if (expenseBudgets
-                                .any((element) => element.category == value)) {
+                            if (expenseBudgets.any(
+                                (element) => element.category!.name == value)) {
                               showInfoToast(
                                   'This category already exists in your list of budgets',
                                   context: context);
@@ -761,9 +805,9 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                         ),
                         items: _transactionCategories
                             .map((item) => DropdownMenuItem(
-                                  value: item,
+                                  value: item.name,
                                   child: Text(
-                                    item,
+                                    item.name,
                                     style: const TextStyle(
                                       fontSize: AppSizes.bodySmaller,
                                       fontWeight: FontWeight.w500,
@@ -775,8 +819,8 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                         value: selectedCategory,
                         onChanged: (value) {
                           if (expenseBudgets != null) {
-                            if (expenseBudgets
-                                .any((element) => element.category == value)) {
+                            if (expenseBudgets.any(
+                                (element) => element.category!.name == value)) {
                               showInfoToast(
                                   'This category already exists in your list of budgets',
                                   context: context);
@@ -862,7 +906,9 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                     await ref.read(userProvider.notifier).addExpenseBudget(
                         selectedAccount: _selectedAccount,
                         currentDate: _currentDate,
-                        selectedCategory: selectedCategory!,
+                        selectedCategory: _transactionCategories.firstWhere(
+                          (element) => element.name == selectedCategory,
+                        ),
                         expenseAmount: _expenseAmountController.text,
                         expenseCoverage: _expenseCoverageController.text);
                     selectedCategory = null;
@@ -883,6 +929,185 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
             ],
           );
         }
+      },
+    );
+  }
+
+  Future<dynamic> _showUpdateDialog(
+      {required BuildContext context, required Budget budget}) {
+    _expenseAmountController.text =
+        budget.amount == 0 ? '' : budget.amount.toString();
+    _expenseCoverageController.text = budget.duration.toString();
+    return showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        if (defaultTargetPlatform == TargetPlatform.iOS) {
+          return CupertinoAlertDialog(
+            content: StatefulBuilder(builder: (context, setState) {
+              return Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const RequiredText('Goal'),
+                    const Gap(12),
+                    AppTextFormField(
+                      controller: _expenseAmountController,
+                      hintText: '0.0',
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(),
+                      ]),
+                    ),
+                    const Gap(12),
+                    const RequiredText('Amount'),
+                    const Gap(12),
+                    AppTextFormField(
+                      controller: _expenseAmountController,
+                      hintText: '50.05',
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      suffixIcon: AppText(
+                        text: _currency,
+                        color: Colors.grey,
+                      ),
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(),
+                      ]),
+                    ),
+                    const Gap(12),
+                    const RequiredText('Estimated Date'),
+                    const Gap(12),
+                  ],
+                ),
+              );
+            }),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {}
+                },
+                child: const AppText(
+                  text: 'Update',
+                  color: AppColors.primary,
+                  weight: FontWeight.w600,
+                ),
+              ),
+            ],
+          );
+        } else {
+          return AlertDialog(
+            actionsPadding: const EdgeInsets.only(bottom: 5),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0)),
+            backgroundColor: Colors.white,
+            content: StatefulBuilder(
+              builder: (context, setState) => Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        AppText(
+                          text: budget.category!.name,
+                          size: AppSizes.bodySmaller,
+                          weight: FontWeight.bold,
+                        ),
+                        InkWell(
+                          onTap: () async => await _showDeleteDialog(budget),
+                          child: Ink(
+                            //wrapping with a bigger sizedbox to make the delete button easier to tap
+                            child: const SizedBox(
+                              width: 18,
+                              child: Icon(
+                                FontAwesomeIcons.trashCan,
+                                color: Colors.red,
+                                size: 15,
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    const Gap(20),
+                    const RequiredText('Expense Amount'),
+                    const Gap(12),
+                    AppTextFormField(
+                      controller: _expenseAmountController,
+                      hintText: '0.0',
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      suffixIcon: AppText(
+                        text: _currency,
+                        color: Colors.grey,
+                      ),
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.positiveNumber(),
+                      ]),
+                    ),
+                    const Gap(12),
+                    const RequiredText('Expense Coverage Duration'),
+                    const Gap(12),
+                    AppTextFormField(
+                      controller: _expenseCoverageController,
+                      hintText: '30',
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      suffixIcon: const AppText(
+                        text: 'days',
+                        color: Colors.grey,
+                      ),
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.integer(),
+                      ]),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    await ref.read(userProvider.notifier).updateExpenseBudget(
+                        selectedAccount: _selectedAccount,
+                        budget: budget,
+                        newDuration: int.parse(_expenseCoverageController.text),
+                        parsedAmount:
+                            double.parse(_expenseAmountController.text));
+
+                    navigatorKey.currentState!.pop();
+                  }
+                },
+                child: const AppText(
+                  text: 'Update',
+                  color: AppColors.primary,
+                  weight: FontWeight.w600,
+                ),
+              ),
+            ],
+          );
+        }
+      },
+    );
+  }
+
+  Future<void> _showDeleteDialog(Budget budget) async {
+    await showAppInfoDialog(
+      context,
+      title:
+          'Are you sure you want to delete this ${budget.category!.name} budget?',
+      confirmText: 'No',
+      cancelText: 'Yes',
+      cancelCallbackFunction: () async {
+        await ref.read(userProvider.notifier).deleteExpenseBudget(
+            budget: budget, selectedAccount: _selectedAccount);
+        navigatorKey.currentState!.pop();
+        navigatorKey.currentState!.pop();
       },
     );
   }

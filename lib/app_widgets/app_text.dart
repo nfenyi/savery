@@ -18,7 +18,7 @@ class AppText extends StatelessWidget {
   const AppText(
       {super.key,
       required this.text,
-      this.size = AppSizes.bodySmaller,
+      this.size = AppSizes.bodySmallest,
       this.weight,
       this.style = FontStyle.normal,
       this.decoration = TextDecoration.none,

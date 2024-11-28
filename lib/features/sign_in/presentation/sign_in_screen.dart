@@ -239,7 +239,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               ),
               const Gap(20),
               //TODO:Implement apple account log in later
-              const CircularIconButton(
+              CircularIconButton(
+                callback: () {
+                  showInfoToast('Coming soon.', context: context);
+                },
                 icon: FontAwesomeIcons.apple,
                 color: Colors.black,
               ),

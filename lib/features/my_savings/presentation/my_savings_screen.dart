@@ -5,9 +5,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:gap/gap.dart';
 
-import 'package:get/get_utils/get_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
 import 'package:lottie/lottie.dart';
 
 import 'package:savery/app_constants/app_assets.dart';
@@ -15,10 +15,8 @@ import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
-import 'package:savery/features/main_screen/presentation/widgets.dart';
 
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
-import 'package:savery/main.dart';
 
 class MySavingsScreen extends ConsumerStatefulWidget {
   const MySavingsScreen({super.key});
@@ -68,8 +66,9 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
         .toList();
     for (var i = 0; i < (_savings?.length ?? 0); i++) {
       //killing two birds with one stone
-      _controllers
-          .add(TextEditingController(text: _savings![i].amount.toString()));
+      _controllers.add(TextEditingController(
+          text:
+              _savings![i].amount == 0 ? '' : _savings![i].amount.toString()));
       _canPops.add(true);
       // _textFormFieldColors.add(null);
     }
@@ -239,8 +238,8 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                                   padding: const EdgeInsets.all(10),
                                   width: 50,
                                   color: AppColors.primary.withOpacity(0.1),
-                                  child: Icon(
-                                    getCategoryIcon(saving.category),
+                                  child: Iconify(
+                                    saving.category!.icon,
                                     color: AppColors.primary,
                                   ),
                                 ),
@@ -255,7 +254,7 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         AppText(
-                                          text: saving.category!,
+                                          text: saving.category!.name,
                                           weight: FontWeight.bold,
                                           size: AppSizes.bodySmall,
                                         ),
@@ -277,8 +276,10 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                                             SizedBox(
                                                 width: 60,
                                                 child: AppTextFormField(
+                                                  hintText: '0.0',
                                                   validator: (value) {
                                                     if (value == null ||
+                                                        value.isEmpty ||
                                                         double.parse(value) >
                                                             _expenseBudgets![
                                                                     index]
@@ -289,7 +290,7 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                                                     return null;
                                                   },
                                                   textAlign: TextAlign.end,
-                                                  paddingWidth: 0,
+                                                  paddingWidth: 2,
                                                   height: 6,
                                                   controller:
                                                       _controllers[index],

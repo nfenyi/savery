@@ -1,8 +1,10 @@
 // import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
+import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
 // import 'package:hive_flutter/hive_flutter.dart';
 // import 'package:lottie/lottie.dart';
 // import 'package:savery/app_constants/app_assets.dart';
@@ -12,7 +14,6 @@ import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 
 import '../../../app_functions/app_functions.dart';
-import '../../main_screen/presentation/widgets.dart';
 import '../../sign_in/user_info/models/user_model.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
@@ -168,9 +169,6 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
             //     ?
             Expanded(
               child: ListView.separated(
-                  //TODO: find a better way to implement the implementation of timestamps
-                  //and remove cacheExtent property
-                  cacheExtent: 1000000,
                   itemBuilder: (context, index) {
                     final transaction = _reversedTransactions![index];
                     return Container(
@@ -187,15 +185,17 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                               padding: const EdgeInsets.all(10),
                               width: 50,
                               color: AppColors.primary.withOpacity(0.1),
-                              child: Icon(
-                                getCategoryIcon(transaction.category),
-                                color: AppColors.primary,
-                              )),
+                              child: transaction.category == null
+                                  ? const Icon(FontAwesomeIcons.coins)
+                                  : Iconify(
+                                      transaction.category!.icon,
+                                      color: AppColors.primary,
+                                    )),
                         ),
                         title: AppText(
                             text: transaction.type == 'Income'
                                 ? "Income"
-                                : transaction.category!),
+                                : transaction.category!.name),
                         subtitle: AppText(
                           text: transaction.description,
                           color: Colors.grey,

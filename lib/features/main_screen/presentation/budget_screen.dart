@@ -37,22 +37,7 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
   final _user = Hive.box<AppUser>(AppBoxes.user).values.first;
 
   @override
-  void initState() {
-    super.initState();
-    // if (_budgets.isNotEmpty) _dateHolder = _budgets.first.createdAt;
-  }
-
-  @override
   Widget build(BuildContext context) {
-    // logger.d(Hive.box<Budget>(AppBoxes.budgets).values.map(
-    //       (e) => e.type,
-    //     ));
-    // logger.d(Hive.box<Budget>(AppBoxes.budgets)
-    //     .values
-    //     .where(
-    //       (element) => element.type == BudgetType.expenseBudget,
-    //     )
-    //     .toList());
     return Padding(
       padding: const EdgeInsets.symmetric(
           horizontal: AppSizes.horizontalPaddingSmall),

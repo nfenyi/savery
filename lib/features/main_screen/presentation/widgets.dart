@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/features/my_budgets/presentation/my_expense_budgets_screen.dart';
 import 'package:savery/features/my_goals/presentation/my_goals_screen.dart';
@@ -27,9 +26,7 @@ class AccountCard extends ConsumerWidget {
     final consumerAccount = ref.watch(userProvider).user.accounts!.firstWhere(
           (element) => element.name == account.name,
         );
-    final consumerGoals = ref.watch(userProvider).goals(consumerAccount);
-    final consumerExpenseBudgets =
-        ref.watch(userProvider).expenseBudgets(consumerAccount);
+
     return Container(
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.symmetric(horizontal: 5),
@@ -112,7 +109,7 @@ class AccountCard extends ConsumerWidget {
                               default:
                                 await ref
                                     .read(userProvider.notifier)
-                                    .addToBucket(
+                                    .addBalanceToBucket(
                                         selectedAccount: consumerAccount);
                                 break;
                             }
@@ -322,38 +319,38 @@ class AccountCard extends ConsumerWidget {
   }
 }
 
-IconData getCategoryIcon(String? name) {
-  switch (name) {
-    case 'Gifts':
-      return Iconsax.gift;
+// IconData getCategoryIcon(String? name) {
+//   switch (name) {
+//     case 'Gifts':
+//       return Iconsax.gift;
 
-    case 'Health':
-      return FontAwesomeIcons.stethoscope;
+//     case 'Health':
+//       return FontAwesomeIcons.stethoscope;
 
-    case 'Car':
-      return FontAwesomeIcons.car;
-    case 'Game':
-      return FontAwesomeIcons.chess;
-    case 'Cafe':
-      return FontAwesomeIcons.utensils;
+//     case 'Car':
+//       return FontAwesomeIcons.car;
+//     case 'Game':
+//       return FontAwesomeIcons.chess;
+//     case 'Cafe':
+//       return FontAwesomeIcons.utensils;
 
-    case 'Travel':
-      return Iconsax.airplane;
-    case 'Utility':
-      return FontAwesomeIcons.lightbulb;
-    case 'Care':
-      return Icons.face_2;
+//     case 'Travel':
+//       return Iconsax.airplane;
+//     case 'Utility':
+//       return FontAwesomeIcons.lightbulb;
+//     case 'Care':
+//       return Icons.face_2;
 
-    case 'Devices':
-      return FontAwesomeIcons.tv;
-    case 'Food':
-      return FontAwesomeIcons.bowlFood;
-    case 'Shopping':
-      return FontAwesomeIcons.cartShopping;
-    case 'Transport':
-      return Iconsax.truck;
+//     case 'Devices':
+//       return FontAwesomeIcons.tv;
+//     case 'Food':
+//       return FontAwesomeIcons.bowlFood;
+//     case 'Shopping':
+//       return FontAwesomeIcons.cartShopping;
+//     case 'Transport':
+//       return Iconsax.truck;
 
-    default:
-      return FontAwesomeIcons.coins;
-  }
-}
+//     default:
+//       return FontAwesomeIcons.coins;
+//   }
+// }

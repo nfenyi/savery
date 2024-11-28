@@ -2,6 +2,7 @@ import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get_utils/get_utils.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:gap/gap.dart';
@@ -39,7 +40,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
   final _descriptionController = TextEditingController();
   DateTime? _selectedDate;
   String _selectedTransactionType = "Income";
-  String? _selectedCategory;
+  TransactionCategory? _selectedCategory;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final List<TransactionCategory> _categories =
@@ -63,13 +64,9 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
   // ];
 
   String? _selectedAccountName;
+  final Iterable<Account> _accounts = Hive.box<Account>('accounts').values;
 
-  final List<String> _accountNames = Hive.box<Account>('accounts')
-      .values
-      .map(
-        (e) => e.name,
-      )
-      .toList();
+  late final List<String> _accountNames;
 
   Color? _accountNameColor;
 
@@ -82,7 +79,11 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
   @override
   void initState() {
     super.initState();
-
+    _accountNames = _accounts
+        .map(
+          (e) => e.name,
+        )
+        .toList();
     _currency = 'GHS';
   }
 
@@ -220,7 +221,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                             title: AppText(
                               text: _selectedCategory == null
                                   ? 'Category'
-                                  : _selectedCategory!,
+                                  : _selectedCategory!.name,
                               // weight: _selectedCategory == null
                               //     ? null
                               //     : FontWeight.bold,
@@ -311,7 +312,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                                     onTap: () {
                                                       setState(() {
                                                         _selectedCategory =
-                                                            category.name;
+                                                            category;
                                                       });
                                                       navigatorKey.currentState!
                                                           .pop();
@@ -483,6 +484,26 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                         _categoryColor = Colors.red;
                       });
                       showInfoToast('Please select a category',
+                          context: context);
+                    } else if (_selectedTransactionType == 'Expense' &&
+                        ref
+                                .read(userProvider)
+                                .expenseBudgets(_accounts.firstWhere(
+                                  (element) =>
+                                      element.name == _selectedAccountName,
+                                ))
+                                ?.toList()
+                                .firstWhereOrNull(
+                                  (element) =>
+                                      element.category!.name ==
+                                      _selectedCategory!.name,
+                                ) ==
+                            null) {
+                      setState(() {
+                        _categoryColor = Colors.red;
+                      });
+                      showInfoToast(
+                          'Please create a ${_selectedCategory!.name} budget for this transaction for this account first.',
                           context: context);
                     } else {
                       await ref.read(userProvider.notifier).addTransaction(

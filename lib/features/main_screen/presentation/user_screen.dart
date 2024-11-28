@@ -8,9 +8,11 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
+import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/accounts_&_currencies/presentation/accounts_n_currencies_screen.dart';
 import 'package:savery/features/accounts_&_currencies/services/api_services.dart';
-import 'package:savery/features/app_settings/presentation/app_settings.dart';
+import 'package:savery/features/app_settings/presentation/app_settings_screen.dart';
+import 'package:savery/features/categories/presentation/categories_screen.dart';
 import 'package:savery/features/main_screen/models/settings.dart';
 import 'package:savery/features/sign_in/providers/providers.dart';
 import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
@@ -42,25 +44,25 @@ class _UserScreenState extends ConsumerState<UserScreen> {
               MaterialPageRoute(builder: (context) => const AppSettings()));
         }),
     Setting(
-      icon: Iconsax.grid_2,
-      name: "Categories",
-    ),
+        icon: Iconsax.grid_2,
+        name: "Categories",
+        callback: () {
+          navigatorKey.currentState!.push(MaterialPageRoute(
+              builder: (context) => const CategoriesScreen()));
+        }),
     Setting(
         icon: FontAwesomeIcons.chartLine,
         name: "Accounts & Currencies",
         callback: () async {
+          showLoadingDialog(description: 'Fetching exchange rates...');
           final response = await ApiServices().fetchExchangeRates();
-
+          navigatorKey.currentState!.pop();
           navigatorKey.currentState!.push(MaterialPageRoute(
             builder: (context) => CurrencyScreen(
               currencyResponse: response,
             ),
           ));
         }),
-    Setting(
-      icon: FontAwesomeIcons.globe,
-      name: "Language",
-    ),
     Setting(
       icon: Iconsax.message,
       name: "Support",

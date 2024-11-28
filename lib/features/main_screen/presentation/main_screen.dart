@@ -174,7 +174,10 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               ref.read(bottomNavIndexProvider.notifier).updateIndex(value);
             }
           },
-          backgroundColor: Colors.white,
+          backgroundColor:
+              MediaQuery.platformBrightnessOf(context) == Brightness.dark
+                  ? Colors.white
+                  : Colors.black,
           elevation: 5,
           enableFeedback: true,
           showUnselectedLabels: true,
@@ -194,8 +197,8 @@ class _MainScreenState extends ConsumerState<MainScreen> {
             color: AppColors.neutral500,
           ),
           items: [
-            const BottomNavigationBarItem(
-              activeIcon: Icon(
+            BottomNavigationBarItem(
+              activeIcon: const Icon(
                 Icons.home_rounded,
                 size: 27,
                 color: AppColors.primary,
@@ -203,19 +206,25 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               icon: Icon(
                 Icons.home_outlined,
                 size: 27,
-                // color: Colors.transparent,
+                color:
+                    MediaQuery.platformBrightnessOf(context) == Brightness.dark
+                        ? null
+                        : Colors.white,
               ),
               label: 'Home',
             ),
-            const BottomNavigationBarItem(
-              activeIcon: Iconify(
+            BottomNavigationBarItem(
+              activeIcon: const Iconify(
                 MaterialSymbols.insert_chart_rounded,
                 color: AppColors.primary,
                 size: 27,
               ),
               icon: Iconify(
                 MaterialSymbols.insert_chart_outline_rounded,
-                // color: AppColors.neutral500,
+                color:
+                    MediaQuery.platformBrightnessOf(context) == Brightness.dark
+                        ? null
+                        : Colors.white,
                 size: 27,
               ),
               label: 'Statistics',
@@ -227,14 +236,17 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               ),
               label: '',
             ),
-            const BottomNavigationBarItem(
-              activeIcon: Icon(
+            BottomNavigationBarItem(
+              activeIcon: const Icon(
                 Icons.account_balance_wallet,
                 color: AppColors.primary,
               ),
               icon: Icon(
                 Icons.account_balance_wallet_outlined,
-                // color: AppColors.neutral500,
+                color:
+                    MediaQuery.platformBrightnessOf(context) == Brightness.dark
+                        ? null
+                        : Colors.white,
               ),
               label: 'Budgets',
             ),
@@ -248,7 +260,13 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                     ),
               icon: (_userBox.values.first.photoUrl != null)
                   ? Image.network(_userBox.values.first.photoUrl!)
-                  : const Icon(Iconsax.user),
+                  : Icon(
+                      Iconsax.user,
+                      color: MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark
+                          ? null
+                          : Colors.white,
+                    ),
               label: 'User',
             ),
           ],

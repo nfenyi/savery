@@ -14,6 +14,7 @@ import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/accounts_&_currencies/services/api_constants.dart';
 import 'package:savery/features/accounts_&_currencies/services/api_services.dart';
+import 'package:savery/features/main_screen/state/bottom_nav_index_provider.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'package:savery/main.dart';
 
@@ -50,306 +51,311 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const AppText(
-          text: 'Accounts & Currencies',
-          weight: FontWeight.bold,
-          size: AppSizes.bodySmall,
+        appBar: AppBar(
+          title: const AppText(
+            text: 'Accounts & Currencies',
+            weight: FontWeight.bold,
+            size: AppSizes.bodySmall,
+          ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: AppSizes.horizontalPaddingSmall),
-        child: Column(
-          children: [
-            Visibility(
-              visible: _accounts.isNotEmpty,
-              replacement: Expanded(
-                child: Center(
-                  child: Column(
-                    // mainAxisSize: MainAxisSize.max,
-                    children: [
-                      //TODO: fix all animations and center them
-                      Lottie.asset(AppAssets.noAccount, width: 150),
-                      const Gap(10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const AppText(text: 'Please '),
-                          InkWell(
-                            onTap: () {
-                              navigatorKey.currentState!.pop();
-                            },
-                            child: Ink(
-                              child: const AppText(
-                                text: 'create an account',
-                                color: AppColors.primary,
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
-                          ),
-                          const AppText(text: ' first.'),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(
+              horizontal: AppSizes.horizontalPaddingSmall),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const AppText(
+                text: 'Accounts',
+                weight: FontWeight.bold,
+                size: AppSizes.bodySmall,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const AppText(
-                    text: 'Transactions',
-                    weight: FontWeight.bold,
-                    size: AppSizes.bodySmall,
-                  ),
-                  SizedBox(
-                    height: Adaptive.h(20),
-                    child: ListView.builder(
-                      itemCount: _accounts.length,
-                      itemBuilder: (context, index) {
-                        final account = _accounts[index];
-                        return ListTile(
-                          contentPadding: const EdgeInsets.all(0),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
+              _accounts.isEmpty
+                  ? Center(
+                      child: Column(
+                        children: [
+                          Lottie.asset(AppAssets.noAccount, width: 150),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              DropdownButtonHideUnderline(
-                                child: DropdownButton2<String>(
-                                  hint: const AppText(
-                                    text: 'GHS',
-                                    overflow: TextOverflow.ellipsis,
-                                    color: Colors.grey,
-                                  ),
-                                  iconStyleData: const IconStyleData(
-                                    icon: FaIcon(
-                                      FontAwesomeIcons.chevronDown,
-                                      color: AppColors.primary,
-                                    ),
-                                    iconSize: 12.0,
-                                  ),
-                                  items: _currencies
-                                      .map((item) => DropdownMenuItem(
-                                            value: item,
-                                            child: Text(
-                                              item,
-                                              style: const TextStyle(
-                                                fontSize: AppSizes.bodySmaller,
-                                                fontWeight: FontWeight.w500,
-                                                // color: Colors.grey,
-                                              ),
-                                            ),
-                                          ))
-                                      .toList(),
-                                  value: account.currency ?? 'GHS',
-                                  onChanged: (value) async {
-                                    setState(() {
-                                      _accounts[index].currency = value;
-                                      _accounts[index].save();
-                                      // _accountsBox.values[index];
-                                    });
-                                  },
-                                  buttonStyleData: ButtonStyleData(
-                                    height: AppSizes.dropDownBoxHeight,
-                                    padding: const EdgeInsets.only(right: 10.0),
-                                    decoration: BoxDecoration(
-                                      // color: Colors.grey.shade100,
-                                      border: Border.all(
-                                        width: 1.0,
-                                        color: AppColors.neutral300,
-                                      ),
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                  ),
-                                  dropdownStyleData: DropdownStyleData(
-                                    maxHeight: 350,
-                                    elevation: 1,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5.0),
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  menuItemStyleData: const MenuItemStyleData(
-                                    height: 40.0,
-                                  ),
-                                ),
+                              const AppText(
+                                text: 'Please ',
+                                size: AppSizes.bodySmaller,
                               ),
-                              const Gap(45),
                               InkWell(
-                                onTap: () async {
-                                  final shouldDelete = await showAppInfoDialog(
-                                      context,
-                                      title:
-                                          'Are you sure you want to delete ${account.name}?',
-                                      cancelCallbackFunction: () =>
-                                          navigatorKey.currentState!.pop(true),
-                                      cancelText: 'Yes',
-                                      confirmText: 'Cancel');
-                                  if (shouldDelete == true) {
-                                    await _accountsBox.deleteAt(index);
-                                    setState(() {
-                                      _accounts = _accountsBox.values.toList();
-                                    });
-                                  }
+                                onTap: () {
+                                  navigatorKey.currentState!.pop();
+                                  ref
+                                      .read(bottomNavIndexProvider.notifier)
+                                      .updateIndex(0);
                                 },
                                 child: Ink(
-                                  child: const Icon(
-                                    FontAwesomeIcons.trashCan,
-                                    color: Colors.red,
-                                    size: 15,
+                                  child: const AppText(
+                                    text: 'create an account',
+                                    color: AppColors.primary,
+                                    size: AppSizes.bodySmaller,
+                                    decoration: TextDecoration.underline,
                                   ),
                                 ),
-                              )
+                              ),
+                              const AppText(
+                                text: ' first.',
+                                size: AppSizes.bodySmaller,
+                              ),
                             ],
                           ),
-                          leading: Image.asset(
-                            AppAssets.account,
-                            width: 20,
+                        ],
+                      ),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                          ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: _accounts.length,
+                            itemBuilder: (context, index) {
+                              final account = _accounts[index];
+                              return ListTile(
+                                contentPadding: const EdgeInsets.all(0),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    DropdownButtonHideUnderline(
+                                      child: DropdownButton2<String>(
+                                        hint: const AppText(
+                                          text: 'GHS',
+                                          overflow: TextOverflow.ellipsis,
+                                          color: Colors.grey,
+                                        ),
+                                        iconStyleData: const IconStyleData(
+                                          icon: FaIcon(
+                                            FontAwesomeIcons.chevronDown,
+                                            color: AppColors.primary,
+                                          ),
+                                          iconSize: 12.0,
+                                        ),
+                                        items: _currencies
+                                            .map((item) => DropdownMenuItem(
+                                                  value: item,
+                                                  child: Text(
+                                                    item,
+                                                    style: const TextStyle(
+                                                      fontSize:
+                                                          AppSizes.bodySmaller,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      // color: Colors.grey,
+                                                    ),
+                                                  ),
+                                                ))
+                                            .toList(),
+                                        value: account.currency ?? 'GHS',
+                                        onChanged: (value) async {
+                                          setState(() {
+                                            _accounts[index].currency = value;
+                                            _accounts[index].save();
+                                            // _accountsBox.values[index];
+                                          });
+                                        },
+                                        buttonStyleData: ButtonStyleData(
+                                          height: AppSizes.dropDownBoxHeight,
+                                          padding: const EdgeInsets.only(
+                                              right: 10.0),
+                                          decoration: BoxDecoration(
+                                            // color: Colors.grey.shade100,
+                                            border: Border.all(
+                                              width: 1.0,
+                                              color: AppColors.neutral300,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                        ),
+                                        dropdownStyleData: DropdownStyleData(
+                                          maxHeight: 350,
+                                          elevation: 1,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(5.0),
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        menuItemStyleData:
+                                            const MenuItemStyleData(
+                                          height: 40.0,
+                                        ),
+                                      ),
+                                    ),
+                                    const Gap(45),
+                                    InkWell(
+                                      onTap: () async {
+                                        final shouldDelete =
+                                            await showAppInfoDialog(context,
+                                                title:
+                                                    'Are you sure you want to delete ${account.name}?',
+                                                cancelCallbackFunction: () =>
+                                                    navigatorKey.currentState!
+                                                        .pop(true),
+                                                cancelText: 'Yes',
+                                                confirmText: 'Cancel');
+                                        if (shouldDelete == true) {
+                                          await _accountsBox.deleteAt(index);
+                                          setState(() {
+                                            _accounts =
+                                                _accountsBox.values.toList();
+                                          });
+                                        }
+                                      },
+                                      child: Ink(
+                                        child: const Icon(
+                                          FontAwesomeIcons.trashCan,
+                                          color: Colors.red,
+                                          size: 15,
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                leading: Image.asset(
+                                  AppAssets.account,
+                                  width: 20,
+                                ),
+                                title: Text(account.name),
+                              );
+                            },
                           ),
-                          title: Text(account.name),
-                        );
-                      },
-                    ),
-                  ),
-                  const Gap(10),
-                  const AppText(
-                    text: 'Exchange Rates',
-                    weight: FontWeight.bold,
-                    size: AppSizes.bodySmall,
-                  ),
-                  const Gap(5),
-                  (widget.currencyResponse.status == RequestStatus.success)
-                      ? SizedBox(
-                          height: Adaptive.h(30),
-                          child: Scrollbar(
-                            child: ListView(
-                              children: [
-                                ListTile(
-                                  contentPadding: const EdgeInsets.all(0),
-                                  leading: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 15, vertical: 11),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        width: 1.0,
-                                        color: Colors.deepPurple.shade100,
-                                      ),
-                                      borderRadius: BorderRadius.circular(30.0),
-                                    ),
-                                    child: const FaIcon(
-                                      FontAwesomeIcons.dollarSign,
-                                      size: 15,
-                                      color: Colors.deepPurple,
-                                    ),
-                                  ),
-                                  title: const Text('Dollar'),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      AppText(
-                                        text: (1 / _dollarRate)
-                                            .toStringAsFixed(3),
-                                        size: AppSizes.bodySmall,
-                                      ),
-                                      const Gap(5),
-                                      const AppText(text: 'GHS'),
-                                    ],
-                                  ),
-                                ),
-                                ListTile(
-                                  contentPadding: const EdgeInsets.all(0),
-                                  leading: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 15, vertical: 11),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        width: 1.0,
-                                        color: Colors.deepPurple.shade100,
-                                      ),
-                                      borderRadius: BorderRadius.circular(30.0),
-                                    ),
-                                    child: const FaIcon(
-                                      FontAwesomeIcons.sterlingSign,
-                                      size: 15,
-                                      color: Colors.deepPurple,
-                                    ),
-                                  ),
-                                  title: const Text('Pound'),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      AppText(
-                                        text:
-                                            (1 / _poundRate).toStringAsFixed(3),
-                                        size: AppSizes.bodySmall,
-                                      ),
-                                      const Gap(5),
-                                      const AppText(text: 'GHS'),
-                                    ],
-                                  ),
-                                ),
-                                ListTile(
-                                  contentPadding: const EdgeInsets.all(0),
-                                  leading: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 15, vertical: 11),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        width: 1.0,
-                                        color: Colors.deepPurple.shade100,
-                                      ),
-                                      borderRadius: BorderRadius.circular(30.0),
-                                    ),
-                                    child: const FaIcon(
-                                      FontAwesomeIcons.euroSign,
-                                      color: Colors.deepPurple,
-                                      size: 15,
-                                    ),
-                                  ),
-                                  title: const Text(
-                                    'Euro',
-                                  ),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      AppText(
-                                        text:
-                                            (1 / _euroRate).toStringAsFixed(3),
-                                        size: AppSizes.bodySmall,
-                                      ),
-                                      const Gap(5),
-                                      const AppText(text: 'GHS'),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ))
-                      : Center(
-                          child: SizedBox(
-                            width: Adaptive.w(60),
-                            child: Column(
-                              children: [
-                                const Gap(20),
-                                Image.asset(
-                                  AppAssets.noInternet,
-                                  height: Adaptive.h(20),
-                                ),
-                                const AppText(
-                                  text:
-                                      'Could not retrieve rates. Please check your internet connection',
-                                  textAlign: TextAlign.center,
-                                )
-                              ],
-                            ),
-                          ),
-                        )
-                ],
+                        ]),
+              const Gap(50),
+              const AppText(
+                text: 'Exchange Rates',
+                weight: FontWeight.bold,
+                size: AppSizes.bodySmall,
               ),
-            )
-          ],
-        ),
-      ),
-    );
+              const Gap(5),
+              (widget.currencyResponse.status == RequestStatus.success)
+                  ? SizedBox(
+                      height: Adaptive.h(30),
+                      child: Scrollbar(
+                        child: ListView(
+                          children: [
+                            ListTile(
+                              contentPadding: const EdgeInsets.all(0),
+                              leading: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 11),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    width: 1.0,
+                                    color: Colors.deepPurple.shade100,
+                                  ),
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                child: const FaIcon(
+                                  FontAwesomeIcons.dollarSign,
+                                  size: 15,
+                                  color: Colors.deepPurple,
+                                ),
+                              ),
+                              title: const Text('Dollar'),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  AppText(
+                                    text: (1 / _dollarRate).toStringAsFixed(3),
+                                    size: AppSizes.bodySmall,
+                                  ),
+                                  const Gap(5),
+                                  const AppText(text: 'GHS'),
+                                ],
+                              ),
+                            ),
+                            ListTile(
+                              contentPadding: const EdgeInsets.all(0),
+                              leading: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 11),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    width: 1.0,
+                                    color: Colors.deepPurple.shade100,
+                                  ),
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                child: const FaIcon(
+                                  FontAwesomeIcons.sterlingSign,
+                                  size: 15,
+                                  color: Colors.deepPurple,
+                                ),
+                              ),
+                              title: const Text('Pound'),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  AppText(
+                                    text: (1 / _poundRate).toStringAsFixed(3),
+                                    size: AppSizes.bodySmall,
+                                  ),
+                                  const Gap(5),
+                                  const AppText(text: 'GHS'),
+                                ],
+                              ),
+                            ),
+                            ListTile(
+                              contentPadding: const EdgeInsets.all(0),
+                              leading: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 11),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    width: 1.0,
+                                    color: Colors.deepPurple.shade100,
+                                  ),
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                child: const FaIcon(
+                                  FontAwesomeIcons.euroSign,
+                                  color: Colors.deepPurple,
+                                  size: 15,
+                                ),
+                              ),
+                              title: const Text(
+                                'Euro',
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  AppText(
+                                    text: (1 / _euroRate).toStringAsFixed(3),
+                                    size: AppSizes.bodySmall,
+                                  ),
+                                  const Gap(5),
+                                  const AppText(text: 'GHS'),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ))
+                  : Center(
+                      child: SizedBox(
+                        width: Adaptive.w(60),
+                        child: Column(
+                          children: [
+                            const Gap(20),
+                            Image.asset(
+                              AppAssets.noInternet,
+                              height: Adaptive.h(20),
+                            ),
+                            const AppText(
+                              text:
+                                  'Could not retrieve rates. Please check your internet connection',
+                              textAlign: TextAlign.center,
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+            ],
+          ),
+        ));
   }
 }

@@ -36,15 +36,12 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
   String? _selectedAccountName;
   late final HiveList<Account>? _accounts =
       ref.read(userProvider).user.accounts;
-  // final _accounts = Hive.box<Account>('accounts');
+
   late final List<String>? _accountNames;
   final _formKey = GlobalKey<FormState>();
 
-  // final _userBox = Hive.box<AppUser>(AppBoxes.user);
-
-  // final _goalsBox = Hive.box<Goal>(AppBoxes.goals);
   late DateTime _currentDate;
-  late Account? _selectedAccount;
+  late Account _selectedAccount;
   late String _currency;
   late double consumerSavingsBucket;
   final _goalNameController = TextEditingController();
@@ -60,13 +57,19 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
     super.initState();
 
     _selectedAccount = widget.account ?? _accounts!.first;
-    _selectedAccountName = _selectedAccount?.name;
-    _currency = _selectedAccount?.currency ?? 'GHS';
+    _selectedAccountName = _selectedAccount.name;
+    _currency = _selectedAccount.currency ?? 'GHS';
     _accountNames = _accounts
         ?.map(
           (e) => e.name,
         )
         .toList();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.account != null && _selectedAccount.balance < 0) {
+        showInfoToast('Reduce some milestones to reduce account deficit',
+            context: navigatorKey.currentState!.context);
+      }
+    });
   }
 
   @override
@@ -80,20 +83,20 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
   @override
   Widget build(BuildContext context) {
     consumerSavingsBucket =
-        ref.watch(userProvider).savingsBucket(_selectedAccount!);
+        ref.watch(userProvider).savingsBucket(_selectedAccount);
     HiveList<Goal>? consumerGoals =
-        ref.watch(userProvider).goals(_selectedAccount!);
+        ref.watch(userProvider).goals(_selectedAccount);
 
     _currentDate = DateTime.now();
     _showDaysMoreList = [];
     _goalAmountList = [];
-    for (int i = 0; i < (_selectedAccount?.goals?.length ?? 0); i++) {
+    for (int i = 0; i < (_selectedAccount.goals?.length ?? 0); i++) {
       _showDaysMoreList.add(ValueNotifier(true));
       _goalAmountList
-          .add(ValueNotifier(_selectedAccount!.goals![i].raisedAmount));
+          .add(ValueNotifier(_selectedAccount.goals![i].raisedAmount));
     }
     final double? bucketIndicatorThreshold = consumerGoals?.fold<double>(
-        0, (previousValue, element) => previousValue + element.raisedAmount);
+        0, (previousValue, element) => previousValue + element.fund);
 
     // _showDaysMoreList =
     //     List.filled(_selectedAccount.goals?.length ?? 0, ValueNotifier(true));
@@ -113,10 +116,9 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
               if (widget.account == null)
                 DropdownButtonHideUnderline(
                   child: DropdownButton2<String>(
+                    alignment: Alignment.center,
                     style: GoogleFonts.manrope(
                       fontSize: AppSizes.bodySmaller,
-                      fontWeight:
-                          _selectedAccountName == null ? null : FontWeight.bold,
                       color: _selectedAccountName == null
                           ? Colors.grey
                           : Colors.black,
@@ -154,15 +156,14 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                         _selectedAccount = _accounts!.firstWhere(
                           (element) => element.name == _selectedAccountName,
                         );
-                        _currency = _selectedAccount?.currency ?? 'GHS';
-                        consumerGoals = _selectedAccount?.goals;
+                        _currency = _selectedAccount.currency ?? 'GHS';
+                        consumerGoals = _selectedAccount.goals;
                       });
                     },
                     buttonStyleData: ButtonStyleData(
                       height: AppSizes.dropDownBoxHeight,
                       padding: const EdgeInsets.only(right: 10.0),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
                         border: Border.all(
                           width: 1.0,
                           color: AppColors.neutral300,
@@ -189,7 +190,15 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    const AppText(text: 'Savings Bucket'),
+                    Row(
+                      children: [
+                        const AppText(text: 'Savings Bucket:'),
+                        const Gap(10),
+                        AppText(
+                            text:
+                                '${_selectedAccount.currency ?? 'GHS'} $consumerSavingsBucket'),
+                      ],
+                    ),
                     const Gap(5),
                     // (consumerGoals != null && consumerGoals!.isNotEmpty)
                     //     ?
@@ -199,8 +208,8 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                       color: Colors.green,
                       value: (bucketIndicatorThreshold == null ||
                               bucketIndicatorThreshold == 0)
-                          ? consumerSavingsBucket / 100000 < 1
-                              ? consumerSavingsBucket / 100000
+                          ? consumerSavingsBucket / 1000 < 1
+                              ? consumerSavingsBucket / 1000
                               : 1
                           : consumerSavingsBucket / bucketIndicatorThreshold < 1
                               ? consumerSavingsBucket / bucketIndicatorThreshold
@@ -314,8 +323,20 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                                             child: Container(
                                               padding: const EdgeInsets.all(10),
                                               width: 50,
-                                              color:
-                                                  Colors.red.withOpacity(0.1),
+                                              color: consumerGoals![index]
+                                                          .raisedAmount >=
+                                                      consumerGoals![index].fund
+                                                  ? Colors.green
+                                                      .withOpacity(0.1)
+                                                  : consumerGoals![index]
+                                                              .raisedAmount <
+                                                          consumerGoals![index]
+                                                                  .fund /
+                                                              2
+                                                      ? Colors.red
+                                                          .withOpacity(0.1)
+                                                      : Colors.amber
+                                                          .withOpacity(0.1),
                                               child: Icon(
                                                 FontAwesomeIcons.circleCheck,
                                                 color: consumerGoals![index]
@@ -431,6 +452,15 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                                                                                 .toString(),
                                                                             format:
                                                                                 'j M Y'),
+                                                                    color: consumerGoals![index].raisedAmount >=
+                                                                            consumerGoals![index]
+                                                                                .fund
+                                                                        ? Colors
+                                                                            .green
+                                                                        : daysMore <=
+                                                                                0
+                                                                            ? Colors.red
+                                                                            : null,
                                                                   ),
                                                                 ),
                                                               );
@@ -472,7 +502,9 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                                                                       BorderRadius
                                                                           .circular(
                                                                               5),
-                                                                  value: value <
+                                                                  value: value /
+                                                                              goal
+                                                                                  .fund <
                                                                           1
                                                                       ? (value /
                                                                           goal.fund)
@@ -505,7 +537,7 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                                       children: [
                                         GestureDetector(
                                           onTap: () async {
-                                            await showUpdateDialog(
+                                            await _showUpdateDialog(
                                                 context: context,
                                                 goal: goal,
                                                 consumerSavingsBucket:
@@ -786,7 +818,7 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     await ref.read(userProvider.notifier).addGoal(
-                        selectedAccount: _selectedAccount!,
+                        selectedAccount: _selectedAccount,
                         goalName: _goalNameController.text,
                         goalFund: _goalFundController.text,
                         currentDate: _currentDate,
@@ -812,7 +844,7 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
     );
   }
 
-  Future<dynamic> showUpdateDialog(
+  Future<dynamic> _showUpdateDialog(
       {required BuildContext context,
       required Goal goal,
       required double consumerSavingsBucket}) {
@@ -1003,51 +1035,36 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     // final user = _userBox.values.first;
-                    final parsedInput = double.parse(_milestoneController.text);
-                    final double difference = parsedInput - goal.raisedAmount;
-                    if (difference <= consumerSavingsBucket) {
-                      if (parsedInput > goal.raisedAmount) {
+                    final parsedInput = double.parse(
+                        _milestoneController.text != ''
+                            ? _milestoneController.text
+                            : '0');
+                    final double difference =
+                        (parsedInput - goal.raisedAmount).abs();
+                    if (parsedInput > goal.raisedAmount) {
+                      if (consumerSavingsBucket == 0) {
+                        showInfoToast('Your savings bucket is currently empty',
+                            context: context);
+                      } else if (consumerSavingsBucket < difference) {
+                        showInfoToast(
+                            'Your increment is more than what the savings bucket can provide',
+                            context: context);
+                      } else if (consumerSavingsBucket >= difference) {
                         await ref.read(userProvider.notifier).increaseMilestone(
                               goal: goal,
                               parsedInput: parsedInput,
                               difference: difference,
-                              selectedAccount: _selectedAccount!,
+                              selectedAccount: _selectedAccount,
                             );
-                      } else {
-                        await ref.read(userProvider.notifier).reduceMilestone(
-                            goal: goal,
-                            parsedInput: parsedInput,
-                            difference: difference,
-                            selectedAccount: _selectedAccount!);
                       }
-                      // goal.raisedAmount = parsedInput;
-                      // await goal.save();
-
-                      // _selectedAccount.goals = HiveList(_goalsBox);
-
-                      // _selectedAccount.goals?.addAll(_goalsBox.values);
-
-                      // await _selectedAccount.save();
-                      //TODO: check if this change trickles to the user box without explicitly adding this to the user box
-                      //and calling the .save() method
-                      // var temp = user.accounts!.firstWhere(
-                      //   (element) => element.name == _selectedAccountName,
-                      // );
-
-                      _selectedDate = null;
-                      navigatorKey.currentState!.pop();
                     } else {
-                      if (consumerSavingsBucket == 0) {
-                        showInfoToast('Your savings bucket is currently empty',
-                            context: context);
-                      } else {
-                        showInfoToast(
-                            'Your increment is more than what the savings bucket can provide',
-                            context: context);
-                      }
+                      await ref.read(userProvider.notifier).decreaseMilestone(
+                          goal: goal,
+                          parsedInput: parsedInput,
+                          difference: difference,
+                          selectedAccount: _selectedAccount);
                     }
-
-                    //
+                    navigatorKey.currentState!.pop();
                   }
                 },
                 child: const AppText(
@@ -1072,7 +1089,7 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
       cancelCallbackFunction: () async {
         await ref
             .read(userProvider.notifier)
-            .deleteGoal(goal: goal, selectedAccount: _selectedAccount!);
+            .deleteGoal(goal: goal, selectedAccount: _selectedAccount);
         navigatorKey.currentState!.pop();
         navigatorKey.currentState!.pop();
       },
