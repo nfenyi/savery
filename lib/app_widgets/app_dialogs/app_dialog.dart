@@ -1,6 +1,6 @@
 part of '../widgets.dart';
 
-Future<dynamic> showAppInfoDialog(BuildContext context,
+Future<dynamic> showAppInfoDialog(BuildContext context, WidgetRef ref,
     {required String title,
     String? description,
     String confirmText = 'OK',
@@ -17,7 +17,7 @@ Future<dynamic> showAppInfoDialog(BuildContext context,
           title: AppText(
             text: title,
             size: AppSizes.bodySmall,
-            color: AppColors.neutral900,
+            // color: AppColors.neutral900,
             // weight: FontWeight.w600,
           ),
           content: description != null
@@ -39,7 +39,12 @@ Future<dynamic> showAppInfoDialog(BuildContext context,
                   },
               child: AppText(
                 text: confirmText,
-                color: AppColors.primary,
+                color: ((ref.watch(themeProvider) == 'System' ||
+                            ref.watch(themeProvider) == 'Dark') &&
+                        (MediaQuery.platformBrightnessOf(context) ==
+                            Brightness.dark))
+                    ? AppColors.primaryDark
+                    : AppColors.primary,
                 // weight: FontWeight.w600,
               ),
             ),
@@ -63,11 +68,10 @@ Future<dynamic> showAppInfoDialog(BuildContext context,
           actionsPadding: const EdgeInsets.only(bottom: 4),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-          backgroundColor: Colors.white,
           title: AppText(
             text: title,
             size: AppSizes.bodySmall,
-            color: title == 'Success' ? Colors.green : AppColors.neutral900,
+            color: title == 'Success' ? Colors.green : null,
             // weight: FontWeight.w600,
           ),
           content: description != null
@@ -86,7 +90,12 @@ Future<dynamic> showAppInfoDialog(BuildContext context,
                   },
               child: AppText(
                 text: confirmText,
-                color: AppColors.primary,
+                color: ((ref.watch(themeProvider) == 'System' ||
+                            ref.watch(themeProvider) == 'Dark') &&
+                        (MediaQuery.platformBrightnessOf(context) ==
+                            Brightness.dark))
+                    ? AppColors.primaryDark
+                    : AppColors.primary,
                 // weight: FontWeight.w600,
               ),
             ),

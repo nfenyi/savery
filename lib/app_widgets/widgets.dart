@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
@@ -17,6 +18,7 @@ import 'package:savery/main.dart';
 
 import '../../app_constants/app_sizes.dart';
 import '../app_constants/app_colors.dart';
+import '../themes/themes.dart';
 import 'app_text.dart';
 
 part 'app_gradient_button.dart';

@@ -18,6 +18,7 @@ import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/features/sign_in/user_info/providers/providers.dart';
 
 import 'package:syncfusion_flutter_charts/charts.dart';
+import '../../../themes/themes.dart';
 import '../../sign_in/user_info/models/user_model.dart';
 
 class StatisticsScreen extends ConsumerStatefulWidget {
@@ -158,7 +159,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                     iconStyleData: const IconStyleData(
                       icon: FaIcon(
                         FontAwesomeIcons.chevronDown,
-                        color: AppColors.neutral900,
+                        // color: AppColors.neutral900,
                       ),
                       iconSize: 12.0,
                     ),
@@ -173,7 +174,13 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                 style: GoogleFonts.manrope(
                                   fontSize: AppSizes.bodySmaller,
                                   fontWeight: FontWeight.w500,
-                                  color: AppColors.neutral900,
+                                  color:
+                                      ((ref.watch(themeProvider) == 'System') &&
+                                              (MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark))
+                                          ? Colors.white
+                                          : Colors.black,
                                 ),
                               ),
                             ))
@@ -241,20 +248,6 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                     _categoryString: transaction.category,
                                   };
                                 }
-                                if (transaction ==
-                                    _reversedTransactions?.last) {
-                                  _overallDayIncome = _dayIncomeMap.values.fold(
-                                    0,
-                                    (previousValue, element) =>
-                                        previousValue + element[_amountString],
-                                  );
-                                  _overallDayExpense = _dayExpenseMap.values
-                                      .fold(
-                                          0,
-                                          (previousValue, element) =>
-                                              previousValue +
-                                              element[_amountString]);
-                                }
                               } else {
                                 _overallDayIncome = _dayIncomeMap.values.fold(
                                   0,
@@ -280,11 +273,16 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                       height: AppSizes.dropDownBoxHeight,
                       padding: const EdgeInsets.only(right: 10.0),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        // border: Border.all(
-                        //   width: 1.0,
-                        //   color: AppColors.neutral300,
-                        // ),
+                        color: ((ref.watch(themeProvider) == 'System' ||
+                                    ref.watch(themeProvider) == 'Dark') &&
+                                (MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark))
+                            ? const Color.fromARGB(255, 32, 25, 33)
+                            : Colors.white,
+                        border: Border.all(
+                          // width: 1.0,
+                          color: AppColors.neutral300,
+                        ),
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                     ),
@@ -292,8 +290,13 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                       maxHeight: 350,
                       elevation: 1,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5.0),
-                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20.0),
+                        color: ((ref.watch(themeProvider) == 'System' ||
+                                    ref.watch(themeProvider) == 'Dark') &&
+                                (MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark))
+                            ? const Color.fromARGB(255, 32, 25, 33)
+                            : Colors.white,
                       ),
                     ),
                     menuItemStyleData: const MenuItemStyleData(
@@ -306,8 +309,19 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                   children: [
                     Expanded(
                       child: CupertinoSlidingSegmentedControl(
-                        backgroundColor: Colors.grey.shade100,
-                        thumbColor: AppColors.primary,
+                        backgroundColor:
+                            ((ref.watch(themeProvider) == 'System' ||
+                                        ref.watch(themeProvider) == 'Dark') &&
+                                    (MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark))
+                                ? const Color.fromARGB(255, 32, 25, 33)
+                                : Colors.grey.shade100,
+                        thumbColor: ((ref.watch(themeProvider) == 'System' ||
+                                    ref.watch(themeProvider) == 'Dark') &&
+                                (MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark))
+                            ? AppColors.primaryDark
+                            : AppColors.primary,
                         children: {
                           0: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -737,7 +751,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                               shape: RoundedRectangleBorder(
                                   side: BorderSide(
                                       color: _inIncomeView
-                                          ? AppColors.primary
+                                          ? ((ref.watch(themeProvider) ==
+                                                      'System') &&
+                                                  (MediaQuery
+                                                          .platformBrightnessOf(
+                                                              context) ==
+                                                      Brightness.dark))
+                                              ? AppColors.primaryDark
+                                              : AppColors.primary
                                           : AppColors.neutral100),
                                   borderRadius: BorderRadius.circular(20))),
                           onPressed: () {
@@ -779,6 +800,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                 children: [
                                   AppText(
                                     text:
+                                        //use to test for reactivity
+                                        // '${account?.balance} +${_periodFilter == 0 ? _overallIncome : _periodFilter == 1 ? _overallDayIncome : _periodFilter == 2 ? _overallWeekIncome : _periodFilter == 3 ? _overallMonthIncome : _overallYearIncome} ${_selectedAccount?.currency ?? 'GHS'}',
                                         '+${_periodFilter == 0 ? _overallIncome : _periodFilter == 1 ? _overallDayIncome : _periodFilter == 2 ? _overallWeekIncome : _periodFilter == 3 ? _overallMonthIncome : _overallYearIncome} ${_selectedAccount?.currency ?? 'GHS'}',
                                     size: AppSizes.heading5,
                                     color: Colors.green,
@@ -798,7 +821,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                               shape: RoundedRectangleBorder(
                                   side: BorderSide(
                                       color: !_inIncomeView
-                                          ? AppColors.primary
+                                          ? ((ref.watch(themeProvider) ==
+                                                      'System') &&
+                                                  (MediaQuery
+                                                          .platformBrightnessOf(
+                                                              context) ==
+                                                      Brightness.dark))
+                                              ? AppColors.primaryDark
+                                              : AppColors.primary
                                           : AppColors.neutral100),
                                   borderRadius: BorderRadius.circular(20))),
                           onPressed: () {
@@ -903,13 +933,29 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                               alignment: Alignment.centerRight,
                               hint: const AppText(
                                 text: 'Sort by',
-                                color: AppColors.primary,
+                                // color: ((ref.watch(themeProvider) == 'System' ||
+                                //             ref.watch(themeProvider) ==
+                                //                 'Dark') &&
+                                //         (MediaQuery.platformBrightnessOf(
+                                //                 context) ==
+                                //             Brightness.dark))
+                                //     ? App
+                                //     : AppColors.primary,
+                                color: AppColors.neutral300,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              iconStyleData: const IconStyleData(
+                              iconStyleData: IconStyleData(
                                 icon: FaIcon(
                                   FontAwesomeIcons.chevronDown,
-                                  color: AppColors.primary,
+                                  color:
+                                      ((ref.watch(themeProvider) == 'System' ||
+                                                  ref.watch(themeProvider) ==
+                                                      'Dark') &&
+                                              (MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark))
+                                          ? AppColors.primaryDark
+                                          : AppColors.primary,
                                 ),
                                 iconSize: 12.0,
                               ),
@@ -924,7 +970,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                           style: GoogleFonts.manrope(
                                             fontSize: AppSizes.bodySmaller,
                                             fontWeight: FontWeight.w500,
-                                            color: AppColors.primary,
+                                            color: ((ref.watch(themeProvider) ==
+                                                        'System') &&
+                                                    (MediaQuery
+                                                            .platformBrightnessOf(
+                                                                context) ==
+                                                        Brightness.dark))
+                                                ? AppColors.primaryDark
+                                                : AppColors.primary,
                                           ),
                                         ),
                                       ))
@@ -941,11 +994,15 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                 height: AppSizes.dropDownBoxHeight,
                                 padding: const EdgeInsets.only(right: 10.0),
                                 decoration: BoxDecoration(
-                                  // color: Colors.grey.shade100,
-                                  // border: Border.all(
-                                  //   width: 1.0,
-                                  //   color: AppColors.neutral300,
-                                  // ),
+                                  color: ((ref.watch(themeProvider) ==
+                                                  'System' ||
+                                              ref.watch(themeProvider) ==
+                                                  'Dark') &&
+                                          (MediaQuery.platformBrightnessOf(
+                                                  context) ==
+                                              Brightness.dark))
+                                      ? const Color.fromARGB(255, 32, 25, 33)
+                                      : Colors.white,
                                   borderRadius: BorderRadius.circular(20.0),
                                 ),
                               ),
@@ -953,8 +1010,16 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                 maxHeight: 350,
                                 elevation: 1,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  color: ((ref.watch(themeProvider) ==
+                                                  'System' ||
+                                              ref.watch(themeProvider) ==
+                                                  'Dark') &&
+                                          (MediaQuery.platformBrightnessOf(
+                                                  context) ==
+                                              Brightness.dark))
+                                      ? const Color.fromARGB(255, 32, 25, 33)
+                                      : Colors.white,
                                 ),
                               ),
                               menuItemStyleData: const MenuItemStyleData(
@@ -1085,7 +1150,15 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                   _transactionsHolder.entries.elementAt(index);
                               return Container(
                                 decoration: BoxDecoration(
-                                    color: Colors.grey.shade100,
+                                    color: ((ref.watch(themeProvider) ==
+                                                    'System' ||
+                                                ref.watch(themeProvider) ==
+                                                    'Dark') &&
+                                            (MediaQuery.platformBrightnessOf(
+                                                    context) ==
+                                                Brightness.dark))
+                                        ? const Color.fromARGB(255, 39, 32, 39)
+                                        : Colors.grey.shade100,
                                     borderRadius: BorderRadius.circular(15)),
                                 child: ListTile(
                                   // shape: RoundedRectangleBorder(
@@ -1099,18 +1172,41 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                         padding: const EdgeInsets.all(10),
                                         width: 50,
                                         color: _inIncomeView
-                                            ? AppColors.primary.withOpacity(0.1)
-                                            : _selectedSortBy == 'Sort by date'
-                                                ? AppColors.primary
+                                            ? ((ref.watch(themeProvider) ==
+                                                        'System') &&
+                                                    (MediaQuery.platformBrightnessOf(
+                                                            context) ==
+                                                        Brightness.dark))
+                                                ? AppColors.primaryDark
                                                     .withOpacity(0.1)
+                                                : AppColors.primary
+                                                    .withOpacity(0.1)
+                                            : _selectedSortBy == 'Sort by date'
+                                                ? ((ref.watch(themeProvider) ==
+                                                            'System') &&
+                                                        (MediaQuery.platformBrightnessOf(
+                                                                context) ==
+                                                            Brightness.dark))
+                                                    ? AppColors.primaryDark
+                                                        .withOpacity(0.1)
+                                                    : AppColors.primary
+                                                        .withOpacity(0.1)
                                                 : getCategoryColor(transaction
                                                         .value[_categoryString]
                                                         .name)!
                                                     .withOpacity(0.1),
                                         child: _inIncomeView
-                                            ? const Icon(
+                                            ? Icon(
                                                 FontAwesomeIcons.coins,
-                                                color: AppColors.primary,
+                                                color: ((ref.watch(
+                                                                themeProvider) ==
+                                                            'System') &&
+                                                        (MediaQuery
+                                                                .platformBrightnessOf(
+                                                                    context) ==
+                                                            Brightness.dark))
+                                                    ? AppColors.primaryDark
+                                                    : AppColors.primary,
                                               )
                                             : Iconify(
                                                 transaction
@@ -1118,7 +1214,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                                     .icon,
                                                 color: _selectedSortBy ==
                                                         'Sort by date'
-                                                    ? AppColors.primary
+                                                    ? ((ref.watch(themeProvider) ==
+                                                                'System') &&
+                                                            (MediaQuery.platformBrightnessOf(
+                                                                    context) ==
+                                                                Brightness
+                                                                    .dark))
+                                                        ? AppColors.primaryDark
+                                                        : AppColors.primary
                                                     : getCategoryColor(
                                                         transaction
                                                             .value[
@@ -1239,7 +1342,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
         return Colors.blue[100];
 
       case 'Food':
-        return AppColors.primary;
+        return AppColors.primaryDark;
       case 'Shopping':
         return Colors.blue[900];
       case 'Transport':

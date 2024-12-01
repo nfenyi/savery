@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="facebook_app_id">1719981685517477</string>
-    <string name="fb_login_protocol_scheme">fb1719981685517477</string>
-    <string name="facebook_client_token">308689b7f218582334283d222dee0217</string>
+    <string name="facebook_app_id">3816247238690368</string>
+    <string name="fb_login_protocol_scheme">fb3816247238690368</string>
+    <string name="facebook_client_token">e0c44810f0e720c777cf34f2289a54f6</string>
     <!-- next line wasn't in facebook's setup guide -->
     <string name="app_name">savery</string>
 </resources>    

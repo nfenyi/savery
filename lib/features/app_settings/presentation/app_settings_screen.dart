@@ -57,32 +57,37 @@ class ThemeDropdownButton extends ConsumerWidget {
                   value: item,
                   child: Text(
                     item,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: AppSizes.bodySmaller,
                       fontWeight: FontWeight.w500,
-                      // color: Colors.grey,
+                      color: ((ref.watch(themeProvider) == 'System') &&
+                              (MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark))
+                          ? Colors.white
+                          : Colors.black,
                     ),
                   ),
                 ))
             .toList(),
-        value: theme == ThemeMode.system
-            ? 'System'
-            : theme == ThemeMode.light
-                ? 'Light'
-                : 'Dark',
+        value: theme,
         onChanged: (value) async {
           // setState(() {
           //   _accounts[index].currency = value;
           //   _accounts[index].save();
           //   // _accountsBox.values[index];
           // });
-          ref.read(themeProvider.notifier).changeTheme(value);
+          await ref.read(themeProvider.notifier).changeTheme(value);
         },
         buttonStyleData: ButtonStyleData(
           height: AppSizes.dropDownBoxHeight,
           padding: const EdgeInsets.only(right: 10.0),
           decoration: BoxDecoration(
-            // color: Colors.grey.shade100,
+            color: ((ref.watch(themeProvider) == 'System' ||
+                        ref.watch(themeProvider) == 'Dark') &&
+                    (MediaQuery.platformBrightnessOf(context) ==
+                        Brightness.dark))
+                ? const Color.fromARGB(255, 32, 25, 33)
+                : Colors.white,
             border: Border.all(
               width: 1.0,
               color: AppColors.neutral300,
@@ -94,8 +99,13 @@ class ThemeDropdownButton extends ConsumerWidget {
           maxHeight: 350,
           elevation: 1,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5.0),
-            color: Colors.white,
+            borderRadius: BorderRadius.circular(10.0),
+            color: ((ref.watch(themeProvider) == 'System' ||
+                        ref.watch(themeProvider) == 'Dark') &&
+                    (MediaQuery.platformBrightnessOf(context) ==
+                        Brightness.dark))
+                ? const Color.fromARGB(255, 32, 25, 33)
+                : Colors.white,
           ),
         ),
         menuItemStyleData: const MenuItemStyleData(
@@ -113,7 +123,7 @@ class LanguageDropdownButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = ref.watch(themeProvider);
+    // final theme = ref.watch(themeProvider);
     return DropdownButtonHideUnderline(
       child: DropdownButton2<String>(
         iconStyleData: const IconStyleData(
@@ -130,10 +140,14 @@ class LanguageDropdownButton extends ConsumerWidget {
                   value: item,
                   child: Text(
                     item,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: AppSizes.bodySmaller,
                       fontWeight: FontWeight.w500,
-                      // color: Colors.grey,
+                      color: ((ref.watch(themeProvider) == 'System') &&
+                              (MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark))
+                          ? Colors.white
+                          : Colors.black,
                     ),
                   ),
                 ))
@@ -168,8 +182,13 @@ class LanguageDropdownButton extends ConsumerWidget {
           maxHeight: 350,
           elevation: 1,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5.0),
-            color: Colors.white,
+            borderRadius: BorderRadius.circular(10.0),
+            color: ((ref.watch(themeProvider) == 'System' ||
+                        ref.watch(themeProvider) == 'Dark') &&
+                    (MediaQuery.platformBrightnessOf(context) ==
+                        Brightness.dark))
+                ? const Color.fromARGB(255, 32, 25, 33)
+                : Colors.white,
           ),
         ),
         menuItemStyleData: const MenuItemStyleData(

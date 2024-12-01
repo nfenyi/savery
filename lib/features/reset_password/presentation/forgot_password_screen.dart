@@ -10,6 +10,8 @@ import 'package:savery/features/reset_password/presentation/resend_reset_link_sc
 import 'package:savery/features/sign_in/providers/providers.dart';
 import 'package:savery/main.dart';
 
+import '../../../themes/themes.dart';
+
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
 
@@ -21,15 +23,16 @@ class ForgotPasswordScreen extends ConsumerStatefulWidget {
 class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   final _emailController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(
-            horizontal: AppSizes.horizontalPaddingSmall),
-        child: Expanded(
+      body: Expanded(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+              horizontal: AppSizes.horizontalPaddingSmall),
           child: Column(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -37,9 +40,14 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AppText(
+                    AppText(
                       text: 'Forgot Password?',
-                      color: AppColors.primary,
+                      color: ((ref.watch(themeProvider) == 'System' ||
+                                  ref.watch(themeProvider) == 'Dark') &&
+                              (MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark))
+                          ? AppColors.primaryDark
+                          : AppColors.primary,
                       weight: FontWeight.bold,
                       size: AppSizes.heading6,
                     ),
@@ -48,7 +56,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       text:
                           'We will send you a reset link. Make sure the email you provide is the same as the one used to create your account.',
                       // textAlign: TextAlign.left,
-                      color: Colors.grey,
+                      // color: Colors.grey,
                     ),
                     const Gap(30),
                     const RequiredText('Email'),
@@ -57,6 +65,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       key: _formKey,
                       child: AppTextFormField(
                         controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
                         hintText: 'johndoe@gmail.com',
                         validator: FormBuilderValidators.compose([
                           // FormBuilderValidators.required(),
@@ -66,19 +75,35 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     ),
                   ],
                 ),
-                AppGradientButton(
-                  text: 'Send',
-                  callback: () async {
-                    if (_formKey.currentState!.validate()) {
-                      await ref.read(authStateProvider.notifier).sendResetLink(
-                            _emailController.text.trim(),
-                          );
-                      await navigatorKey.currentState!.push(MaterialPageRoute(
-                        builder: (context) =>
-                            ResendResetLinkScreen(_emailController.text.trim()),
-                      ));
-                    }
-                  },
+                Column(
+                  children: [
+                    AppGradientButton(
+                      text: 'Send',
+                      isLoading: _isLoading,
+                      callback: () async {
+                        if (_formKey.currentState!.validate()) {
+                          setState(() {
+                            _isLoading = true;
+                          });
+
+                          await ref
+                              .read(authStateProvider.notifier)
+                              .sendResetLink(_emailController.text.trim(), ref)
+                              .timeout(const Duration(seconds: 20),
+                                  onTimeout: () => 'timeout');
+                          setState(() {
+                            _isLoading = false;
+                          });
+                          await navigatorKey.currentState!
+                              .push(MaterialPageRoute(
+                            builder: (context) => ResendResetLinkScreen(
+                                _emailController.text.trim()),
+                          ));
+                        }
+                      },
+                    ),
+                    const Gap(25)
+                  ],
                 ),
               ]),
         ),

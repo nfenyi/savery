@@ -17,6 +17,7 @@ import 'package:savery/features/new_transaction/models/transaction_category_mode
 import 'package:savery/main.dart';
 
 import '../../../app_widgets/app_text.dart';
+import '../../../themes/themes.dart';
 
 class CategoriesScreen extends ConsumerWidget {
   const CategoriesScreen({super.key});
@@ -36,6 +37,7 @@ class CategoriesScreen extends ConsumerWidget {
         {required TransactionCategory category, required int index}) async {
       await showAppInfoDialog(
         navigatorKey.currentContext!,
+        ref,
         title: 'Are you sure you want to delete ${category.name}?',
         confirmText: 'No',
         cancelText: 'Yes',
@@ -84,9 +86,14 @@ class CategoriesScreen extends ConsumerWidget {
                   onPressed: () async {
                     if (formKey.currentState!.validate()) {}
                   },
-                  child: const AppText(
+                  child: AppText(
                     text: 'Add',
-                    color: AppColors.primary,
+                    color: ((ref.watch(themeProvider) == 'System' ||
+                                ref.watch(themeProvider) == 'Dark') &&
+                            (MediaQuery.platformBrightnessOf(context) ==
+                                Brightness.dark))
+                        ? AppColors.primaryDark
+                        : AppColors.primary,
                     weight: FontWeight.w600,
                   ),
                 ),
@@ -98,7 +105,6 @@ class CategoriesScreen extends ConsumerWidget {
                 actionsPadding: const EdgeInsets.only(bottom: 5),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.0)),
-                backgroundColor: Colors.white,
                 content: Form(
                   key: formKey,
                   child: Column(
@@ -163,7 +169,14 @@ class CategoriesScreen extends ConsumerWidget {
                                         padding: const EdgeInsets.all(5),
                                         decoration: BoxDecoration(
                                             color: (selectedIcon == icon
-                                                    ? AppColors.primary
+                                                    ? ((ref.watch(themeProvider) ==
+                                                                'System') &&
+                                                            (MediaQuery.platformBrightnessOf(
+                                                                    context) ==
+                                                                Brightness
+                                                                    .dark))
+                                                        ? AppColors.primaryDark
+                                                        : AppColors.primary
                                                     : Colors.grey)
                                                 .withOpacity(0.1),
                                             borderRadius:
@@ -173,7 +186,14 @@ class CategoriesScreen extends ConsumerWidget {
                                         child: Iconify(
                                           icon,
                                           color: selectedIcon == icon
-                                              ? AppColors.primary
+                                              ? ((ref.watch(themeProvider) ==
+                                                          'System') &&
+                                                      (MediaQuery
+                                                              .platformBrightnessOf(
+                                                                  context) ==
+                                                          Brightness.dark))
+                                                  ? AppColors.primaryDark
+                                                  : AppColors.primary
                                               : null,
                                           size: 7,
                                         ),
@@ -211,9 +231,14 @@ class CategoriesScreen extends ConsumerWidget {
                         }
                       }
                     },
-                    child: const AppText(
+                    child: AppText(
                       text: 'Add',
-                      color: AppColors.primary,
+                      color: ((ref.watch(themeProvider) == 'System' ||
+                                  ref.watch(themeProvider) == 'Dark') &&
+                              (MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark))
+                          ? AppColors.primaryDark
+                          : AppColors.primary,
                       weight: FontWeight.w600,
                     ),
                   ),
@@ -272,13 +297,23 @@ class CategoriesScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 7, vertical: 7),
                       decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: ((ref.watch(themeProvider) == 'System' ||
+                                      ref.watch(themeProvider) == 'Dark') &&
+                                  (MediaQuery.platformBrightnessOf(context) ==
+                                      Brightness.dark))
+                              ? AppColors.primaryDark.withOpacity(0.1)
+                              : AppColors.primary.withOpacity(0.1),
                           borderRadius:
                               const BorderRadius.all(Radius.circular(5))),
                       // width: Adaptive.w(5),
                       child: Iconify(
                         category.icon,
-                        color: AppColors.primary,
+                        color: ((ref.watch(themeProvider) == 'System' ||
+                                    ref.watch(themeProvider) == 'Dark') &&
+                                (MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark))
+                            ? AppColors.primaryDark
+                            : AppColors.primary,
                         size: 25,
                       ),
                     ),

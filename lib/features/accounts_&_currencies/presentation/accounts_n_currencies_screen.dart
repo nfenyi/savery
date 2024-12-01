@@ -1,6 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -17,6 +18,8 @@ import 'package:savery/features/accounts_&_currencies/services/api_services.dart
 import 'package:savery/features/main_screen/state/bottom_nav_index_provider.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'package:savery/main.dart';
+
+import '../../../themes/themes.dart';
 
 class CurrencyScreen extends ConsumerStatefulWidget {
   final RequestResponse currencyResponse;
@@ -89,9 +92,15 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                                       .updateIndex(0);
                                 },
                                 child: Ink(
-                                  child: const AppText(
+                                  child: AppText(
                                     text: 'create an account',
-                                    color: AppColors.primary,
+                                    color: ((ref.watch(themeProvider) ==
+                                                'System') &&
+                                            (MediaQuery.platformBrightnessOf(
+                                                    context) ==
+                                                Brightness.dark))
+                                        ? AppColors.primaryDark
+                                        : AppColors.primary,
                                     size: AppSizes.bodySmaller,
                                     decoration: TextDecoration.underline,
                                   ),
@@ -126,10 +135,17 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                                           overflow: TextOverflow.ellipsis,
                                           color: Colors.grey,
                                         ),
-                                        iconStyleData: const IconStyleData(
+                                        iconStyleData: IconStyleData(
                                           icon: FaIcon(
                                             FontAwesomeIcons.chevronDown,
-                                            color: AppColors.primary,
+                                            color: ((ref.watch(themeProvider) ==
+                                                        'System') &&
+                                                    (MediaQuery
+                                                            .platformBrightnessOf(
+                                                                context) ==
+                                                        Brightness.dark))
+                                                ? AppColors.primaryDark
+                                                : AppColors.primary,
                                           ),
                                           iconSize: 12.0,
                                         ),
@@ -138,12 +154,20 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                                                   value: item,
                                                   child: Text(
                                                     item,
-                                                    style: const TextStyle(
+                                                    style: TextStyle(
                                                       fontSize:
                                                           AppSizes.bodySmaller,
                                                       fontWeight:
                                                           FontWeight.w500,
-                                                      // color: Colors.grey,
+                                                      color: ((ref.watch(
+                                                                      themeProvider) ==
+                                                                  'System') &&
+                                                              (MediaQuery.platformBrightnessOf(
+                                                                      context) ==
+                                                                  Brightness
+                                                                      .dark))
+                                                          ? Colors.white
+                                                          : Colors.black,
                                                     ),
                                                   ),
                                                 ))
@@ -161,6 +185,19 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                                           padding: const EdgeInsets.only(
                                               right: 10.0),
                                           decoration: BoxDecoration(
+                                            color: ((ref.watch(themeProvider) ==
+                                                            'System' ||
+                                                        ref.watch(
+                                                                themeProvider) ==
+                                                            'Dark') &&
+                                                    (MediaQuery
+                                                            .platformBrightnessOf(
+                                                                context) ==
+                                                        Brightness.dark))
+                                                ? const Color.fromARGB(
+                                                    255, 32, 25, 33)
+                                                : Colors.white,
+
                                             // color: Colors.grey.shade100,
                                             border: Border.all(
                                               width: 1.0,
@@ -176,7 +213,18 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                                           decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(5.0),
-                                            color: Colors.white,
+                                            color: ((ref.watch(themeProvider) ==
+                                                            'System' ||
+                                                        ref.watch(
+                                                                themeProvider) ==
+                                                            'Dark') &&
+                                                    (MediaQuery
+                                                            .platformBrightnessOf(
+                                                                context) ==
+                                                        Brightness.dark))
+                                                ? const Color.fromARGB(
+                                                    255, 32, 25, 33)
+                                                : Colors.white,
                                           ),
                                         ),
                                         menuItemStyleData:
@@ -189,7 +237,8 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                                     InkWell(
                                       onTap: () async {
                                         final shouldDelete =
-                                            await showAppInfoDialog(context,
+                                            await showAppInfoDialog(
+                                                context, ref,
                                                 title:
                                                     'Are you sure you want to delete ${account.name}?',
                                                 cancelCallbackFunction: () =>
@@ -215,9 +264,18 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                                     )
                                   ],
                                 ),
-                                leading: Image.asset(
+                                leading: SvgPicture.asset(
                                   AppAssets.account,
                                   width: 20,
+                                  colorFilter: ColorFilter.mode(
+                                    ((ref.watch(themeProvider) == 'System') &&
+                                            (MediaQuery.platformBrightnessOf(
+                                                    context) ==
+                                                Brightness.dark))
+                                        ? Colors.white
+                                        : Colors.black,
+                                    BlendMode.srcIn,
+                                  ),
                                 ),
                                 title: Text(account.name),
                               );
@@ -341,10 +399,25 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                         child: Column(
                           children: [
                             const Gap(20),
-                            Image.asset(
-                              AppAssets.noInternet,
-                              height: Adaptive.h(20),
+                            Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: ((ref.watch(themeProvider) ==
+                                            'System') &&
+                                        (MediaQuery.platformBrightnessOf(
+                                                context) ==
+                                            Brightness.dark))
+                                    ? const Color.fromARGB(255, 236, 233, 241)
+                                    : Colors.white,
+                              ),
+                              child: Image.asset(
+                                AppAssets.noInternet,
+                                height: Adaptive.h(20),
+                              ),
                             ),
+                            const Gap(10),
                             const AppText(
                               text:
                                   'Could not retrieve rates. Please check your internet connection',

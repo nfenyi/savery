@@ -1,6 +1,6 @@
 part of 'widgets.dart';
 
-class AppGradientButton extends StatelessWidget {
+class AppGradientButton extends ConsumerWidget {
   final String text;
   final double? textSize;
   final Color textColor;
@@ -47,7 +47,7 @@ class AppGradientButton extends StatelessWidget {
     this.alignment = Alignment.center,
   });
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return ElevatedButton(
       onPressed: callback,
       style: ElevatedButton.styleFrom(
@@ -65,7 +65,7 @@ class AppGradientButton extends StatelessWidget {
               6,
               135,
             ),
-            AppColors.primary
+            AppColors.primary,
           ]),
           borderRadius: BorderRadius.circular(borderRadius),
         ),
@@ -75,7 +75,14 @@ class AppGradientButton extends StatelessWidget {
           height: height,
           alignment: Alignment.center,
           child: isLoading
-              ? const AppLoader()
+              ? AppLoader(
+                  color: ((ref.watch(themeProvider) == 'System' ||
+                              ref.watch(themeProvider) == 'Dark') &&
+                          (MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark))
+                      ? const Color.fromARGB(255, 104, 88, 131)
+                      : AppColors.primary,
+                )
               : icon == null
                   ? AppText(
                       text: text,

@@ -11,6 +11,7 @@ import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/my_goals/presentation/my_goals_screen.dart';
 import 'package:savery/main.dart';
+import '../../../themes/themes.dart';
 import '../../my_budgets/presentation/my_expense_budgets_screen.dart';
 import '../../my_savings/presentation/my_savings_screen.dart';
 import '../../sign_in/user_info/models/user_model.dart';
@@ -218,7 +219,12 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
                           padding: const EdgeInsets.only(
                               right: 17, left: 17, bottom: 20, top: 4),
                           // width: Adaptive.w(40),
-                          color: AppColors.primary,
+                          color: ((ref.watch(themeProvider) == 'System' ||
+                                      ref.watch(themeProvider) == 'Dark') &&
+                                  (MediaQuery.platformBrightnessOf(context) ==
+                                      Brightness.dark))
+                              ? AppColors.primaryDark
+                              : AppColors.primary,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [

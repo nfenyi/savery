@@ -2,7 +2,7 @@ part of 'widgets.dart';
 
 enum BorderType { outline, underline }
 
-class AppTextFormField extends StatelessWidget {
+class AppTextFormField extends ConsumerWidget {
   final TextEditingController? controller;
   final FocusNode? focusNode;
   final String hintText;
@@ -36,14 +36,15 @@ class AppTextFormField extends StatelessWidget {
   final bool filled;
   final Color fillColor;
   final TextInputAction? textInputAction;
-  final Color focusedBorderColor;
+  final Color? focusedBorderColor;
   final Color enabledBorderColor;
   final Color errorBorderColor;
-  final Color textColor;
+  final Color? textColor;
   final TextAlign textAlign;
   final VoidCallback? prefixCallback;
   final VoidCallback? suffixCallback;
   final TextStyle? textStyle;
+  final AutovalidateMode? autovalidateMode;
 
   const AppTextFormField(
       {super.key,
@@ -67,6 +68,7 @@ class AppTextFormField extends StatelessWidget {
       this.validator,
       this.onChanged,
       this.onTap,
+      this.autovalidateMode,
       this.onEditingComplete,
       this.onTapOutside,
       this.keyboardType = TextInputType.text,
@@ -81,16 +83,18 @@ class AppTextFormField extends StatelessWidget {
       this.filled = false,
       this.fillColor = Colors.transparent,
       this.textInputAction = TextInputAction.done,
-      this.focusedBorderColor = AppColors.primary,
-      this.enabledBorderColor = AppColors.neutral300,
+      this.focusedBorderColor,
+      this.enabledBorderColor = AppColors.neutral500,
       this.errorBorderColor = Colors.red,
       this.prefixCallback,
       this.suffixCallback,
-      this.textColor = Colors.black,
+      this.textColor,
       this.textAlign = TextAlign.start});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    logger.d(((ref.watch(themeProvider) == 'System') &&
+        (MediaQuery.platformBrightnessOf(context) == Brightness.dark)));
     return TextFormField(
       textAlign: textAlign,
       controller: controller,
@@ -101,7 +105,7 @@ class AppTextFormField extends StatelessWidget {
       readOnly: readOnly,
       enabled: enabled,
       maxLengthEnforcement: MaxLengthEnforcement.enforced,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
+      autovalidateMode: autovalidateMode ?? AutovalidateMode.onUserInteraction,
       maxLength: maxLength,
       maxLines: maxLines,
       minLines: minLines,
@@ -204,9 +208,15 @@ class AppTextFormField extends StatelessWidget {
               ),
         focusedBorder: borderType == BorderType.outline
             ? OutlineInputBorder(
+                borderRadius: BorderRadius.circular(radius),
                 borderSide: BorderSide(
                   width: 1,
-                  color: focusedBorderColor,
+                  color: focusedBorderColor ??
+                      (((ref.watch(themeProvider) == 'System') &&
+                              (MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark))
+                          ? AppColors.primaryDark
+                          : AppColors.primary),
                 ),
                 // borderRadius: BorderRadius.all(
                 //   Radius.circular(radius),
@@ -215,7 +225,12 @@ class AppTextFormField extends StatelessWidget {
             : UnderlineInputBorder(
                 borderSide: BorderSide(
                   width: 1,
-                  color: focusedBorderColor,
+                  color: focusedBorderColor ??
+                      (((ref.watch(themeProvider) == 'System') &&
+                              (MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark))
+                          ? AppColors.primaryDark
+                          : AppColors.primary),
                 ),
                 // borderRadius: BorderRadius.all(
                 //   Radius.circular(radius),

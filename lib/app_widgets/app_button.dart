@@ -1,6 +1,6 @@
 part of 'widgets.dart';
 
-class AppButton extends StatelessWidget {
+class AppButton extends ConsumerWidget {
   final String text;
   final double? textSize;
   final Color textColor;
@@ -8,7 +8,7 @@ class AppButton extends StatelessWidget {
   final FontStyle textStyle;
   final TextDecoration textDecoration;
   final VoidCallback? callback;
-  final Color buttonColor;
+  final Color? buttonColor;
   final Color loaderColor;
   final double loaderSize;
   final double? width;
@@ -38,7 +38,8 @@ class AppButton extends StatelessWidget {
     this.isLoading = false,
     this.isSecondary = false,
     this.textColor = Colors.white,
-    this.buttonColor = AppColors.primary,
+    // this.buttonColor = AppColors.primary,
+    this.buttonColor,
     this.loaderColor = Colors.white,
     this.loaderSize = 30.0,
     this.textWeight = FontWeight.w500,
@@ -47,7 +48,7 @@ class AppButton extends StatelessWidget {
     this.alignment = Alignment.center,
   });
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return InkWell(
       onTap: callback,
       child: Container(
@@ -58,10 +59,27 @@ class AppButton extends StatelessWidget {
         alignment: alignment,
         decoration: decoration ??
             BoxDecoration(
-              color: isSecondary ? Colors.transparent : buttonColor,
+              color: isSecondary
+                  ? Colors.transparent
+                  : buttonColor ??
+                      (((ref.watch(themeProvider) == 'System' ||
+                                  ref.watch(themeProvider) == 'Dark') &&
+                              (MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark))
+                          ? AppColors.primaryDark
+                          : AppColors.primary),
               borderRadius: BorderRadius.circular(borderRadius),
-              border:
-                  isSecondary ? Border.all(width: 1, color: buttonColor) : null,
+              border: isSecondary
+                  ? Border.all(
+                      width: 1,
+                      color: ((ref.watch(themeProvider) == 'System' ||
+                                  ref.watch(themeProvider) == 'Dark') &&
+                              (MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark))
+                          ? AppColors.primaryDark
+                          : AppColors.primary,
+                    )
+                  : null,
             ),
         child: isLoading
             ? const AppLoader()
@@ -69,7 +87,15 @@ class AppButton extends StatelessWidget {
                 ? AppText(
                     text: text,
                     size: textSize ?? AppSizes.bodySmaller,
-                    color: isSecondary ? buttonColor : textColor,
+                    color: isSecondary
+                        ? buttonColor ??
+                            (((ref.watch(themeProvider) == 'System' ||
+                                        ref.watch(themeProvider) == 'Dark') &&
+                                    (MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark))
+                                ? AppColors.primaryDark
+                                : AppColors.primary)
+                        : textColor,
                     weight: textWeight,
                     style: textStyle,
                     decoration: textDecoration,
@@ -83,7 +109,17 @@ class AppButton extends StatelessWidget {
                           AppText(
                             text: text,
                             size: textSize ?? AppSizes.bodySmaller,
-                            color: isSecondary ? buttonColor : textColor,
+                            color: isSecondary
+                                ? buttonColor ??
+                                    (((ref.watch(themeProvider) == 'System' ||
+                                                ref.watch(themeProvider) ==
+                                                    'Dark') &&
+                                            (MediaQuery.platformBrightnessOf(
+                                                    context) ==
+                                                Brightness.dark))
+                                        ? AppColors.primaryDark
+                                        : AppColors.primary)
+                                : textColor,
                             weight: textWeight,
                             style: textStyle,
                             decoration: textDecoration,

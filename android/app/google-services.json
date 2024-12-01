@@ -1,26 +1,44 @@
 {
   "project_info": {
-    "project_number": "26297828009",
-    "project_id": "savery-d54a9",
-    "storage_bucket": "savery-d54a9.firebasestorage.app"
+    "project_number": "154149331628",
+    "project_id": "savery-5f977",
+    "storage_bucket": "savery-5f977.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:26297828009:android:cd713cc7f8788fa7dedfb8",
+        "mobilesdk_app_id": "1:154149331628:android:a340f3a22f595476813509",
         "android_client_info": {
-          "package_name": "com.example.savery"
+          "package_name": "com.example.savery2"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "154149331628-7o93as7gu2eoeci97b8qu2uh228igicl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyCcZZ7ihjd0zLZJktSZ3F86lEnCOmZzinI"
+          "current_key": "AIzaSyBNk21ueKJ__0VxhAhIhm1U3amtpa1WRaI"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "154149331628-7o93as7gu2eoeci97b8qu2uh228igicl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "154149331628-k295arbeb6g3nfnb37fte7m5k6i92lj4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                
+                "bundle_id": "com.example.savery2"
+              }
+            }
+          ]
         }
       }
     }

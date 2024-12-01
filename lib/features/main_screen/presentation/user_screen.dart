@@ -18,6 +18,7 @@ import 'package:savery/features/sign_in/providers/providers.dart';
 import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'package:savery/main.dart';
+import 'package:savery/themes/themes.dart';
 
 import '../../../app_constants/app_assets.dart';
 import '../../../app_constants/app_colors.dart';
@@ -31,43 +32,50 @@ class UserScreen extends ConsumerStatefulWidget {
 
 class _UserScreenState extends ConsumerState<UserScreen> {
   final _userBox = Hive.box<AppUser>(AppBoxes.user);
-  final List<Setting> _personalSettings = [
-    Setting(
-      icon: Iconsax.notification,
-      name: "Notifications",
-    ),
-    Setting(
-        icon: Icons.settings_outlined,
-        name: "Settings",
-        callback: () {
-          navigatorKey.currentState!.push(
-              MaterialPageRoute(builder: (context) => const AppSettings()));
-        }),
-    Setting(
-        icon: Iconsax.grid_2,
-        name: "Categories",
-        callback: () {
-          navigatorKey.currentState!.push(MaterialPageRoute(
-              builder: (context) => const CategoriesScreen()));
-        }),
-    Setting(
-        icon: FontAwesomeIcons.chartLine,
-        name: "Accounts & Currencies",
-        callback: () async {
-          showLoadingDialog(description: 'Fetching exchange rates...');
-          final response = await ApiServices().fetchExchangeRates();
-          navigatorKey.currentState!.pop();
-          navigatorKey.currentState!.push(MaterialPageRoute(
-            builder: (context) => CurrencyScreen(
-              currencyResponse: response,
-            ),
-          ));
-        }),
-    Setting(
-      icon: Iconsax.message,
-      name: "Support",
-    ),
-  ];
+  late final List<Setting> _personalSettings;
+
+  @override
+  void initState() {
+    super.initState();
+    _personalSettings = [
+      Setting(
+        icon: Iconsax.notification,
+        name: "Notifications",
+      ),
+      Setting(
+          icon: Icons.settings_outlined,
+          name: "Settings",
+          callback: () {
+            navigatorKey.currentState!.push(
+                MaterialPageRoute(builder: (context) => const AppSettings()));
+          }),
+      Setting(
+          icon: Iconsax.grid_2,
+          name: "Categories",
+          callback: () {
+            navigatorKey.currentState!.push(MaterialPageRoute(
+                builder: (context) => const CategoriesScreen()));
+          }),
+      Setting(
+          icon: FontAwesomeIcons.chartLine,
+          name: "Accounts & Currencies",
+          callback: () async {
+            showLoadingDialog(
+                description: 'Fetching exchange rates...', ref: ref);
+            final response = await ApiServices().fetchExchangeRates();
+            navigatorKey.currentState!.pop();
+            navigatorKey.currentState!.push(MaterialPageRoute(
+              builder: (context) => CurrencyScreen(
+                currencyResponse: response,
+              ),
+            ));
+          }),
+      Setting(
+        icon: Iconsax.message,
+        name: "Support",
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,9 +86,14 @@ class _UserScreenState extends ConsumerState<UserScreen> {
           Container(
             height: Adaptive.h(18),
             width: double.infinity,
-            decoration: const BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.only(
+            decoration: BoxDecoration(
+                color: ((ref.watch(themeProvider) == 'System' ||
+                            ref.watch(themeProvider) == 'Dark') &&
+                        (MediaQuery.platformBrightnessOf(context) ==
+                            Brightness.dark))
+                    ? AppColors.primaryDark
+                    : AppColors.primary,
+                borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(15),
                     bottomRight: Radius.circular(15))),
             child: Center(

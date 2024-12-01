@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:savery/app_constants/app_constants.dart';
@@ -22,12 +23,12 @@ class Authenticator {
     await FirebaseAuth.instance.signOut();
     await GoogleSignIn().signOut();
     await FacebookAuth.instance.logOut();
-    await Hive.box(AppBoxes.user).put('authenticated', false);
+    await Hive.box(AppBoxes.appState).put('authenticated', false);
 
     // await appStateBox.put('user', {});
   }
 
-  Future<AuthResult> logInWithFacebook() async {
+  Future<AuthResult> logInWithFacebook(WidgetRef ref) async {
     final loginResult = await FacebookAuth.instance.login();
     final AccessToken? accessToken = loginResult.accessToken;
 
@@ -51,7 +52,7 @@ class Authenticator {
         // final providers = await FirebaseAuth.instance.fetchSignInMethodsForEmail(
         //     email!);
         // if (providers.contains(Constants.googleCom)) {
-        await loginWithGoogle();
+        await loginWithGoogle(ref);
         //TODO: handle errors that can come from this function:
         await FirebaseAuth.instance.currentUser?.linkWithCredential(
           credential,
@@ -63,16 +64,16 @@ class Authenticator {
           context: navigatorKey.currentContext!,
           'It seems you signed in using your google account. Signing in with Google instead',
         );
-        return await loginWithGoogle();
+        return await loginWithGoogle(ref);
       } else {
-        await showAppInfoDialog(navigatorKey.currentContext!,
-            title: e.toString());
+        await showAppInfoDialog(navigatorKey.currentContext!, ref,
+            title: e.message ?? e.toString());
         return AuthResult.failure;
       }
     }
   }
 
-  Future<AuthResult> loginWithGoogle() async {
+  Future<AuthResult> loginWithGoogle(WidgetRef ref) async {
     final GoogleSignIn googleSignIn = GoogleSignIn(scopes: [
       Constants.emailScope,
     ]);
@@ -92,8 +93,12 @@ class Authenticator {
       );
       await Hive.box(AppBoxes.appState).put('authenticated', true);
       return AuthResult.success;
+    } on FirebaseAuthException catch (e) {
+      await showAppInfoDialog(navigatorKey.currentContext!, ref,
+          title: e.message ?? e.code);
+      return AuthResult.failure;
     } catch (e) {
-      await showAppInfoDialog(navigatorKey.currentContext!,
+      await showAppInfoDialog(navigatorKey.currentContext!, ref,
           title: e.toString());
       return AuthResult.failure;
     }
@@ -102,7 +107,8 @@ class Authenticator {
   Future<AuthResult> createAccountWithEmailAndPassword(
       {required String email,
       required String password,
-      required String name}) async {
+      required String name,
+      required WidgetRef ref}) async {
     try {
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -115,16 +121,20 @@ class Authenticator {
       } else {
         return AuthResult.failure;
       }
-    } on Exception catch (e) {
+    } on FirebaseAuthException catch (e) {
       //TODO: make error message user friendly
-      await showAppInfoDialog(navigatorKey.currentContext!,
-          title: e.toString());
+      await showAppInfoDialog(navigatorKey.currentContext!, ref,
+          title: e.message ?? e.code);
       return AuthResult.failure;
+    } catch (e) {
+      await showAppInfoDialog(navigatorKey.currentContext!, ref,
+          title: e.toString());
     }
+    return AuthResult.failure;
   }
 
   Future<AuthResult> signInWithEmailAndPassword(
-      String email, String password) async {
+      String email, String password, WidgetRef ref) async {
     try {
       final result = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
@@ -138,19 +148,23 @@ class Authenticator {
           phoneNumber: result.user?.phoneNumber));
 
       return AuthResult.success;
+    } on FirebaseAuthException catch (e) {
+      await showAppInfoDialog(navigatorKey.currentContext!, ref,
+          title: e.message ?? e.code);
+      return AuthResult.failure;
     } catch (e) {
-      await showAppInfoDialog(navigatorKey.currentContext!,
+      await showAppInfoDialog(navigatorKey.currentContext!, ref,
           title: e.toString());
       return AuthResult.failure;
     }
   }
 
-  Future<void> sendPasswordReset(String email) async {
+  Future<void> sendPasswordReset(String email, WidgetRef ref) async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
     } on FirebaseAuthException catch (e) {
-      await showAppInfoDialog(navigatorKey.currentContext!,
-          title: e.toString());
+      await showAppInfoDialog(navigatorKey.currentContext!, ref,
+          title: e.message ?? e.code);
       // switch (e.code) {
       //   case 'invalid-email':
       //     throw InvalidEmailAuthException();

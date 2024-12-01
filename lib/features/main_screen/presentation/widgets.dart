@@ -7,6 +7,7 @@ import 'package:savery/features/my_budgets/presentation/my_expense_budgets_scree
 import 'package:savery/features/my_goals/presentation/my_goals_screen.dart';
 import 'package:savery/features/sign_in/user_info/providers/providers.dart';
 import 'package:savery/main.dart';
+import 'package:savery/themes/themes.dart';
 
 import '../../../app_constants/app_sizes.dart';
 import '../../../app_widgets/app_text.dart';
@@ -31,10 +32,17 @@ class AccountCard extends ConsumerWidget {
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [
-          Color.fromARGB(255, 224, 130, 186),
-          Color.fromARGB(255, 156, 117, 233)
-        ]),
+        gradient: ((ref.watch(themeProvider) == 'System' ||
+                    ref.watch(themeProvider) == 'Dark') &&
+                (MediaQuery.platformBrightnessOf(context) == Brightness.dark))
+            ? const LinearGradient(colors: [
+                Color.fromARGB(255, 172, 84, 136),
+                Color.fromARGB(255, 122, 91, 183)
+              ])
+            : const LinearGradient(colors: [
+                Color.fromARGB(255, 224, 130, 186),
+                Color.fromARGB(255, 156, 117, 233)
+              ]),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -127,9 +135,16 @@ class AccountCard extends ConsumerWidget {
                             PopupMenuItem<int>(
                               height: popupMenuHeight,
                               value: 0,
-                              child: const AppText(
+                              child: AppText(
                                 text: 'Budget',
-                                color: AppColors.primary,
+                                color: ((ref.watch(themeProvider) == 'System' ||
+                                            ref.watch(themeProvider) ==
+                                                'Dark') &&
+                                        (MediaQuery.platformBrightnessOf(
+                                                context) ==
+                                            Brightness.dark))
+                                    ? AppColors.primaryDark
+                                    : AppColors.primary,
                               ),
                             ),
                             const PopupMenuDivider(),
@@ -196,9 +211,16 @@ class AccountCard extends ConsumerWidget {
                             PopupMenuItem<int>(
                               height: popupMenuHeight,
                               value: 0,
-                              child: const AppText(
+                              child: AppText(
                                 text: 'Budget',
-                                color: AppColors.primary,
+                                color: ((ref.watch(themeProvider) == 'System' ||
+                                            ref.watch(themeProvider) ==
+                                                'Dark') &&
+                                        (MediaQuery.platformBrightnessOf(
+                                                context) ==
+                                            Brightness.dark))
+                                    ? AppColors.primaryDark
+                                    : AppColors.primary,
                               ),
                             ),
                             const PopupMenuDivider(),

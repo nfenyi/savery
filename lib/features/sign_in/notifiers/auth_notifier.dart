@@ -23,9 +23,9 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     state = const AuthState.unknown();
   }
 
-  Future<void> logInWithGoogle() async {
+  Future<void> logInWithGoogle(WidgetRef ref) async {
     state = state.copiedWithIsLoading(true);
-    final result = await _authenticator.loginWithGoogle();
+    final result = await _authenticator.loginWithGoogle(ref);
     final userId = _authenticator.userId;
 
     // if (result == AuthResult.success && userId != null) {
@@ -41,10 +41,11 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
   Future<void> createAccountWithEmailAndPassword(
       {required String email,
       required String password,
-      required String name}) async {
+      required String name,
+      required WidgetRef ref}) async {
     state = state.copiedWithIsLoading(true);
     final result = await _authenticator.createAccountWithEmailAndPassword(
-        email: email, password: password, name: name);
+        email: email, password: password, name: name, ref: ref);
     final userId = _authenticator.userId;
 
     state = AuthState(
@@ -54,17 +55,16 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     );
   }
 
-  Future<void> sendResetLink(String email) async {
+  Future<void> sendResetLink(String email, WidgetRef ref) async {
     state = state.copiedWithIsLoading(true);
-    await _authenticator.sendPasswordReset(
-      email,
-    );
+    await _authenticator.sendPasswordReset(email, ref);
   }
 
-  Future<void> signInWithEmailAndPassword(String email, String password) async {
+  Future<void> signInWithEmailAndPassword(
+      String email, String password, WidgetRef ref) async {
     state = state.copiedWithIsLoading(true);
     final result =
-        await _authenticator.signInWithEmailAndPassword(email, password);
+        await _authenticator.signInWithEmailAndPassword(email, password, ref);
     final userId = _authenticator.userId;
 
     state = AuthState(
@@ -74,9 +74,9 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     );
   }
 
-  Future<void> logInWithFacebook() async {
+  Future<void> logInWithFacebook(WidgetRef ref) async {
     state = state.copiedWithIsLoading(true);
-    final result = await _authenticator.logInWithFacebook();
+    final result = await _authenticator.logInWithFacebook(ref);
     final userId = _authenticator.userId;
 
     // if (result == AuthResult.success && userId != null) {

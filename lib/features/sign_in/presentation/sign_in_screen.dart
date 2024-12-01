@@ -16,6 +16,7 @@ import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'package:savery/features/sign_up/presentation/create_account_screen.dart';
 import 'package:savery/main.dart';
 
+import '../../../themes/themes.dart';
 import '../../main_screen/presentation/main_screen.dart';
 import '../providers/providers.dart';
 
@@ -52,18 +53,28 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         padding: const EdgeInsets.symmetric(
             horizontal: AppSizes.horizontalPaddingSmall),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Center(
+          Center(
             child: Column(
               children: [
-                AppNameWidget(),
+                const AppNameWidget(),
                 AppText(
                   text: 'Simplify your expenses',
-                  color: Colors.grey,
+                  color: ((ref.watch(themeProvider) == 'System' ||
+                              ref.watch(themeProvider) == 'Dark') &&
+                          (MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark))
+                      ? const Color.fromARGB(255, 162, 166, 173)
+                      : Colors.grey,
                 ),
-                Gap(20),
+                const Gap(20),
                 AppText(
                   text: 'SIGN IN',
-                  color: AppColors.primary,
+                  color: ((ref.watch(themeProvider) == 'System' ||
+                              ref.watch(themeProvider) == 'Dark') &&
+                          (MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark))
+                      ? AppColors.primaryDark
+                      : AppColors.primary,
                   weight: FontWeight.bold,
                   size: AppSizes.heading6,
                 ),
@@ -81,6 +92,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 AppTextFormField(
                     controller: _emailController,
                     hintText: 'johndoe@gmail.com',
+                    autovalidateMode: AutovalidateMode.disabled,
                     validator: FormBuilderValidators.compose([
                       FormBuilderValidators.required(),
                       FormBuilderValidators.email(),
@@ -94,6 +106,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   controller: _passwordController,
                   hintText: '* * * * * * * *',
                   obscureText: !_showPassword,
+                  autovalidateMode: AutovalidateMode.disabled,
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.password(),
                   ]),
@@ -117,10 +130,15 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
-              child: const AppText(
+              child: AppText(
                 text: 'Forgot Password?',
                 decoration: TextDecoration.underline,
-                color: AppColors.primary,
+                color: ((ref.watch(themeProvider) == 'System' ||
+                            ref.watch(themeProvider) == 'Dark') &&
+                        (MediaQuery.platformBrightnessOf(context) ==
+                            Brightness.dark))
+                    ? AppColors.primaryDark
+                    : AppColors.primary,
               ),
               onPressed: () async {
                 await navigatorKey.currentState!.push(MaterialPageRoute(
@@ -141,9 +159,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   await ref
                       .read(authStateProvider.notifier)
                       .signInWithEmailAndPassword(
-                        _emailController.text,
-                        _passwordController.text,
-                      );
+                          _emailController.text, _passwordController.text, ref);
                   if (ref.read(authStateProvider).result ==
                       AuthResult.success) {
                     await _appBox.put('authenticated', true);
@@ -168,16 +184,21 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
           const Gap(
             40,
           ),
-          const Row(
+          Row(
             children: [
-              Expanded(child: Divider()),
-              Gap(10),
+              const Expanded(child: Divider()),
+              const Gap(10),
               AppText(
                 text: 'Or Log In with',
-                color: AppColors.neutral500,
+                color: ((ref.watch(themeProvider) == 'System' ||
+                            ref.watch(themeProvider) == 'Dark') &&
+                        (MediaQuery.platformBrightnessOf(context) ==
+                            Brightness.dark))
+                    ? AppColors.neutral300
+                    : AppColors.neutral500,
               ),
-              Gap(10),
-              Expanded(child: Divider()),
+              const Gap(10),
+              const Expanded(child: Divider()),
             ],
           ),
           const Gap(
@@ -191,7 +212,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 callback: () async {
                   await ref
                       .read(authStateProvider.notifier)
-                      .logInWithFacebook();
+                      .logInWithFacebook(ref);
                   if (ref.read(authStateProvider).result ==
                       AuthResult.success) {
                     User firebaseUser = FirebaseAuth.instance.currentUser!;
@@ -210,7 +231,12 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   }
                 },
                 icon: FontAwesomeIcons.facebookF,
-                color: Colors.blue[900],
+                color: ((ref.watch(themeProvider) == 'System' ||
+                            ref.watch(themeProvider) == 'Dark') &&
+                        (MediaQuery.platformBrightnessOf(context) ==
+                            Brightness.dark))
+                    ? Colors.blue[300]
+                    : Colors.blue[900],
               ),
               const Gap(20),
               //google button
@@ -218,7 +244,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 icon: FontAwesomeIcons.google,
                 // color: null,
                 callback: () async {
-                  await ref.read(authStateProvider.notifier).logInWithGoogle();
+                  await ref
+                      .read(authStateProvider.notifier)
+                      .logInWithGoogle(ref);
                   if (ref.read(authStateProvider).result ==
                       AuthResult.success) {
                     User firebaseUser = FirebaseAuth.instance.currentUser!;
@@ -244,7 +272,12 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   showInfoToast('Coming soon.', context: context);
                 },
                 icon: FontAwesomeIcons.apple,
-                color: Colors.black,
+                color: ((ref.watch(themeProvider) == 'System' ||
+                            ref.watch(themeProvider) == 'Dark') &&
+                        (MediaQuery.platformBrightnessOf(context) ==
+                            Brightness.dark))
+                    ? Colors.white
+                    : Colors.black,
               ),
             ],
           ),
@@ -263,10 +296,15 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                       builder: (context) => const CreateAccountScreen(),
                     ));
                   },
-                  child: const AppText(
+                  child: AppText(
                     text: "Sign Up",
                     decoration: TextDecoration.underline,
-                    color: AppColors.primary,
+                    color: ((ref.watch(themeProvider) == 'System' ||
+                                ref.watch(themeProvider) == 'Dark') &&
+                            (MediaQuery.platformBrightnessOf(context) ==
+                                Brightness.dark))
+                        ? AppColors.primaryDark
+                        : AppColors.primary,
                   ),
                 ),
               )

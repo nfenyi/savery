@@ -23,6 +23,7 @@ import 'package:savery/features/main_screen/presentation/main_screen.dart';
 import 'package:savery/features/new_transaction/models/transaction_category_model.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'package:savery/main.dart';
+import 'package:savery/themes/themes.dart';
 
 import '../../sign_in/user_info/providers/providers.dart';
 
@@ -193,10 +194,15 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                   overflow: TextOverflow.ellipsis,
                   color: Colors.grey,
                 ),
-                iconStyleData: const IconStyleData(
+                iconStyleData: IconStyleData(
                   icon: FaIcon(
                     FontAwesomeIcons.chevronDown,
-                    color: AppColors.primary,
+                    color: ((ref.watch(themeProvider) == 'System' ||
+                                ref.watch(themeProvider) == 'Dark') &&
+                            (MediaQuery.platformBrightnessOf(context) ==
+                                Brightness.dark))
+                        ? AppColors.primaryDark
+                        : AppColors.primary,
                   ),
                   iconSize: 12.0,
                 ),
@@ -205,10 +211,15 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                           value: item,
                           child: Text(
                             item,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: AppSizes.bodySmaller,
                               fontWeight: FontWeight.w500,
-                              // color: Colors.grey,
+                              color: ((ref.watch(themeProvider) == 'System') &&
+                                      (MediaQuery.platformBrightnessOf(
+                                              context) ==
+                                          Brightness.dark))
+                                  ? Colors.white
+                                  : Colors.black,
                             ),
                           ),
                         ))
@@ -274,9 +285,14 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                   height: AppSizes.dropDownBoxHeight,
                   padding: const EdgeInsets.only(right: 10.0),
                   decoration: BoxDecoration(
-                    // color: Colors.grey.shade100,
+                    color: ((ref.watch(themeProvider) == 'System' ||
+                                ref.watch(themeProvider) == 'Dark') &&
+                            (MediaQuery.platformBrightnessOf(context) ==
+                                Brightness.dark))
+                        ? const Color.fromARGB(255, 32, 25, 33)
+                        : Colors.white,
                     border: Border.all(
-                      width: 1.0,
+                      // width: 1.0,
                       color: AppColors.neutral300,
                     ),
                     borderRadius: BorderRadius.circular(20.0),
@@ -286,8 +302,13 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                   maxHeight: 350,
                   elevation: 1,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5.0),
-                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20.0),
+                    color: ((ref.watch(themeProvider) == 'System' ||
+                                ref.watch(themeProvider) == 'Dark') &&
+                            (MediaQuery.platformBrightnessOf(context) ==
+                                Brightness.dark))
+                        ? const Color.fromARGB(255, 32, 25, 33)
+                        : Colors.white,
                   ),
                 ),
                 menuItemStyleData: const MenuItemStyleData(
@@ -332,20 +353,30 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
               child: Ink(
                 child: d_border.DottedBorder(
                     padding: const EdgeInsets.symmetric(vertical: 10),
-                    color: AppColors.primary,
+                    color: ((ref.watch(themeProvider) == 'System' ||
+                                ref.watch(themeProvider) == 'Dark') &&
+                            (MediaQuery.platformBrightnessOf(context) ==
+                                Brightness.dark))
+                        ? AppColors.primaryDark
+                        : AppColors.primary,
                     borderType: d_border.BorderType.RRect,
                     radius: const Radius.circular(10),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.add_circle,
-                          color: AppColors.primary,
+                          color: ((ref.watch(themeProvider) == 'System' ||
+                                      ref.watch(themeProvider) == 'Dark') &&
+                                  (MediaQuery.platformBrightnessOf(context) ==
+                                      Brightness.dark))
+                              ? AppColors.primaryDark
+                              : AppColors.primary,
                           // size: 5,
                         ),
-                        Gap(5),
-                        AppText(
+                        const Gap(5),
+                        const AppText(
                           text: 'Create New Budget',
                           weight: FontWeight.bold,
                           size: AppSizes.heading6,
@@ -424,11 +455,27 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(10),
                                             width: 50,
-                                            color: AppColors.primary
-                                                .withOpacity(0.1),
+                                            color: ((ref.watch(themeProvider) ==
+                                                        'System') &&
+                                                    (MediaQuery
+                                                            .platformBrightnessOf(
+                                                                context) ==
+                                                        Brightness.dark))
+                                                ? AppColors.primaryDark
+                                                    .withOpacity(0.1)
+                                                : AppColors.primary
+                                                    .withOpacity(0.1),
                                             child: Iconify(
                                               expenseBudget.category!.icon,
-                                              color: AppColors.primary,
+                                              color: ((ref.watch(
+                                                              themeProvider) ==
+                                                          'System') &&
+                                                      (MediaQuery
+                                                              .platformBrightnessOf(
+                                                                  context) ==
+                                                          Brightness.dark))
+                                                  ? AppColors.primaryDark
+                                                  : AppColors.primary,
                                             ),
                                           ),
                                         ),
@@ -487,8 +534,16 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                                       AppText(
                                                         text:
                                                             '${expenseBudget.createdAt.difference(_currentDate).inDays + 1}/${expenseBudget.duration} day',
-                                                        color:
-                                                            AppColors.primary,
+                                                        color: ((ref.watch(
+                                                                        themeProvider) ==
+                                                                    'System') &&
+                                                                (MediaQuery.platformBrightnessOf(
+                                                                        context) ==
+                                                                    Brightness
+                                                                        .dark))
+                                                            ? AppColors
+                                                                .primaryDark
+                                                            : AppColors.primary,
                                                       ),
                                                     ],
                                                   ),
@@ -629,12 +684,12 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                       child: DropdownButton2<String>(
                         style: GoogleFonts.manrope(
                           fontSize: AppSizes.bodySmaller,
-                          // fontWeight:
-                          //     _selectedAccountName == null ? null : FontWeight.bold,
-                          color:
-                              // selectedCategory == null
-                              //     ? Colors.grey :
-                              Colors.black,
+                          fontWeight: FontWeight.w500,
+                          color: ((ref.watch(themeProvider) == 'System') &&
+                                  (MediaQuery.platformBrightnessOf(context) ==
+                                      Brightness.dark))
+                              ? AppColors.primaryDark
+                              : AppColors.primary,
                         ),
                         isExpanded: true,
                         hint: const AppText(
@@ -642,10 +697,15 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                           overflow: TextOverflow.ellipsis,
                           color: Colors.grey,
                         ),
-                        iconStyleData: const IconStyleData(
+                        iconStyleData: IconStyleData(
                           icon: FaIcon(
                             FontAwesomeIcons.chevronDown,
-                            color: AppColors.primary,
+                            color: ((ref.watch(themeProvider) == 'System' ||
+                                        ref.watch(themeProvider) == 'Dark') &&
+                                    (MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark))
+                                ? AppColors.primaryDark
+                                : AppColors.primary,
                           ),
                           iconSize: 12.0,
                         ),
@@ -654,10 +714,16 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                   value: item.name,
                                   child: Text(
                                     item.name,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: AppSizes.bodySmaller,
                                       fontWeight: FontWeight.w500,
-                                      // color: Colors.grey,
+                                      color: ((ref.watch(themeProvider) ==
+                                                  'System') &&
+                                              (MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark))
+                                          ? Colors.white
+                                          : Colors.black,
                                     ),
                                   ),
                                 ))
@@ -688,9 +754,14 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                           height: AppSizes.dropDownBoxHeight,
                           padding: const EdgeInsets.only(right: 10.0),
                           decoration: BoxDecoration(
-                            // color: Colors.grey.shade100,
+                            color: ((ref.watch(themeProvider) == 'System' ||
+                                        ref.watch(themeProvider) == 'Dark') &&
+                                    (MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark))
+                                ? const Color.fromARGB(255, 32, 25, 33)
+                                : Colors.white,
                             border: Border.all(
-                              width: 1.0,
+                              // width: 1.0,
                               color: AppColors.neutral300,
                             ),
                             borderRadius: BorderRadius.circular(10.0),
@@ -700,8 +771,13 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                           maxHeight: 350,
                           elevation: 1,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5.0),
-                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: ((ref.watch(themeProvider) == 'System' ||
+                                        ref.watch(themeProvider) == 'Dark') &&
+                                    (MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark))
+                                ? const Color.fromARGB(255, 32, 25, 33)
+                                : Colors.white,
                           ),
                         ),
                         menuItemStyleData: const MenuItemStyleData(
@@ -755,9 +831,14 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                     _expenseCoverageController.clear();
                   }
                 },
-                child: const AppText(
+                child: AppText(
                   text: 'OK',
-                  color: AppColors.primary,
+                  color: ((ref.watch(themeProvider) == 'System' ||
+                              ref.watch(themeProvider) == 'Dark') &&
+                          (MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark))
+                      ? AppColors.primaryDark
+                      : AppColors.primary,
                   weight: FontWeight.w600,
                 ),
               ),
@@ -769,7 +850,6 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
             actionsPadding: const EdgeInsets.only(bottom: 5),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.0)),
-            backgroundColor: Colors.white,
             content: StatefulBuilder(
               builder: (context, setState) => Form(
                 key: _formKey,
@@ -796,10 +876,15 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                           overflow: TextOverflow.ellipsis,
                           color: Colors.grey,
                         ),
-                        iconStyleData: const IconStyleData(
+                        iconStyleData: IconStyleData(
                           icon: FaIcon(
                             FontAwesomeIcons.chevronDown,
-                            color: AppColors.primary,
+                            color: ((ref.watch(themeProvider) == 'System' ||
+                                        ref.watch(themeProvider) == 'Dark') &&
+                                    (MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark))
+                                ? AppColors.primaryDark
+                                : AppColors.primary,
                           ),
                           iconSize: 12.0,
                         ),
@@ -808,10 +893,16 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                   value: item.name,
                                   child: Text(
                                     item.name,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: AppSizes.bodySmaller,
                                       fontWeight: FontWeight.w500,
-                                      // color: Colors.grey,
+                                      color: ((ref.watch(themeProvider) ==
+                                                  'System') &&
+                                              (MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark))
+                                          ? Colors.white
+                                          : Colors.black,
                                     ),
                                   ),
                                 ))
@@ -842,9 +933,14 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                           height: AppSizes.dropDownBoxHeight,
                           padding: const EdgeInsets.only(right: 10.0),
                           decoration: BoxDecoration(
-                            // color: Colors.grey.shade100,
+                            color: ((ref.watch(themeProvider) == 'System' ||
+                                        ref.watch(themeProvider) == 'Dark') &&
+                                    (MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark))
+                                ? const Color.fromARGB(255, 32, 25, 33)
+                                : Colors.white,
                             border: Border.all(
-                              width: 1.0,
+                              // width: 1.0,
                               color: AppColors.neutral300,
                             ),
                             borderRadius: BorderRadius.circular(10.0),
@@ -854,8 +950,13 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                           maxHeight: 350,
                           elevation: 1,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5.0),
-                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: ((ref.watch(themeProvider) == 'System' ||
+                                        ref.watch(themeProvider) == 'Dark') &&
+                                    (MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark))
+                                ? const Color.fromARGB(255, 32, 25, 33)
+                                : Colors.white,
                           ),
                         ),
                         menuItemStyleData: const MenuItemStyleData(
@@ -920,9 +1021,14 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                     //
                   }
                 },
-                child: const AppText(
+                child: AppText(
                   text: 'OK',
-                  color: AppColors.primary,
+                  color: ((ref.watch(themeProvider) == 'System' ||
+                              ref.watch(themeProvider) == 'Dark') &&
+                          (MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark))
+                      ? AppColors.primaryDark
+                      : AppColors.primary,
                   weight: FontWeight.w600,
                 ),
               ),
@@ -988,9 +1094,14 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {}
                 },
-                child: const AppText(
+                child: AppText(
                   text: 'Update',
-                  color: AppColors.primary,
+                  color: ((ref.watch(themeProvider) == 'System' ||
+                              ref.watch(themeProvider) == 'Dark') &&
+                          (MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark))
+                      ? AppColors.primaryDark
+                      : AppColors.primary,
                   weight: FontWeight.w600,
                 ),
               ),
@@ -1001,7 +1112,6 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
             actionsPadding: const EdgeInsets.only(bottom: 5),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.0)),
-            backgroundColor: Colors.white,
             content: StatefulBuilder(
               builder: (context, setState) => Form(
                 key: _formKey,
@@ -1083,9 +1193,14 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                     navigatorKey.currentState!.pop();
                   }
                 },
-                child: const AppText(
+                child: AppText(
                   text: 'Update',
-                  color: AppColors.primary,
+                  color: ((ref.watch(themeProvider) == 'System' ||
+                              ref.watch(themeProvider) == 'Dark') &&
+                          (MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark))
+                      ? AppColors.primaryDark
+                      : AppColors.primary,
                   weight: FontWeight.w600,
                 ),
               ),
@@ -1099,6 +1214,7 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
   Future<void> _showDeleteDialog(Budget budget) async {
     await showAppInfoDialog(
       context,
+      ref,
       title:
           'Are you sure you want to delete this ${budget.category!.name} budget?',
       confirmText: 'No',

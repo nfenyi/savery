@@ -74,18 +74,27 @@ class Savery extends StatelessWidget {
     return ResponsiveSizer(builder:
         (BuildContext context, Orientation orientation, ScreenType screenType) {
       return Consumer(
-        builder: (context, ref, child) => GetMaterialApp(
-          debugShowCheckedModeBanner: false,
-          builder: FToastBuilder(),
-          title: 'Flutter Demo',
-          themeMode: ref.watch(themeProvider),
-          // themeMode: ThemeMode.light,
-          theme: AppThemes.lightTheme,
-          darkTheme: AppThemes.darkTheme,
-          navigatorKey: navigatorKey,
+        builder: (context, ref, child) {
+          var theme = ref.watch(themeProvider);
+          return GetMaterialApp(
+            debugShowCheckedModeBanner: false,
+            builder: FToastBuilder(),
 
-          home: const Wrapper(),
-        ),
+            title: 'Flutter Demo',
+            themeMode: theme == 'System'
+                ? ThemeMode.system
+                : theme == 'Light'
+                    ? ThemeMode.light
+                    : ThemeMode.dark,
+            // themeMode: ThemeMode.light,
+
+            theme: AppThemes.lightTheme,
+            darkTheme: AppThemes.darkTheme,
+            navigatorKey: navigatorKey,
+
+            home: const Wrapper(),
+          );
+        },
       );
     });
   }

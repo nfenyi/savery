@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconify_flutter/icons/akar_icons.dart';
@@ -22,16 +23,17 @@ import 'package:savery/features/onboarding/onboarding_texts.dart';
 import 'package:savery/features/onboarding/presentation/widgets.dart';
 import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
 import 'package:savery/main.dart';
+import 'package:savery/themes/themes.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class OnboardingScreen extends StatefulWidget {
+class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final Box _appStateBox = Hive.box(AppBoxes.appState);
   final _transactionCategoriesBox =
       Hive.box<TransactionCategory>(AppBoxes.transactionsCategories);
@@ -71,6 +73,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         actions: [
           AppTextButton(
             text: 'Skip',
+            size: AppSizes.bodySmall,
             callback: () async {
               await _appStateBox.putAll({
                 'onboarded': true,
@@ -129,18 +132,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           child: Column(
                             children: [
                               Container(
-                                decoration: const BoxDecoration(
-                                  gradient: RadialGradient(
-                                    colors: [
-                                      Color.fromARGB(
-                                        255,
-                                        174,
-                                        145,
-                                        233,
-                                      ),
-                                      Colors.white
-                                    ],
-                                  ),
+                                decoration: BoxDecoration(
+                                  gradient:
+                                      ((ref.watch(themeProvider) == 'System' ||
+                                                  ref.watch(themeProvider) ==
+                                                      'Dark') &&
+                                              (MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark))
+                                          ? null
+                                          : const RadialGradient(
+                                              colors: [
+                                                Color.fromARGB(
+                                                  255,
+                                                  174,
+                                                  145,
+                                                  233,
+                                                ),
+                                                // ((ref.watch(themeProvider) == 'System') &&
+                                                //         (MediaQuery.platformBrightnessOf(
+                                                //                 context) ==
+                                                //             Brightness.dark))
+                                                //     ? const Color.fromARGB(
+                                                //         255, 32, 25, 33)
+                                                // :
+                                                Colors.white
+                                              ],
+                                            ),
                                 ),
                                 child: Image.asset(
                                   AppAssets.onboarding1,
@@ -166,18 +184,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           child: Column(
                             children: [
                               Container(
-                                decoration: const BoxDecoration(
-                                  gradient: RadialGradient(
-                                    colors: [
-                                      Color.fromARGB(
-                                        255,
-                                        174,
-                                        145,
-                                        233,
-                                      ),
-                                      Colors.white
-                                    ],
-                                  ),
+                                decoration: BoxDecoration(
+                                  gradient:
+                                      ((ref.watch(themeProvider) == 'System' ||
+                                                  ref.watch(themeProvider) ==
+                                                      'Dark') &&
+                                              (MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark))
+                                          ? null
+                                          : const RadialGradient(
+                                              colors: [
+                                                Color.fromARGB(
+                                                  255,
+                                                  174,
+                                                  145,
+                                                  233,
+                                                ),
+                                                // ((ref.watch(themeProvider) == 'System') &&
+                                                //         (MediaQuery.platformBrightnessOf(
+                                                //                 context) ==
+                                                //             Brightness.dark))
+                                                //     ? const Color.fromARGB(
+                                                //         255, 32, 25, 33)
+                                                // :
+                                                Colors.white
+                                              ],
+                                            ),
                                 ),
                                 child: Image.asset(
                                   AppAssets.onboarding2,
@@ -203,18 +236,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           child: Column(
                             children: [
                               Container(
-                                decoration: const BoxDecoration(
-                                  gradient: RadialGradient(
-                                    colors: [
-                                      Color.fromARGB(
-                                        255,
-                                        174,
-                                        145,
-                                        233,
-                                      ),
-                                      Colors.white
-                                    ],
-                                  ),
+                                decoration: BoxDecoration(
+                                  gradient:
+                                      ((ref.watch(themeProvider) == 'System' ||
+                                                  ref.watch(themeProvider) ==
+                                                      'Dark') &&
+                                              (MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark))
+                                          ? null
+                                          : const RadialGradient(
+                                              colors: [
+                                                Color.fromARGB(
+                                                  255,
+                                                  174,
+                                                  145,
+                                                  233,
+                                                ),
+                                                // ((ref.watch(themeProvider) == 'System') &&
+                                                //         (MediaQuery.platformBrightnessOf(
+                                                //                 context) ==
+                                                //             Brightness.dark))
+                                                //     ? const Color.fromARGB(
+                                                //         255, 32, 25, 33)
+                                                // :
+                                                Colors.white
+                                              ],
+                                            ),
                                 ),
                                 child: Image.asset(
                                   AppAssets.onboarding3,
@@ -248,13 +296,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           curve: Curves.easeIn);
                     },
                     controller: _pageController,
-                    effect: const SlideEffect(
-                        activeDotColor: Colors.black,
+                    effect: SlideEffect(
+                        activeDotColor:
+                            ((ref.watch(themeProvider) == 'System' ||
+                                        ref.watch(themeProvider) == 'Dark') &&
+                                    (MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark))
+                                ? Colors.white
+                                : Colors.black,
                         dotHeight: 6,
                         radius: 200,
                         dotWidth: 6,
                         paintStyle: PaintingStyle.fill,
-                        dotColor: Color.fromARGB(255, 93, 69, 142)),
+                        dotColor: const Color.fromARGB(255, 93, 69, 142)),
                     count: _onboardingTexts.length),
                 const Gap(30),
                 AppGradientButton(

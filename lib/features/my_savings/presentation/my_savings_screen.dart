@@ -18,6 +18,8 @@ import 'package:savery/app_widgets/widgets.dart';
 
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 
+import '../../../themes/themes.dart';
+
 class MySavingsScreen extends ConsumerStatefulWidget {
   const MySavingsScreen({super.key});
 
@@ -134,7 +136,7 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                 iconStyleData: const IconStyleData(
                   icon: FaIcon(
                     FontAwesomeIcons.chevronDown,
-                    color: AppColors.primary,
+                    // color: AppColors.primary,
                   ),
                   iconSize: 12.0,
                 ),
@@ -143,10 +145,15 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                           value: item,
                           child: Text(
                             item,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: AppSizes.bodySmaller,
                               fontWeight: FontWeight.w500,
-                              // color: Colors.grey,
+                              color: ((ref.watch(themeProvider) == 'System') &&
+                                      (MediaQuery.platformBrightnessOf(
+                                              context) ==
+                                          Brightness.dark))
+                                  ? Colors.white
+                                  : Colors.black,
                             ),
                           ),
                         ))
@@ -191,9 +198,14 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                   height: AppSizes.dropDownBoxHeight,
                   padding: const EdgeInsets.only(right: 10.0),
                   decoration: BoxDecoration(
-                    // color: Colors.grey.shade100,
+                    color: ((ref.watch(themeProvider) == 'System' ||
+                                ref.watch(themeProvider) == 'Dark') &&
+                            (MediaQuery.platformBrightnessOf(context) ==
+                                Brightness.dark))
+                        ? const Color.fromARGB(255, 32, 25, 33)
+                        : Colors.white,
                     border: Border.all(
-                      width: 1.0,
+                      // width: 1.0,
                       color: AppColors.neutral300,
                     ),
                     borderRadius: BorderRadius.circular(20.0),
@@ -203,8 +215,13 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                   maxHeight: 350,
                   elevation: 1,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5.0),
-                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                    color: ((ref.watch(themeProvider) == 'System' ||
+                                ref.watch(themeProvider) == 'Dark') &&
+                            (MediaQuery.platformBrightnessOf(context) ==
+                                Brightness.dark))
+                        ? const Color.fromARGB(255, 32, 25, 33)
+                        : Colors.white,
                   ),
                 ),
                 menuItemStyleData: const MenuItemStyleData(
@@ -237,10 +254,22 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.all(10),
                                   width: 50,
-                                  color: AppColors.primary.withOpacity(0.1),
+                                  color: ((ref.watch(themeProvider) ==
+                                              'System') &&
+                                          (MediaQuery.platformBrightnessOf(
+                                                  context) ==
+                                              Brightness.dark))
+                                      ? AppColors.primaryDark.withOpacity(0.1)
+                                      : AppColors.primary.withOpacity(0.1),
                                   child: Iconify(
                                     saving.category!.icon,
-                                    color: AppColors.primary,
+                                    color: ((ref.watch(themeProvider) ==
+                                                'System') &&
+                                            (MediaQuery.platformBrightnessOf(
+                                                    context) ==
+                                                Brightness.dark))
+                                        ? AppColors.primaryDark
+                                        : AppColors.primary,
                                   ),
                                 ),
                               ),

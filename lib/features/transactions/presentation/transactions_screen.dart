@@ -14,6 +14,7 @@ import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 
 import '../../../app_functions/app_functions.dart';
+import '../../../themes/themes.dart';
 import '../../sign_in/user_info/models/user_model.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
@@ -173,7 +174,12 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                     final transaction = _reversedTransactions![index];
                     return Container(
                       decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
+                          color: ((ref.watch(themeProvider) == 'System' ||
+                                      ref.watch(themeProvider) == 'Dark') &&
+                                  (MediaQuery.platformBrightnessOf(context) ==
+                                      Brightness.dark))
+                              ? const Color.fromARGB(255, 39, 32, 39)
+                              : Colors.grey.shade100,
                           borderRadius: BorderRadius.circular(15)),
                       child: ListTile(
                         // tileColor: Colors.grey.shade100,
@@ -184,12 +190,32 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                           child: Container(
                               padding: const EdgeInsets.all(10),
                               width: 50,
-                              color: AppColors.primary.withOpacity(0.1),
+                              color: ((ref.watch(themeProvider) == 'System') &&
+                                      (MediaQuery.platformBrightnessOf(
+                                              context) ==
+                                          Brightness.dark))
+                                  ? AppColors.primaryDark.withOpacity(0.1)
+                                  : AppColors.primary.withOpacity(0.1),
                               child: transaction.category == null
-                                  ? const Icon(FontAwesomeIcons.coins)
+                                  ? FaIcon(
+                                      FontAwesomeIcons.coins,
+                                      color: ((ref.watch(themeProvider) ==
+                                                  'System') &&
+                                              (MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark))
+                                          ? AppColors.primaryDark
+                                          : AppColors.primary,
+                                    )
                                   : Iconify(
                                       transaction.category!.icon,
-                                      color: AppColors.primary,
+                                      color: ((ref.watch(themeProvider) ==
+                                                  'System') &&
+                                              (MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark))
+                                          ? AppColors.primaryDark
+                                          : AppColors.primary,
                                     )),
                         ),
                         title: AppText(

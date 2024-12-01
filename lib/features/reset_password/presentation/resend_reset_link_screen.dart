@@ -54,7 +54,7 @@ class _ResendResetLinkScreenState extends ConsumerState<ResendResetLinkScreen> {
                       callback: () async {
                         await ref
                             .read(authStateProvider.notifier)
-                            .sendResetLink(widget.email);
+                            .sendResetLink(widget.email, ref);
                       },
                     ),
                     AppTextButton(

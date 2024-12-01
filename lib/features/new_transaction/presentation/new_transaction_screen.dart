@@ -24,6 +24,7 @@ import 'package:savery/features/sign_in/user_info/providers/providers.dart';
 import 'package:savery/main.dart';
 
 import '../../../app_constants/app_sizes.dart';
+import '../../../themes/themes.dart';
 
 class NewTransactionScreen extends ConsumerStatefulWidget {
   const NewTransactionScreen({
@@ -97,41 +98,35 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: InkWell(
+          onTap: () => navigatorKey.currentState!.pop(),
+          child: Ink(
+            child: const Padding(
+              padding: EdgeInsets.only(
+                  left: AppSizes.horizontalPadding,
+                  top: AppSizes.horizontalPadding),
+              child: FaIcon(
+                FontAwesomeIcons.chevronDown,
+                // color: AppColors.neutral500,
+                size: 18,
+              ),
+            ),
+          ),
+        ),
+        title: const AppText(
+          text: 'New Transaction',
+          weight: FontWeight.bold,
+          size: AppSizes.bodySmall,
+        ),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(
               horizontal: AppSizes.horizontalPaddingSmall),
           child: Column(
             children: [
-              const Gap(10),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          navigatorKey.currentState!.pop();
-                        },
-                        child: Ink(
-                          child: const FaIcon(
-                            FontAwesomeIcons.chevronDown,
-                            color: AppColors.neutral500,
-                            size: 18,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const AppText(
-                    text: 'New Transaction',
-                    weight: FontWeight.bold,
-                    size: AppSizes.bodySmall,
-                  ),
-                  const SizedBox.shrink(),
-                ],
-              ),
               const Gap(20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -152,7 +147,8 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                     icon: Icon(
                       Iconsax.arrow_down,
                       color: _selectedTransactionType == 'Expense'
-                          ? AppColors.primary
+                          // ? AppColors.primary
+                          ? null
                           : Colors.white,
                       size: 17,
                     ),
@@ -174,379 +170,499 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                     icon: Icon(
                       Iconsax.arrow_up_3,
                       color: _selectedTransactionType == 'Income'
-                          ? AppColors.primary
+                          // ? AppColors.primary
+                          ? null
                           : Colors.white,
                       size: 17,
                     ),
                   ),
                 ],
               ),
-              Form(
-                key: _formKey,
+              Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(
-                      width: 110,
-                      child: AppTextFormField(
-                        controller: _amountController,
-                        textAlign: TextAlign.right,
-                        borderType: BorderType.underline,
-                        hintText: '0.00',
-                        keyboardType: const TextInputType.numberWithOptions(),
-                        // textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                        suffixIcon: AppText(text: _currency),
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(
-                              errorText: 'Provide figure')
-                        ]),
-                      ),
-                    ),
-                    AppTextFormField(
-                      // fontWeight: FontWeight.bold,
-                      controller: _descriptionController,
-                      borderType: BorderType.underline,
-                      hintText: 'Description',
-                      hintStyleColor: Colors.grey,
-                      validator: FormBuilderValidators.compose(
-                          [FormBuilderValidators.required()]),
-                    ),
-                    Visibility(
-                      visible: _selectedTransactionType == 'Expense',
-                      child: Column(
-                        children: [
-                          ListTile(
-                            contentPadding:
-                                const EdgeInsets.only(left: 12, right: 5),
-                            title: AppText(
-                              text: _selectedCategory == null
-                                  ? 'Category'
-                                  : _selectedCategory!.name,
-                              // weight: _selectedCategory == null
-                              //     ? null
-                              //     : FontWeight.bold,
-                              color: _selectedCategory == null
-                                  ? Colors.grey
-                                  : null,
-                            ),
-                            trailing: const Icon(
-                              Icons.keyboard_arrow_down,
-                              color: AppColors.primary,
-                            ),
-                            dense: true,
-                            onTap: () async {
-                              await showModalBottomSheet(
-                                context: context,
-                                barrierColor: Colors.black.withOpacity(0.6),
-                                builder: (BuildContext context) {
-                                  return Container(
-                                      width: double.infinity,
-                                      // height: Adaptive.h(40),
-                                      height:
-                                          MediaQuery.sizeOf(context).height *
-                                              0.4,
-                                      decoration: const BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(15.0),
-                                          topRight: Radius.circular(15.0),
-                                        ),
+                    Column(
+                      children: [
+                        Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              SizedBox(
+                                width: 110,
+                                child: AppTextFormField(
+                                  controller: _amountController,
+                                  textAlign: TextAlign.right,
+                                  borderType: BorderType.underline,
+                                  hintText: '0.00',
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(),
+                                  // textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                                  suffixIcon: AppText(text: _currency),
+                                  validator: FormBuilderValidators.compose([
+                                    FormBuilderValidators.required(
+                                        errorText: 'Provide figure')
+                                  ]),
+                                ),
+                              ),
+                              AppTextFormField(
+                                // fontWeight: FontWeight.bold,
+                                controller: _descriptionController,
+                                borderType: BorderType.underline,
+                                hintText: 'Description',
+                                hintStyleColor: Colors.grey,
+                                validator: FormBuilderValidators.compose(
+                                    [FormBuilderValidators.required()]),
+                              ),
+                              Visibility(
+                                visible: _selectedTransactionType == 'Expense',
+                                child: Column(
+                                  children: [
+                                    ListTile(
+                                      contentPadding: const EdgeInsets.only(
+                                          left: 12, right: 5),
+                                      title: AppText(
+                                        text: _selectedCategory == null
+                                            ? 'Category'
+                                            : _selectedCategory!.name,
+                                        // weight: _selectedCategory == null
+                                        //     ? null
+                                        //     : FontWeight.bold,
+                                        color: _selectedCategory == null
+                                            ? Colors.grey
+                                            : null,
                                       ),
-                                      child: SingleChildScrollView(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 30),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const Gap(
-                                              5,
-                                            ),
-                                            const Gap(10),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                const SizedBox.shrink(),
-                                                const AppText(
-                                                  text: "Select the category",
-                                                  size: AppSizes.bodySmaller,
-                                                  // weight: FontWeight.bold,
-                                                ),
-                                                // const Gap(10),
-                                                GestureDetector(
-                                                  child: const FaIcon(
-                                                    FontAwesomeIcons.xmark,
-                                                    size: 18,
+                                      trailing: const Icon(
+                                        Icons.keyboard_arrow_down,
+                                        // color: AppColors.primary,
+                                      ),
+                                      dense: true,
+                                      onTap: () async {
+                                        await showModalBottomSheet(
+                                          context: context,
+                                          barrierColor:
+                                              Colors.black.withOpacity(0.6),
+                                          builder: (BuildContext context) {
+                                            return Container(
+                                                width: double.infinity,
+                                                // height: Adaptive.h(40),
+                                                height:
+                                                    MediaQuery.sizeOf(context)
+                                                            .height *
+                                                        0.4,
+                                                decoration: BoxDecoration(
+                                                  // color: Colors.white,
+                                                  color: ((ref.watch(themeProvider) ==
+                                                                  'System' ||
+                                                              ref.watch(
+                                                                      themeProvider) ==
+                                                                  'Dark') &&
+                                                          (MediaQuery
+                                                                  .platformBrightnessOf(
+                                                                      context) ==
+                                                              Brightness.dark))
+                                                      ? const Color.fromARGB(
+                                                          255, 32, 25, 33)
+                                                      : Colors.white,
+                                                  borderRadius:
+                                                      const BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(15.0),
+                                                    topRight:
+                                                        Radius.circular(15.0),
                                                   ),
-                                                  onTap: () => navigatorKey
-                                                      .currentState!
-                                                      .pop(),
                                                 ),
-                                                // const Gap(10),
-                                                // AppTextButton(
-                                                //   text: 'Done',
-                                                //   color: AppColors.primary,
-                                                //   callback: () {
-                                                //     navigatorKey.currentState!.pop();
-                                                //   },
-                                                // )
-                                              ],
-                                            ),
-                                            const Gap(30),
-                                            SizedBox(
-                                              height: Adaptive.h(30),
-                                              child: GridView.builder(
-                                                itemCount: _categories.length,
-                                                gridDelegate:
-                                                    const SliverGridDelegateWithMaxCrossAxisExtent(
-                                                        maxCrossAxisExtent: 70,
-                                                        mainAxisExtent: 65,
-                                                        crossAxisSpacing: 10,
-                                                        mainAxisSpacing: 10),
-                                                itemBuilder: (context, index) {
-                                                  final category =
-                                                      _categories[index];
-                                                  return InkWell(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        _selectedCategory =
-                                                            category;
-                                                      });
-                                                      navigatorKey.currentState!
-                                                          .pop();
-                                                    },
-                                                    child: Ink(
-                                                      child: ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(20),
-                                                        child: TileIcon(
-                                                            category: category),
+                                                child: SingleChildScrollView(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 30),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      const Gap(
+                                                        5,
                                                       ),
-                                                    ),
-                                                  );
-                                                },
+                                                      const Gap(10),
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          const SizedBox
+                                                              .shrink(),
+                                                          const AppText(
+                                                            text:
+                                                                "Select the category",
+                                                            size: AppSizes
+                                                                .bodySmaller,
+                                                            // weight: FontWeight.bold,
+                                                          ),
+                                                          // const Gap(10),
+                                                          GestureDetector(
+                                                            child: FaIcon(
+                                                              FontAwesomeIcons
+                                                                  .xmark,
+                                                              size: 18,
+                                                              color: ((ref.watch(themeProvider) ==
+                                                                              'System' ||
+                                                                          ref.watch(themeProvider) ==
+                                                                              'Dark') &&
+                                                                      (MediaQuery.platformBrightnessOf(
+                                                                              context) ==
+                                                                          Brightness
+                                                                              .dark))
+                                                                  ? AppColors
+                                                                      .primaryDark
+                                                                  : AppColors
+                                                                      .primary,
+                                                            ),
+                                                            onTap: () =>
+                                                                navigatorKey
+                                                                    .currentState!
+                                                                    .pop(),
+                                                          ),
+                                                          // const Gap(10),
+                                                          // AppTextButton(
+                                                          //   text: 'Done',
+                                                          //   color: AppColors.primary,
+                                                          //   callback: () {
+                                                          //     navigatorKey.currentState!.pop();
+                                                          //   },
+                                                          // )
+                                                        ],
+                                                      ),
+                                                      const Gap(30),
+                                                      SizedBox(
+                                                        height: Adaptive.h(30),
+                                                        child: GridView.builder(
+                                                          itemCount: _categories
+                                                              .length,
+                                                          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                                                              maxCrossAxisExtent:
+                                                                  70,
+                                                              mainAxisExtent:
+                                                                  65,
+                                                              crossAxisSpacing:
+                                                                  10,
+                                                              mainAxisSpacing:
+                                                                  10),
+                                                          itemBuilder:
+                                                              (context, index) {
+                                                            final category =
+                                                                _categories[
+                                                                    index];
+                                                            return InkWell(
+                                                              onTap: () {
+                                                                setState(() {
+                                                                  _selectedCategory =
+                                                                      category;
+                                                                });
+                                                                navigatorKey
+                                                                    .currentState!
+                                                                    .pop();
+                                                              },
+                                                              child: Ink(
+                                                                child:
+                                                                    ClipRRect(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              20),
+                                                                  child: TileIcon(
+                                                                      category:
+                                                                          category),
+                                                                ),
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ));
+                                          },
+                                        );
+                                      },
+                                    ),
+                                    Divider(
+                                      color: _categoryColor,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              DropdownButtonHideUnderline(
+                                child: DropdownButton2<String>(
+                                  style: GoogleFonts.manrope(
+                                    fontSize: AppSizes.bodySmaller,
+                                    // fontWeight: _selectedAccountName == null
+                                    //     ? null
+                                    //     : FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                  isExpanded: true,
+                                  hint: const AppText(
+                                    text: 'Select an account',
+                                    overflow: TextOverflow.ellipsis,
+                                    color: Colors.grey,
+                                  ),
+                                  iconStyleData: const IconStyleData(
+                                    icon: FaIcon(
+                                      FontAwesomeIcons.chevronDown,
+                                      // color: AppColors.primary,
+                                    ),
+                                    iconSize: 12.0,
+                                  ),
+                                  items: _accountNames
+                                      .map((item) => DropdownMenuItem(
+                                            value: item,
+                                            child: Text(
+                                              item,
+                                              style: GoogleFonts.manrope(
+                                                fontSize: AppSizes.bodySmaller,
+                                                fontWeight: FontWeight.w500,
+                                                color: ((ref.watch(themeProvider) ==
+                                                                'System' ||
+                                                            ref.watch(
+                                                                    themeProvider) ==
+                                                                'Dark') &&
+                                                        (MediaQuery
+                                                                .platformBrightnessOf(
+                                                                    context) ==
+                                                            Brightness.dark))
+                                                    ? Colors.white
+                                                    : Colors.black,
                                               ),
-                                            )
-                                          ],
-                                        ),
-                                      ));
-                                },
-                              );
-                            },
-                          ),
-                          Divider(
-                            color: _categoryColor,
-                          ),
-                        ],
-                      ),
-                    ),
-                    DropdownButtonHideUnderline(
-                      child: DropdownButton2<String>(
-                        style: GoogleFonts.manrope(
-                          fontSize: AppSizes.bodySmaller,
-                          // fontWeight: _selectedAccountName == null
-                          //     ? null
-                          //     : FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                        isExpanded: true,
-                        hint: const AppText(
-                          text: 'Select an account',
-                          overflow: TextOverflow.ellipsis,
-                          color: Colors.grey,
-                        ),
-                        iconStyleData: const IconStyleData(
-                          icon: FaIcon(
-                            FontAwesomeIcons.chevronDown,
-                            color: AppColors.primary,
-                          ),
-                          iconSize: 12.0,
-                        ),
-                        items: _accountNames
-                            .map((item) => DropdownMenuItem(
-                                  value: item,
-                                  child: Text(
-                                    item,
-                                    style: const TextStyle(
-                                      fontSize: AppSizes.bodySmaller,
-                                      fontWeight: FontWeight.w500,
-                                      // color: Colors.grey,
+                                            ),
+                                          ))
+                                      .toList(),
+                                  value: _selectedAccountName,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedAccountName = value;
+                                      _currency =
+                                          Hive.box<Account>(AppBoxes.accounts)
+                                                  .values
+                                                  .firstWhere(
+                                                    (element) =>
+                                                        element.name == value,
+                                                  )
+                                                  .currency ??
+                                              'GHS';
+                                    });
+                                  },
+                                  buttonStyleData: const ButtonStyleData(
+                                    height: AppSizes.dropDownBoxHeight,
+                                    padding: EdgeInsets.only(right: 10.0),
+                                    // decoration: BoxDecoration(
+                                    //   color: ((ref.watch(themeProvider) == 'System' ||
+                                    //               ref.watch(themeProvider) == 'Dark') &&
+                                    //           (MediaQuery.platformBrightnessOf(context) ==
+                                    //               Brightness.dark))
+                                    //       ? const Color.fromARGB(255, 32, 25, 33)
+                                    //       : Colors.white,
+                                    //   border: Border.all(
+                                    //     //   width: 1.0,
+                                    //     color: AppColors.neutral300,
+                                    //   ),
+                                    // borderRadius: BorderRadius.circular(20.0),
+                                    // ),
+                                  ),
+                                  dropdownStyleData: DropdownStyleData(
+                                    maxHeight: 350,
+                                    elevation: 1,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      color: ((ref.watch(themeProvider) ==
+                                                      'System' ||
+                                                  ref.watch(themeProvider) ==
+                                                      'Dark') &&
+                                              (MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark))
+                                          ? const Color.fromARGB(
+                                              255, 32, 25, 33)
+                                          : Colors.white,
                                     ),
                                   ),
-                                ))
-                            .toList(),
-                        value: _selectedAccountName,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedAccountName = value;
-                            _currency = Hive.box<Account>(AppBoxes.accounts)
-                                    .values
-                                    .firstWhere(
-                                      (element) => element.name == value,
-                                    )
-                                    .currency ??
-                                'GHS';
-                          });
-                        },
-                        buttonStyleData: ButtonStyleData(
-                          height: AppSizes.dropDownBoxHeight,
-                          padding: const EdgeInsets.only(right: 10.0),
-                          decoration: BoxDecoration(
-                            // color: Colors.grey.shade100,
-                            // border: Border.all(
-                            //   width: 1.0,
-                            //   color: AppColors.neutral300,
-                            // ),
-                            borderRadius: BorderRadius.circular(20.0),
+                                  menuItemStyleData: const MenuItemStyleData(
+                                    height: 40.0,
+                                  ),
+                                ),
+                              ),
+                              Divider(
+                                color: _accountNameColor,
+                              ),
+                              ListTile(
+                                title: Text(
+                                  _selectedDate == null
+                                      ? 'Date'
+                                      : AppFunctions.formatDate(
+                                          _selectedDate.toString(),
+                                          format: 'j M Y, g:i A'),
+                                  style: GoogleFonts.manrope(
+                                    fontSize: AppSizes.bodySmaller,
+                                    // fontWeight:
+                                    //     _selectedDate == null ? null : FontWeight.bold,
+                                    color: _selectedDate == null
+                                        ? Colors.grey
+                                        : null,
+                                  ),
+                                ),
+                                trailing: const Icon(
+                                  FontAwesomeIcons.calendar,
+                                  // color: AppColors.primary,
+                                  size: 15,
+                                ),
+                                dense: true,
+                                contentPadding:
+                                    const EdgeInsets.symmetric(horizontal: 12),
+                                onTap: () async {
+                                  await showBoardDateTimePicker(
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _selectedDate = value;
+                                      });
+                                    },
+                                    showDragHandle: true,
+                                    options: BoardDateTimeOptions(
+                                      activeColor: ((ref.watch(themeProvider) ==
+                                                      'System' ||
+                                                  ref.watch(themeProvider) ==
+                                                      'Dark') &&
+                                              (MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark))
+                                          ? AppColors.primaryDark
+                                          : AppColors.primary,
+                                      // backgroundColor: Colors.white,
+                                      foregroundColor: ((ref.watch(
+                                                          themeProvider) ==
+                                                      'System' ||
+                                                  ref.watch(themeProvider) ==
+                                                      'Dark') &&
+                                              (MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark))
+                                          ? const Color.fromARGB(
+                                              255, 78, 79, 91)
+                                          : AppColors.neutral100,
+                                      // boardTitle: "Select 'TODAY' or '",
+                                      // boardTitleTextStyle: TextStyle(fontWeight: FontWeight.w400),
+                                      inputable: false,
+                                      pickerSubTitles:
+                                          const BoardDateTimeItemTitles(
+                                        year: 'Year',
+                                        // day: 'd',
+                                        // hour: 'h',
+                                        // minute: 'm',
+                                      ),
+                                    ),
+                                    context: context,
+                                    pickerType: DateTimePickerType.datetime,
+                                  );
+                                },
+                              ),
+                            ],
                           ),
                         ),
-                        dropdownStyleData: DropdownStyleData(
-                          maxHeight: 350,
-                          elevation: 1,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5.0),
-                            color: Colors.white,
-                          ),
+                        Divider(
+                          color: _dateColor,
                         ),
-                        menuItemStyleData: const MenuItemStyleData(
-                          height: 40.0,
-                        ),
-                      ),
+                      ],
                     ),
-                    Divider(
-                      color: _accountNameColor,
-                    ),
-                    ListTile(
-                      title: Text(
-                        _selectedDate == null
-                            ? 'Date'
-                            : AppFunctions.formatDate(_selectedDate.toString(),
-                                format: 'j M Y, g:i A'),
-                        style: GoogleFonts.manrope(
-                          fontSize: AppSizes.bodySmaller,
-                          // fontWeight:
-                          //     _selectedDate == null ? null : FontWeight.bold,
-                          color: _selectedDate == null ? Colors.grey : null,
-                        ),
-                      ),
-                      trailing: const Icon(
-                        FontAwesomeIcons.calendar,
-                        color: AppColors.primary,
-                        size: 15,
-                      ),
-                      dense: true,
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 12),
-                      onTap: () async {
-                        await showBoardDateTimePicker(
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedDate = value;
-                            });
+                    Column(
+                      children: [
+                        AppGradientButton(
+                          text: 'Save',
+                          callback: () async {
+                            if (_formKey.currentState!.validate() &&
+                                _selectedAccountName != null &&
+                                _selectedDate != null) {
+                              if (_selectedCategory == null &&
+                                  _selectedTransactionType == 'Expense') {
+                                setState(() {
+                                  _categoryColor = Colors.red;
+                                });
+                                showInfoToast('Please select a category',
+                                    context: context);
+                              } else if (_selectedTransactionType ==
+                                      'Expense' &&
+                                  ref
+                                          .read(userProvider)
+                                          .expenseBudgets(_accounts.firstWhere(
+                                            (element) =>
+                                                element.name ==
+                                                _selectedAccountName,
+                                          ))
+                                          ?.toList()
+                                          .firstWhereOrNull(
+                                            (element) =>
+                                                element.category!.name ==
+                                                _selectedCategory!.name,
+                                          ) ==
+                                      null) {
+                                setState(() {
+                                  _categoryColor = Colors.red;
+                                });
+                                showInfoToast(
+                                    'Please create a ${_selectedCategory!.name} budget for this transaction for this account first.',
+                                    context: context);
+                              } else {
+                                await ref
+                                    .read(userProvider.notifier)
+                                    .addTransaction(
+                                      amount: _amountController.text,
+                                      description: _descriptionController.text,
+                                      selectedAccountName:
+                                          _selectedAccountName!,
+                                      selectedCategory: _selectedCategory,
+                                      selectedDate: _selectedDate!,
+                                      selectedTransactionType:
+                                          _selectedTransactionType,
+                                    );
+                                _amountController.clear();
+                                _descriptionController.clear();
+                                navigatorKey.currentState!.pop();
+                                if (ref.read(inStatsScreenProvider)) {
+                                  ref
+                                      .read(bottomNavIndexProvider.notifier)
+                                      .rebuildStatsScreen();
+                                }
+                              }
+                            } else {
+                              if (_selectedAccountName == null) {
+                                setState(() {
+                                  _accountNameColor = Colors.red;
+                                });
+                                showInfoToast('Please select an account',
+                                    context: context);
+                              } else {
+                                setState(() {
+                                  _accountNameColor = null;
+                                });
+                              }
+                              if (_selectedDate == null) {
+                                setState(() {
+                                  _dateColor = Colors.red;
+                                });
+                                showInfoToast('Please pick a date',
+                                    context: context);
+                              } else {
+                                setState(() {
+                                  _dateColor = null;
+                                });
+                              }
+                            }
                           },
-                          showDragHandle: true,
-                          options: const BoardDateTimeOptions(
-                            // backgroundColor: Colors.white,
-                            foregroundColor: AppColors.neutral100,
-                            // boardTitle: "Select 'TODAY' or '",
-                            // boardTitleTextStyle: TextStyle(fontWeight: FontWeight.w400),
-                            inputable: false,
-                            pickerSubTitles: BoardDateTimeItemTitles(
-                              year: 'Year',
-                              // day: 'd',
-                              // hour: 'h',
-                              // minute: 'm',
-                            ),
-                          ),
-                          context: context,
-                          pickerType: DateTimePickerType.datetime,
-                        );
-                      },
+                        ),
+                        Gap(20),
+                      ],
                     ),
                   ],
                 ),
-              ),
-              Divider(
-                color: _dateColor,
-              ),
-              AppGradientButton(
-                text: 'Save',
-                callback: () async {
-                  if (_formKey.currentState!.validate() &&
-                      _selectedAccountName != null &&
-                      _selectedDate != null) {
-                    if (_selectedCategory == null &&
-                        _selectedTransactionType == 'Expense') {
-                      setState(() {
-                        _categoryColor = Colors.red;
-                      });
-                      showInfoToast('Please select a category',
-                          context: context);
-                    } else if (_selectedTransactionType == 'Expense' &&
-                        ref
-                                .read(userProvider)
-                                .expenseBudgets(_accounts.firstWhere(
-                                  (element) =>
-                                      element.name == _selectedAccountName,
-                                ))
-                                ?.toList()
-                                .firstWhereOrNull(
-                                  (element) =>
-                                      element.category!.name ==
-                                      _selectedCategory!.name,
-                                ) ==
-                            null) {
-                      setState(() {
-                        _categoryColor = Colors.red;
-                      });
-                      showInfoToast(
-                          'Please create a ${_selectedCategory!.name} budget for this transaction for this account first.',
-                          context: context);
-                    } else {
-                      await ref.read(userProvider.notifier).addTransaction(
-                            amount: _amountController.text,
-                            description: _descriptionController.text,
-                            selectedAccountName: _selectedAccountName!,
-                            selectedCategory: _selectedCategory,
-                            selectedDate: _selectedDate!,
-                            selectedTransactionType: _selectedTransactionType,
-                          );
-                      _amountController.clear();
-                      _descriptionController.clear();
-                      navigatorKey.currentState!.pop();
-                      if (ref.read(inStatsScreenProvider)) {
-                        ref
-                            .read(bottomNavIndexProvider.notifier)
-                            .rebuildStatsScreen();
-                      }
-                    }
-                  } else {
-                    if (_selectedAccountName == null) {
-                      setState(() {
-                        _accountNameColor = Colors.red;
-                      });
-                      showInfoToast('Please select an account',
-                          context: context);
-                    } else {
-                      setState(() {
-                        _accountNameColor = null;
-                      });
-                    }
-                    if (_selectedDate == null) {
-                      setState(() {
-                        _dateColor = Colors.red;
-                      });
-                      showInfoToast('Please pick a date', context: context);
-                    } else {
-                      setState(() {
-                        _dateColor = null;
-                      });
-                    }
-                  }
-                },
               ),
             ],
           ),
@@ -556,7 +672,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
   }
 }
 
-class TileIcon extends StatelessWidget {
+class TileIcon extends ConsumerWidget {
   const TileIcon({
     super.key,
     required this.category,
@@ -565,21 +681,33 @@ class TileIcon extends StatelessWidget {
   final TransactionCategory category;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
         width: double.infinity,
-        color: AppColors.primary.withOpacity(0.1),
+        color: ((ref.watch(themeProvider) == 'System' ||
+                    ref.watch(themeProvider) == 'Dark') &&
+                (MediaQuery.platformBrightnessOf(context) == Brightness.dark))
+            ? AppColors.primaryDark.withOpacity(0.1)
+            : AppColors.primary.withOpacity(0.1),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            //TODO: change to iconify widget
             Iconify(
               category.icon,
-              color: AppColors.primary,
+              color: ((ref.watch(themeProvider) == 'System') &&
+                      (MediaQuery.platformBrightnessOf(context) ==
+                          Brightness.dark))
+                  ? AppColors.primaryDark
+                  : AppColors.primary,
             ),
             AppText(
               text: category.name,
-              color: AppColors.primary,
+              color: ((ref.watch(themeProvider) == 'System' ||
+                          ref.watch(themeProvider) == 'Dark') &&
+                      (MediaQuery.platformBrightnessOf(context) ==
+                          Brightness.dark))
+                  ? AppColors.primaryDark
+                  : AppColors.primary,
               size: AppSizes.bodySmallest,
             )
           ],

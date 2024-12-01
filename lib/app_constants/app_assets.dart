@@ -4,9 +4,11 @@ class AppAssets {
   static const onboarding1 = 'assets/images/onboarding1.png';
   static const onboarding2 = 'assets/images/onboarding2.png';
   static const onboarding3 = 'assets/images/onboarding3.png';
+  static const noInternet = 'assets/images/no-internet.png';
   // static const noStatistics = 'assets/images/no-statistics.png';
-  static const account = 'assets/images/account.png';
-  static const noInternet = 'assets/images/no-internet.jpg';
+
+  //svg
+  static const account = 'assets/images/account.svg';
 
   static const noProfile = 'assets/images/empty-profile-picture.jpeg';
   static const moneyPlus = 'assets/images/money-plus.jpeg';

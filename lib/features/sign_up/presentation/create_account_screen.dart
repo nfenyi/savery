@@ -13,6 +13,7 @@ import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/sign_up/presentation/terms_and_condition_webview.dart';
 import 'package:savery/main.dart';
 
+import '../../../themes/themes.dart';
 import '../../main_screen/presentation/main_screen.dart';
 import '../../sign_in/models/auth_state.dart';
 import '../../sign_in/providers/providers.dart';
@@ -50,17 +51,22 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.max,
             children: [
-              const Center(
+              Center(
                 child: Column(
                   children: [
                     AppText(
                       text: 'CREATE ACCOUNT',
-                      color: AppColors.primary,
+                      color: ((ref.watch(themeProvider) == 'System' ||
+                                  ref.watch(themeProvider) == 'Dark') &&
+                              (MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark))
+                          ? AppColors.primaryDark
+                          : AppColors.primary,
                       weight: FontWeight.bold,
                       size: AppSizes.heading6,
                     ),
-                    Gap(10),
-                    AppText(
+                    const Gap(10),
+                    const AppText(
                       text:
                           'Fill your information below or register with your social account',
                       textAlign: TextAlign.center,
@@ -94,6 +100,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                     AppTextFormField(
                       controller: _emailController,
                       hintText: 'annasmith@gmail.com',
+                      keyboardType: TextInputType.emailAddress,
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.email(),
                       ]),
@@ -150,10 +157,15 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                     child: TextButton(
                       style: TextButton.styleFrom(
                           padding: const EdgeInsets.all(0)),
-                      child: const AppText(
+                      child: AppText(
                         text: 'Terms and Conditions',
                         decoration: TextDecoration.underline,
-                        color: AppColors.primary,
+                        color: ((ref.watch(themeProvider) == 'System' ||
+                                    ref.watch(themeProvider) == 'Dark') &&
+                                (MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark))
+                            ? AppColors.primaryDark
+                            : AppColors.primary,
                       ),
                       onPressed: () {
                         navigatorKey.currentState!.push(MaterialPageRoute(
@@ -180,7 +192,8 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                           .createAccountWithEmailAndPassword(
                               email: _emailController.text,
                               password: _passwordController.text,
-                              name: _nameController.text);
+                              name: _nameController.text,
+                              ref: ref);
 
                       if (ref.read(authStateProvider).result ==
                           AuthResult.success) {
@@ -208,16 +221,21 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
               const Gap(
                 40,
               ),
-              const Row(
+              Row(
                 children: [
-                  Expanded(child: Divider()),
-                  Gap(10),
+                  const Expanded(child: Divider()),
+                  const Gap(10),
                   AppText(
                     text: 'Or Log In with',
-                    color: AppColors.neutral500,
+                    color: ((ref.watch(themeProvider) == 'System' ||
+                                ref.watch(themeProvider) == 'Dark') &&
+                            (MediaQuery.platformBrightnessOf(context) ==
+                                Brightness.dark))
+                        ? AppColors.neutral300
+                        : AppColors.neutral500,
                   ),
-                  Gap(10),
-                  Expanded(child: Divider()),
+                  const Gap(10),
+                  const Expanded(child: Divider()),
                 ],
               ),
               const Gap(
@@ -235,9 +253,14 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                     // color: null,
                   ),
                   const Gap(20),
-                  const CircularIconButton(
+                  CircularIconButton(
                     icon: FontAwesomeIcons.apple,
-                    color: Colors.black,
+                    color: ((ref.watch(themeProvider) == 'System' ||
+                                ref.watch(themeProvider) == 'Dark') &&
+                            (MediaQuery.platformBrightnessOf(context) ==
+                                Brightness.dark))
+                        ? Colors.white
+                        : Colors.black,
                   ),
                 ],
               ),
@@ -260,10 +283,15 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                               (r) {
                         return false;
                       }),
-                      child: const AppText(
+                      child: AppText(
                         text: "Sign In",
                         decoration: TextDecoration.underline,
-                        color: AppColors.primary,
+                        color: ((ref.watch(themeProvider) == 'System' ||
+                                    ref.watch(themeProvider) == 'Dark') &&
+                                (MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark))
+                            ? AppColors.primaryDark
+                            : AppColors.primary,
                       ),
                     ),
                   )

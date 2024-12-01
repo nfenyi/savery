@@ -21,6 +21,7 @@ import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/main.dart';
 
 import '../../../app_widgets/app_text.dart';
+import '../../../themes/themes.dart';
 import '../../sign_in/user_info/models/user_model.dart';
 import '../../sign_in/user_info/providers/providers.dart';
 
@@ -129,10 +130,15 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                       overflow: TextOverflow.ellipsis,
                       color: Colors.grey,
                     ),
-                    iconStyleData: const IconStyleData(
+                    iconStyleData: IconStyleData(
                       icon: FaIcon(
                         FontAwesomeIcons.chevronDown,
-                        color: AppColors.primary,
+                        color: ((ref.watch(themeProvider) == 'System' ||
+                                    ref.watch(themeProvider) == 'Dark') &&
+                                (MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark))
+                            ? AppColors.primaryDark
+                            : AppColors.primary,
                       ),
                       iconSize: 12.0,
                     ),
@@ -141,10 +147,16 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                               value: item,
                               child: Text(
                                 item,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: AppSizes.bodySmaller,
                                   fontWeight: FontWeight.w500,
-                                  // color: Colors.grey,
+                                  color:
+                                      ((ref.watch(themeProvider) == 'System') &&
+                                              (MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark))
+                                          ? Colors.white
+                                          : Colors.black,
                                 ),
                               ),
                             ))
@@ -164,8 +176,14 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                       height: AppSizes.dropDownBoxHeight,
                       padding: const EdgeInsets.only(right: 10.0),
                       decoration: BoxDecoration(
+                        color: ((ref.watch(themeProvider) == 'System' ||
+                                    ref.watch(themeProvider) == 'Dark') &&
+                                (MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark))
+                            ? const Color.fromARGB(255, 32, 25, 33)
+                            : Colors.white,
                         border: Border.all(
-                          width: 1.0,
+                          // width: 1.0,
                           color: AppColors.neutral300,
                         ),
                         borderRadius: BorderRadius.circular(20.0),
@@ -175,8 +193,13 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                       maxHeight: 350,
                       elevation: 1,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5.0),
-                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10.0),
+                        color: ((ref.watch(themeProvider) == 'System' ||
+                                    ref.watch(themeProvider) == 'Dark') &&
+                                (MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark))
+                            ? const Color.fromARGB(255, 32, 25, 33)
+                            : Colors.white,
                       ),
                     ),
                     menuItemStyleData: const MenuItemStyleData(
@@ -204,7 +227,7 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                     //     ?
                     LinearProgressIndicator(
                       backgroundColor: Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(5),
+                      borderRadius: BorderRadius.circular(10),
                       color: Colors.green,
                       value: (bucketIndicatorThreshold == null ||
                               bucketIndicatorThreshold == 0)
@@ -255,7 +278,13 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                       child: Ink(
                         child: d_border.DottedBorder(
                             padding: const EdgeInsets.symmetric(vertical: 10),
-                            color: AppColors.primary,
+                            // color: ((ref.watch(themeProvider) == 'System' ||
+                            //             ref.watch(themeProvider) == 'Dark') &&
+                            //         (MediaQuery.platformBrightnessOf(context) ==
+                            //             Brightness.dark))
+                            //     ? AppColors.primaryDark
+                            //     : AppColors.primary,
+                            color: Colors.green,
                             borderType: d_border.BorderType.RRect,
                             radius: const Radius.circular(10),
                             child: const Row(
@@ -264,7 +293,16 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                               children: [
                                 Icon(
                                   Icons.add_circle,
-                                  color: AppColors.primary,
+                                  // color:
+                                  //     ((ref.watch(themeProvider) == 'System' ||
+                                  //                 ref.watch(themeProvider) ==
+                                  //                     'Dark') &&
+                                  //             (MediaQuery.platformBrightnessOf(
+                                  //                     context) ==
+                                  //                 Brightness.dark))
+                                  //         ? AppColors.primaryDark
+                                  //         : AppColors.primary,
+                                  color: Colors.green,
                                   // size: 5,
                                 ),
                                 Gap(5),
@@ -574,7 +612,7 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
 
   Future<dynamic> showCreateGoalDialog(
       BuildContext context, List<Goal>? goals) {
-    //TODO: not using goals param, remove or refactor?
+    //TODO: not using goals param?
     _goalFundController.clear();
     return showDialog(
       context: context,
@@ -638,9 +676,14 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                             color: _selectedDate == null ? Colors.grey : null,
                           ),
                         ),
-                        trailing: const Icon(
+                        trailing: Icon(
                           FontAwesomeIcons.calendar,
-                          color: AppColors.primary,
+                          color: ((ref.watch(themeProvider) == 'System' ||
+                                      ref.watch(themeProvider) == 'Dark') &&
+                                  (MediaQuery.platformBrightnessOf(context) ==
+                                      Brightness.dark))
+                              ? AppColors.primaryDark
+                              : AppColors.primary,
                           size: 15,
                         ),
                         dense: true,
@@ -654,13 +697,28 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                               });
                             },
                             showDragHandle: true,
-                            options: const BoardDateTimeOptions(
-                              backgroundColor: Colors.white,
-                              foregroundColor: AppColors.neutral200,
+                            options: BoardDateTimeOptions(
+                              activeColor: ((ref.watch(themeProvider) ==
+                                              'System' ||
+                                          ref.watch(themeProvider) == 'Dark') &&
+                                      (MediaQuery.platformBrightnessOf(
+                                              context) ==
+                                          Brightness.dark))
+                                  ? AppColors.primaryDark
+                                  : AppColors.primary,
+                              // backgroundColor: Colors.white,
+                              foregroundColor: ((ref.watch(themeProvider) ==
+                                              'System' ||
+                                          ref.watch(themeProvider) == 'Dark') &&
+                                      (MediaQuery.platformBrightnessOf(
+                                              context) ==
+                                          Brightness.dark))
+                                  ? const Color.fromARGB(255, 78, 79, 91)
+                                  : AppColors.neutral100,
                               // boardTitle: "Select 'TODAY' or '",
                               // boardTitleTextStyle: TextStyle(fontWeight: FontWeight.w400),
                               inputable: false,
-                              pickerSubTitles: BoardDateTimeItemTitles(
+                              pickerSubTitles: const BoardDateTimeItemTitles(
                                 year: 'Year',
                                 // day: 'd',
                                 // hour: 'h',
@@ -704,9 +762,14 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
 //                     navigatorKey.currentState!.pop(true);
                   }
                 },
-                child: const AppText(
+                child: AppText(
                   text: 'OK',
-                  color: AppColors.primary,
+                  color: ((ref.watch(themeProvider) == 'System' ||
+                              ref.watch(themeProvider) == 'Dark') &&
+                          (MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark))
+                      ? AppColors.primaryDark
+                      : AppColors.primary,
                   weight: FontWeight.w600,
                 ),
               ),
@@ -717,7 +780,6 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
             actionsPadding: const EdgeInsets.only(bottom: 5),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.0)),
-            backgroundColor: Colors.white,
             content: StatefulBuilder(
               builder: (context, setState) => Form(
                 key: _formKey,
@@ -774,9 +836,14 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                             color: _selectedDate == null ? Colors.grey : null,
                           ),
                         ),
-                        trailing: const Icon(
+                        trailing: Icon(
                           FontAwesomeIcons.calendar,
-                          color: AppColors.primary,
+                          color: ((ref.watch(themeProvider) == 'System' ||
+                                      ref.watch(themeProvider) == 'Dark') &&
+                                  (MediaQuery.platformBrightnessOf(context) ==
+                                      Brightness.dark))
+                              ? AppColors.primaryDark
+                              : AppColors.primary,
                           size: 15,
                         ),
                         dense: true,
@@ -790,13 +857,28 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                               });
                             },
                             showDragHandle: true,
-                            options: const BoardDateTimeOptions(
-                              backgroundColor: Colors.white,
-                              foregroundColor: AppColors.neutral200,
+                            options: BoardDateTimeOptions(
+                              activeColor: ((ref.watch(themeProvider) ==
+                                              'System' ||
+                                          ref.watch(themeProvider) == 'Dark') &&
+                                      (MediaQuery.platformBrightnessOf(
+                                              context) ==
+                                          Brightness.dark))
+                                  ? AppColors.primaryDark
+                                  : AppColors.primary,
+                              // backgroundColor: Colors.white,
+                              foregroundColor: ((ref.watch(themeProvider) ==
+                                              'System' ||
+                                          ref.watch(themeProvider) == 'Dark') &&
+                                      (MediaQuery.platformBrightnessOf(
+                                              context) ==
+                                          Brightness.dark))
+                                  ? const Color.fromARGB(255, 78, 79, 91)
+                                  : AppColors.neutral100,
                               // boardTitle: "Select 'TODAY' or '",
                               // boardTitleTextStyle: TextStyle(fontWeight: FontWeight.w400),
                               inputable: false,
-                              pickerSubTitles: BoardDateTimeItemTitles(
+                              pickerSubTitles: const BoardDateTimeItemTitles(
                                 year: 'Year',
                                 // day: 'd',
                                 // hour: 'h',
@@ -831,9 +913,14 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                     //
                   }
                 },
-                child: const AppText(
+                child: AppText(
                   text: 'OK',
-                  color: AppColors.primary,
+                  color: ((ref.watch(themeProvider) == 'System' ||
+                              ref.watch(themeProvider) == 'Dark') &&
+                          (MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark))
+                      ? AppColors.primaryDark
+                      : AppColors.primary,
                   weight: FontWeight.w600,
                 ),
               ),
@@ -914,7 +1001,7 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                         ),
                         trailing: const Icon(
                           FontAwesomeIcons.calendar,
-                          color: AppColors.primary,
+                          // color: AppColors.primary,
                           size: 15,
                         ),
                         dense: true,
@@ -928,13 +1015,28 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                               });
                             },
                             showDragHandle: true,
-                            options: const BoardDateTimeOptions(
-                              backgroundColor: Colors.white,
-                              foregroundColor: AppColors.neutral200,
+                            options: BoardDateTimeOptions(
+                              activeColor: ((ref.watch(themeProvider) ==
+                                              'System' ||
+                                          ref.watch(themeProvider) == 'Dark') &&
+                                      (MediaQuery.platformBrightnessOf(
+                                              context) ==
+                                          Brightness.dark))
+                                  ? AppColors.primaryDark
+                                  : AppColors.primary,
+                              // backgroundColor: Colors.white,
+                              foregroundColor: ((ref.watch(themeProvider) ==
+                                              'System' ||
+                                          ref.watch(themeProvider) == 'Dark') &&
+                                      (MediaQuery.platformBrightnessOf(
+                                              context) ==
+                                          Brightness.dark))
+                                  ? const Color.fromARGB(255, 78, 79, 91)
+                                  : AppColors.neutral100,
                               // boardTitle: "Select 'TODAY' or '",
                               // boardTitleTextStyle: TextStyle(fontWeight: FontWeight.w400),
                               inputable: false,
-                              pickerSubTitles: BoardDateTimeItemTitles(
+                              pickerSubTitles: const BoardDateTimeItemTitles(
                                 year: 'Year',
                                 // day: 'd',
                                 // hour: 'h',
@@ -971,9 +1073,14 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                     // );
                   }
                 },
-                child: const AppText(
+                child: AppText(
                   text: 'Update',
-                  color: AppColors.primary,
+                  color: ((ref.watch(themeProvider) == 'System' ||
+                              ref.watch(themeProvider) == 'Dark') &&
+                          (MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark))
+                      ? AppColors.primaryDark
+                      : AppColors.primary,
                   weight: FontWeight.w600,
                 ),
               ),
@@ -984,7 +1091,6 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
             actionsPadding: const EdgeInsets.only(bottom: 5),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.0)),
-            backgroundColor: Colors.white,
             content: StatefulBuilder(
               builder: (context, setState) => Form(
                 key: _formKey,
@@ -1067,9 +1173,14 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                     navigatorKey.currentState!.pop();
                   }
                 },
-                child: const AppText(
+                child: AppText(
                   text: 'Update',
-                  color: AppColors.primary,
+                  color: ((ref.watch(themeProvider) == 'System' ||
+                              ref.watch(themeProvider) == 'Dark') &&
+                          (MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark))
+                      ? AppColors.primaryDark
+                      : AppColors.primary,
                   weight: FontWeight.w600,
                 ),
               ),
@@ -1083,6 +1194,7 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
   Future<void> _showDeleteDialog(Goal goal) async {
     await showAppInfoDialog(
       context,
+      ref,
       title: 'Are you sure you want to delete this goal?',
       confirmText: 'No',
       cancelText: 'Yes',

@@ -1,6 +1,7 @@
 part of '../widgets.dart';
 
-void showLoadingDialog({required String description}) async {
+void showLoadingDialog(
+    {required String description, required WidgetRef ref}) async {
   await showDialog(
     context: navigatorKey.currentContext!,
     barrierDismissible: false, // Dialog cannot be dismissed by tapping outside
@@ -26,7 +27,6 @@ void showLoadingDialog({required String description}) async {
         return AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-          backgroundColor: Colors.white,
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

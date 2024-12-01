@@ -46,6 +46,7 @@ dependencies:
   flutter_launcher_icons: ^0.14.1
   flutter_native_splash: ^2.4.2
   flutter_riverpod: ^2.6.1
+  flutter_svg: ^2.0.16
   flutter_timer_countdown: ^1.0.7
   fluttertoast: ^8.2.8
   font_awesome_flutter: ^10.7.0

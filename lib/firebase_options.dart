@@ -41,48 +41,52 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCljHiWLKs3fmzCkDN3w3VsqOnQ08rZF_w',
-    appId: '1:26297828009:web:6b88516d371218f6dedfb8',
-    messagingSenderId: '26297828009',
-    projectId: 'savery-d54a9',
-    authDomain: 'savery-d54a9.firebaseapp.com',
-    storageBucket: 'savery-d54a9.firebasestorage.app',
-    measurementId: 'G-YQCQKGLB3N',
+    apiKey: 'AIzaSyCWg9buUSnbAGKgejs5bJ-H5qb-oWbjflY',
+    appId: '1:154149331628:web:ee9655d88b5c71a2813509',
+    messagingSenderId: '154149331628',
+    projectId: 'savery-5f977',
+    authDomain: 'savery-5f977.firebaseapp.com',
+    storageBucket: 'savery-5f977.firebasestorage.app',
+    measurementId: 'G-HYFN33Z2RY',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCcZZ7ihjd0zLZJktSZ3F86lEnCOmZzinI',
-    appId: '1:26297828009:android:cd713cc7f8788fa7dedfb8',
-    messagingSenderId: '26297828009',
-    projectId: 'savery-d54a9',
-    storageBucket: 'savery-d54a9.firebasestorage.app',
+    apiKey: 'AIzaSyBNk21ueKJ__0VxhAhIhm1U3amtpa1WRaI',
+    appId: '1:154149331628:android:a340f3a22f595476813509',
+    messagingSenderId: '154149331628',
+    projectId: 'savery-5f977',
+    storageBucket: 'savery-5f977.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDtLSo8ax3wMw5C0kjcwcsbhtLahsDelqM',
-    appId: '1:26297828009:ios:3a6c286a3273e69adedfb8',
-    messagingSenderId: '26297828009',
-    projectId: 'savery-d54a9',
-    storageBucket: 'savery-d54a9.firebasestorage.app',
-    iosBundleId: 'com.example.savery',
+    apiKey: 'AIzaSyAiN2wzjM1OBJZ1MR2hMHz-_UWxG1dKuOU',
+    appId: '1:154149331628:ios:7f3d05b49dbb8393813509',
+    messagingSenderId: '154149331628',
+    projectId: 'savery-5f977',
+    storageBucket: 'savery-5f977.firebasestorage.app',
+    iosClientId:
+        '154149331628-k295arbeb6g3nfnb37fte7m5k6i92lj4.apps.googleusercontent.com',
+    iosBundleId: 'com.example.savery2',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDtLSo8ax3wMw5C0kjcwcsbhtLahsDelqM',
-    appId: '1:26297828009:ios:3a6c286a3273e69adedfb8',
-    messagingSenderId: '26297828009',
-    projectId: 'savery-d54a9',
-    storageBucket: 'savery-d54a9.firebasestorage.app',
-    iosBundleId: 'com.example.savery',
+    apiKey: 'AIzaSyAiN2wzjM1OBJZ1MR2hMHz-_UWxG1dKuOU',
+    appId: '1:154149331628:ios:7f3d05b49dbb8393813509',
+    messagingSenderId: '154149331628',
+    projectId: 'savery-5f977',
+    storageBucket: 'savery-5f977.firebasestorage.app',
+    iosClientId:
+        '154149331628-k295arbeb6g3nfnb37fte7m5k6i92lj4.apps.googleusercontent.com',
+    iosBundleId: 'com.example.savery2',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyCljHiWLKs3fmzCkDN3w3VsqOnQ08rZF_w',
-    appId: '1:26297828009:web:dfdc8e87a2b945cbdedfb8',
-    messagingSenderId: '26297828009',
-    projectId: 'savery-d54a9',
-    authDomain: 'savery-d54a9.firebaseapp.com',
-    storageBucket: 'savery-d54a9.firebasestorage.app',
-    measurementId: 'G-NXZ7BS0LKT',
+    apiKey: 'AIzaSyCWg9buUSnbAGKgejs5bJ-H5qb-oWbjflY',
+    appId: '1:154149331628:web:1dd9970a212def33813509',
+    messagingSenderId: '154149331628',
+    projectId: 'savery-5f977',
+    authDomain: 'savery-5f977.firebaseapp.com',
+    storageBucket: 'savery-5f977.firebasestorage.app',
+    measurementId: 'G-X3W7298PCL',
   );
 }

@@ -22,6 +22,7 @@ import 'package:savery/main.dart';
 
 import '../../../app_constants/app_assets.dart';
 import '../../../app_widgets/widgets.dart';
+import '../../../themes/themes.dart';
 import '../../sign_in/user_info/models/user_model.dart';
 import '../../sign_in/user_info/providers/providers.dart';
 import 'widgets.dart';
@@ -139,7 +140,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: AppSizes.horizontalPaddingSmall),
                     child: d_border.DottedBorder(
-                        color: AppColors.primary,
+                        color: ((ref.watch(themeProvider) == 'System' ||
+                                    ref.watch(themeProvider) == 'Dark') &&
+                                (MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark))
+                            ? AppColors.primaryDark
+                            : AppColors.primary,
                         borderType: d_border.BorderType.RRect,
                         radius: const Radius.circular(10),
                         child: Column(
@@ -149,16 +155,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             SizedBox(
                               width: Adaptive.w(90),
                               height: 200,
-                              child: const Row(
+                              child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(
                                     Icons.add_circle,
-                                    color: AppColors.primary,
+                                    color: ((ref.watch(themeProvider) ==
+                                                'System') &&
+                                            (MediaQuery.platformBrightnessOf(
+                                                    context) ==
+                                                Brightness.dark))
+                                        ? AppColors.primaryDark
+                                        : AppColors.primary,
                                     // size: 5,
                                   ),
-                                  Gap(10),
-                                  AppText(
+                                  const Gap(10),
+                                  const AppText(
                                       text: 'Tap here to create an account.')
                                 ],
                               ),
@@ -176,7 +188,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     return AccountCard(account: account);
                   } else {
                     return SizedBox(
-                      width: 380,
+                      width: 384,
                       height: 200,
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
@@ -194,16 +206,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             },
                             child: Ink(
                               child: d_border.DottedBorder(
-                                  color: AppColors.primary,
+                                  color:
+                                      ((ref.watch(themeProvider) == 'System' ||
+                                                  ref.watch(themeProvider) ==
+                                                      'Dark') &&
+                                              (MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark))
+                                          ? AppColors.primaryDark
+                                          : AppColors.primary,
                                   borderType: d_border.BorderType.RRect,
                                   radius: const Radius.circular(10),
-                                  child: const Column(
+                                  child: Column(
                                     mainAxisSize: MainAxisSize.max,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Icon(
                                         Icons.add_circle,
-                                        color: AppColors.primary,
+                                        color: ((ref.watch(themeProvider) ==
+                                                    'System') &&
+                                                (MediaQuery
+                                                        .platformBrightnessOf(
+                                                            context) ==
+                                                    Brightness.dark))
+                                            ? AppColors.primaryDark
+                                            : AppColors.primary,
                                         // size: 5,
                                       ),
                                     ],
@@ -302,7 +329,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         final transaction = reversedTransactions[index];
                         return Container(
                           decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
+                              color: ((ref.watch(themeProvider) == 'System' ||
+                                          ref.watch(themeProvider) == 'Dark') &&
+                                      (MediaQuery.platformBrightnessOf(
+                                              context) ==
+                                          Brightness.dark))
+                                  ? const Color.fromARGB(255, 39, 32, 39)
+                                  : Colors.grey.shade100,
                               borderRadius: BorderRadius.circular(15)),
                           child: ListTile(
                             // shape: RoundedRectangleBorder(
@@ -315,15 +348,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               child: Container(
                                   padding: const EdgeInsets.all(10),
                                   width: 50,
-                                  color: AppColors.primary.withOpacity(0.1),
+                                  color: ((ref.watch(themeProvider) ==
+                                              'System') &&
+                                          (MediaQuery.platformBrightnessOf(
+                                                  context) ==
+                                              Brightness.dark))
+                                      ? AppColors.primaryDark.withOpacity(0.1)
+                                      : AppColors.primary.withOpacity(0.1),
                                   child: transaction.category == null
-                                      ? const FaIcon(
+                                      ? FaIcon(
                                           FontAwesomeIcons.coins,
-                                          color: AppColors.primary,
+                                          color: ((ref.watch(themeProvider) ==
+                                                      'System') &&
+                                                  (MediaQuery
+                                                          .platformBrightnessOf(
+                                                              context) ==
+                                                      Brightness.dark))
+                                              ? AppColors.primaryDark
+                                              : AppColors.primary,
                                         )
                                       : Iconify(
                                           transaction.category!.icon,
-                                          color: AppColors.primary,
+                                          color: ((ref.watch(themeProvider) ==
+                                                      'System') &&
+                                                  (MediaQuery
+                                                          .platformBrightnessOf(
+                                                              context) ==
+                                                      Brightness.dark))
+                                              ? AppColors.primaryDark
+                                              : AppColors.primary,
                                         )),
                             ),
                             title: AppText(
@@ -474,9 +527,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   //   _nameController.clear();
                   // }
                 },
-                child: const AppText(
+                child: AppText(
                   text: 'OK',
-                  color: AppColors.primary,
+                  color: ((ref.watch(themeProvider) == 'System' ||
+                              ref.watch(themeProvider) == 'Dark') &&
+                          (MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark))
+                      ? AppColors.primaryDark
+                      : AppColors.primary,
                   weight: FontWeight.w600,
                 ),
               ),
@@ -487,7 +545,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             actionsPadding: const EdgeInsets.only(bottom: 5),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.0)),
-            // backgroundColor: Colors.white,
             content: Form(
               key: _accountNameFormKey,
               child: Column(
@@ -522,9 +579,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             : ref.read(accountsProvider)!.length - 2);
                   }
                 },
-                child: const AppText(
+                child: AppText(
                   text: 'OK',
-                  color: AppColors.primary,
+                  color: ((ref.watch(themeProvider) == 'System' ||
+                              ref.watch(themeProvider) == 'Dark') &&
+                          (MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark))
+                      ? AppColors.primaryDark
+                      : AppColors.primary,
                   weight: FontWeight.w600,
                 ),
               ),
