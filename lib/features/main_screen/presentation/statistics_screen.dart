@@ -913,9 +913,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                             xValueMapper: (MapEntry data, index) => data.key,
                             yValueMapper: (MapEntry data, index) =>
                                 data.value[_amountString],
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(5),
-                                topRight: Radius.circular(5)),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(5),
+                            ),
                             // name: 'Gold',
                             color: Colors.deepPurple[200])
                       ],

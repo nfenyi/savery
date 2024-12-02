@@ -89,19 +89,14 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         ),
         child: Ink(
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-              const Color.fromARGB(
+            gradient: const LinearGradient(colors: [
+              Color.fromARGB(
                 255,
                 224,
                 6,
                 135,
               ),
-              ((ref.watch(themeProvider) == 'System' ||
-                          ref.watch(themeProvider) == 'Dark') &&
-                      (MediaQuery.platformBrightnessOf(context) ==
-                          Brightness.dark))
-                  ? AppColors.primaryDark
-                  : AppColors.primary,
+              AppColors.primary,
             ]),
             borderRadius: BorderRadius.circular(100),
           ),

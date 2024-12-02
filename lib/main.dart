@@ -1,3 +1,5 @@
+import 'themes/themes.dart';
+import 'l10n/l10n.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -12,10 +14,12 @@ import 'package:savery/features/main_screen/presentation/main_screen.dart';
 import 'package:savery/features/new_transaction/models/transaction_category_model.dart';
 import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
-
 import 'features/onboarding/presentation/onboarding_screen.dart';
 import 'firebase_options.dart';
-import 'themes/themes.dart';
+// import 'package:flutter_localization/flutter_localization.dart';
+// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+// import 'package:localization_il8n_arb/l10n/l10n.dart';
+// import "package:flutter_gen/gen_l10n/app_localization.dart";
 
 final Logger logger = Logger();
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -79,7 +83,14 @@ class Savery extends StatelessWidget {
           return GetMaterialApp(
             debugShowCheckedModeBanner: false,
             builder: FToastBuilder(),
-
+            supportedLocales: L10n.all,
+            locale: const Locale('en'),
+            localizationsDelegates: [
+              // AppLocalizations.delegate,
+              // GlobalMaterialLocalizations.delegate,
+              // GlobalWidgetsLocalizations.delegate,
+              // GlobalCupertinoLocalizations.delegate
+            ],
             title: 'Flutter Demo',
             themeMode: theme == 'System'
                 ? ThemeMode.system
