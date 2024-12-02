@@ -1,3 +1,6 @@
+import 'package:savery/notifications/models/notification_model.dart';
+
+import 'notifications/apis/firebase_notifications_api.dart';
 import 'themes/themes.dart';
 import 'l10n/l10n.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -16,6 +19,7 @@ import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'features/onboarding/presentation/onboarding_screen.dart';
 import 'firebase_options.dart';
+import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 // import 'package:flutter_localization/flutter_localization.dart';
 // import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // import 'package:localization_il8n_arb/l10n/l10n.dart';
@@ -25,6 +29,7 @@ final Logger logger = Logger();
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await registerHiveAdpapters();
 
@@ -33,19 +38,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-//   // You may set the permission requests to "provisional" which allows the user to choose what type
-// // of notifications they would like to receive once the user receives a notification.
-// final notificationSettings =
-  await FirebaseMessaging.instance.requestPermission(
-//   // provisional: true
-      );
 
-// // For apple platforms, ensure the APNS token is available before making any FCM plugin API calls
-// final apnsToken = await FirebaseMessaging.instance.getAPNSToken();
-// if (apnsToken != null) {
-//  // APNS token is available, make FCM plugin API requests...
-// }
-  logger.d(await FirebaseMessaging.instance.getToken());
+  await FirebaseNotificationsApi().initNotifications();
+
   runApp(const ProviderScope(child: Savery()));
 }
 
@@ -56,6 +51,7 @@ Future<void> registerHiveAdpapters() async {
   Hive.registerAdapter(TransactionAdapter());
   Hive.registerAdapter(TransactionCategoryAdapter());
   Hive.registerAdapter(GoalAdapter());
+  Hive.registerAdapter(NotificationAdapter());
 }
 
 Future<void> openBoxes() async {
@@ -63,6 +59,7 @@ Future<void> openBoxes() async {
   await Hive.openBox<AppUser>(AppBoxes.user);
   await Hive.openBox<Account>(AppBoxes.accounts);
   await Hive.openBox<Budget>(AppBoxes.budgets);
+  await Hive.openBox<AppNotification>(AppBoxes.notifications);
   await Hive.openBox<AccountTransaction>(AppBoxes.transactions);
   await Hive.openBox<TransactionCategory>(AppBoxes.transactionsCategories);
   await Hive.openBox<Goal>(AppBoxes.goals);

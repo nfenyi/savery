@@ -23,13 +23,14 @@ class UserAdapter extends TypeAdapter<AppUser> {
       phoneNumber: fields[3] as String?,
       photoUrl: fields[5] as String?,
       email: fields[4] as String?,
+      notifications: (fields[6] as HiveList?)?.castHiveList(),
     );
   }
 
   @override
   void write(BinaryWriter writer, AppUser obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.uid)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class UserAdapter extends TypeAdapter<AppUser> {
       ..writeByte(4)
       ..write(obj.email)
       ..writeByte(5)
-      ..write(obj.photoUrl);
+      ..write(obj.photoUrl)
+      ..writeByte(6)
+      ..write(obj.notifications);
   }
 
   @override

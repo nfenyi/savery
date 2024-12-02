@@ -22,6 +22,7 @@ import 'package:savery/themes/themes.dart';
 
 import '../../../app_constants/app_assets.dart';
 import '../../../app_constants/app_colors.dart';
+import '../../../notifications/presentation/notifications_screen.dart';
 
 class UserScreen extends ConsumerStatefulWidget {
   const UserScreen({super.key});
@@ -39,9 +40,10 @@ class _UserScreenState extends ConsumerState<UserScreen> {
     super.initState();
     _personalSettings = [
       Setting(
-        icon: Iconsax.notification,
-        name: "Notifications",
-      ),
+          icon: Iconsax.notification,
+          name: "Notifications",
+          callback: () => navigatorKey.currentState!.push(MaterialPageRoute(
+              builder: (context) => const NotificationsScreen()))),
       Setting(
           icon: Icons.settings_outlined,
           name: "Settings",
@@ -70,10 +72,11 @@ class _UserScreenState extends ConsumerState<UserScreen> {
               ),
             ));
           }),
-      Setting(
-        icon: Iconsax.message,
-        name: "Support",
-      ),
+      //TODO: commented out for now
+      // Setting(
+      //   icon: Iconsax.message,
+      //   name: "Support",
+      // ),
     ];
   }
 

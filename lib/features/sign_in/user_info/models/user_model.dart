@@ -2,6 +2,8 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/features/new_transaction/models/transaction_category_model.dart';
 
+import '../../../../notifications/models/notification_model.dart';
+
 part 'user_model.g.dart';
 
 @HiveType(typeId: 0, adapterName: 'UserAdapter')
@@ -18,6 +20,8 @@ class AppUser extends HiveObject {
   String? email;
   @HiveField(5)
   String? photoUrl;
+  @HiveField(6)
+  HiveList<AppNotification>? notifications;
 
   AppUser({
     required this.uid,
@@ -26,6 +30,7 @@ class AppUser extends HiveObject {
     this.phoneNumber,
     this.photoUrl,
     this.email,
+    this.notifications,
   });
 
   factory AppUser.fromJson(Map<String, dynamic> json) {
@@ -40,6 +45,12 @@ class AppUser extends HiveObject {
       email: json['email'],
       phoneNumber: json['phoneNumber'],
       photoUrl: json['photoUrl'],
+      notifications: HiveList(
+        json['notifications']
+            .map((notificationsJson) =>
+                AppNotification.fromJson(notificationsJson))
+            .toList<AppNotification>(),
+      ),
     );
   }
 
@@ -53,6 +64,11 @@ class AppUser extends HiveObject {
       'email': email,
       'phoneNumber': phoneNumber,
       'photoUrl': photoUrl,
+      'notifications': accounts == null
+          ? []
+          : notifications!
+              .map((notification) => notification.toJson())
+              .toList(),
     };
   }
 }
