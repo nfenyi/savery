@@ -140,7 +140,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                               (MediaQuery.platformBrightnessOf(
                                                       context) ==
                                                   Brightness.dark))
-                                          ? null
+                                          ? const RadialGradient(colors: [
+                                              Color.fromARGB(255, 90, 85, 97),
+                                              // ((ref.watch(themeProvider) == 'System') &&
+                                              //         (MediaQuery.platformBrightnessOf(
+                                              //                 context) ==
+                                              //             Brightness.dark))
+                                              //     ? const Color.fromARGB(
+                                              //         255, 32, 25, 33)
+                                              // :
+                                              Color.fromARGB(255, 32, 25, 33)
+                                            ])
                                           : const RadialGradient(
                                               colors: [
                                                 Color.fromARGB(
@@ -192,7 +202,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                               (MediaQuery.platformBrightnessOf(
                                                       context) ==
                                                   Brightness.dark))
-                                          ? null
+                                          ? const RadialGradient(colors: [
+                                              Color.fromARGB(255, 90, 85, 97),
+                                              // ((ref.watch(themeProvider) == 'System') &&
+                                              //         (MediaQuery.platformBrightnessOf(
+                                              //                 context) ==
+                                              //             Brightness.dark))
+                                              //     ? const Color.fromARGB(
+                                              //         255, 32, 25, 33)
+                                              // :
+                                              Color.fromARGB(255, 32, 25, 33)
+                                            ])
                                           : const RadialGradient(
                                               colors: [
                                                 Color.fromARGB(
@@ -244,7 +264,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                               (MediaQuery.platformBrightnessOf(
                                                       context) ==
                                                   Brightness.dark))
-                                          ? null
+                                          ? const RadialGradient(colors: [
+                                              Color.fromARGB(255, 90, 85, 97),
+                                              // ((ref.watch(themeProvider) == 'System') &&
+                                              //         (MediaQuery.platformBrightnessOf(
+                                              //                 context) ==
+                                              //             Brightness.dark))
+                                              //     ? const Color.fromARGB(
+                                              //         255, 32, 25, 33)
+                                              // :
+                                              Color.fromARGB(255, 32, 25, 33)
+                                            ])
                                           : const RadialGradient(
                                               colors: [
                                                 Color.fromARGB(

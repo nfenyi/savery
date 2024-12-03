@@ -13,6 +13,7 @@ import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
 import 'package:lottie/lottie.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_colors.dart';
+import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_functions/app_functions.dart';
 import 'package:savery/app_widgets/app_text.dart';
@@ -42,13 +43,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final db = FirebaseFirestore.instance;
   bool showFirstCard = true;
   late ValueNotifier<Account?> _valueNotifier;
+  late final String _appStateUid;
 
   @override
   void initState() {
     super.initState();
-
-    _valueNotifier =
-        ValueNotifier(ref.read(userProvider).user.accounts?.firstOrNull);
+    _appStateUid = Hive.box(AppBoxes.appState).get('currentUser');
+    _valueNotifier = ValueNotifier(
+        ref.read(userProvider).user(_appStateUid).accounts?.firstOrNull);
 
     // _accounts.add(
     //   Account(
@@ -87,6 +89,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final DateTime dateTimeNow = DateTime.now();
     // logger.d(_selectedAccount!.name);
 
     // logger.d(_userBox);
@@ -112,8 +115,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     // logger.d(db.doc(
     //     '${FirestoreFieldNames.users}/${FirebaseAuth.instance.currentUser!.uid}/${FirestoreFieldNames.accounts}/').get());
-    final AppUser user = ref.watch(userProvider).user;
-    final HiveList<Account>? accounts = ref.watch(accountsProvider);
+    final AppUser user = ref.watch(userProvider).user(_appStateUid);
+
     // HiveList<Account>? accounts = ref.watch(accountsProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,8 +132,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
         const Gap(10),
-
-        (accounts == null || user.accounts!.isEmpty)
+        (user.accounts == null || user.accounts!.isEmpty)
             ? InkWell(
                 onTap: () async {
                   await showAccountDialog(context);
@@ -185,7 +187,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 itemBuilder: (context, index, realIndex) {
                   final account = user.accounts![index];
                   if (index != user.accounts!.length - 1) {
-                    return AccountCard(account: account);
+                    return AccountCard(
+                        account: account, appStateUid: _appStateUid);
                   } else {
                     return SizedBox(
                       width: 384,
@@ -197,6 +200,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             width: 320,
                             child: AccountCard(
                               account: account,
+                              appStateUid: _appStateUid,
                             ),
                           ),
                           const Gap(1),
@@ -252,7 +256,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     },
                     viewportFraction: 0.85),
               ),
-
         const Gap(20),
         Padding(
           padding: const EdgeInsets.symmetric(
@@ -299,20 +302,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     }
                     _dateHolder = value.transactions?.reversed.first.date;
                     return AppText(
-                        text: (DateTime.now().day == _dateHolder?.day)
-                            ? 'Today'
-                            : (DateTime.now().weekday - _dateHolder!.weekday ==
-                                    1)
-                                ? 'Yesterday'
-                                : AppFunctions.formatDate(
-                                    _dateHolder.toString(),
-                                    format: r'g:i A'));
+                      text: (dateTimeNow.day == _dateHolder?.day)
+                          ? AppFunctions.formatDate(_dateHolder.toString(),
+                              format: r'g:i A')
+                          : (dateTimeNow.weekday - _dateHolder!.weekday == 1)
+                              ? 'Yesterday'
+                              : (dateTimeNow.difference(_dateHolder!).inDays >
+                                      7)
+                                  ? AppFunctions.formatDate(
+                                      _dateHolder!.toString(),
+                                      format: r'l')
+                                  : AppFunctions.formatDate(
+                                      _dateHolder!.toString(),
+                                      format: r'j M'),
+                    );
                   }),
               const Gap(5)
             ],
           ),
         ),
-        //TODO: fix streambuilder not listening to transaction addition
         ValueListenableBuilder(
             valueListenable: _valueNotifier,
             builder: (context, value, child) {
@@ -573,7 +581,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     navigatorKey.currentState!.pop();
                     _nameController.clear();
                     _valueNotifier.value = ref
-                        .read(accountsProvider)!
+                        .read(userProvider)
+                        .user(_appStateUid)
+                        .accounts!
                         .elementAt((_valueNotifier.value == null)
                             ? ref.read(accountsProvider)!.length - 1
                             : ref.read(accountsProvider)!.length - 2);

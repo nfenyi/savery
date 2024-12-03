@@ -35,7 +35,16 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
       .toList()
       .reversed
       .toList();
-  final _user = Hive.box<AppUser>(AppBoxes.user).values.first;
+  final _userUIDAppState = Hive.box(AppBoxes.appState).get('currentUser');
+  late final AppUser _user;
+
+  @override
+  void initState() {
+    super.initState();
+    _user = Hive.box<AppUser>(AppBoxes.users)
+        .values
+        .firstWhere((element) => element.uid == _userUIDAppState);
+  }
 
   @override
   Widget build(BuildContext context) {

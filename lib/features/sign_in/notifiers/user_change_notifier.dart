@@ -8,43 +8,55 @@ import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'package:savery/main.dart';
 
 class UserNotifier extends ChangeNotifier {
-  final Box<AppUser> _userBox;
   final _accountsBox = Hive.box<Account>(AppBoxes.accounts);
   final _transactionsBox = Hive.box<AccountTransaction>(AppBoxes.transactions);
   final _goalsBox = Hive.box<Goal>(AppBoxes.goals);
   final _budgetBox = Hive.box<Budget>(AppBoxes.budgets);
+  final _appStateUid = Hive.box(AppBoxes.appState).get('currentUser');
+  final _userBox = Hive.box<AppUser>(AppBoxes.users);
+  // final _user = Hive.box<AppUser>(AppBoxes.users).values.firstWhere((element) => element.uid == _appStateUid,);
 
-  UserNotifier(this._userBox);
+  UserNotifier();
 
-  AppUser get user => _userBox.values.first;
+  AppUser user(String appStateUid) {
+    return _userBox.values.firstWhere(
+      (element) => element.uid == appStateUid,
+    );
+  }
 
   HiveList<AccountTransaction>? transactions(Account selectedAccount) =>
-      user.accounts
+      user(_appStateUid)
+          .accounts
           ?.firstWhere(
             (element) => element.name == selectedAccount.name,
           )
           .transactions;
 
-  double savingsBucket(Account selectedAccount) => user.accounts!
+  double savingsBucket(Account selectedAccount) => user(_appStateUid)
+      .accounts!
       .firstWhere(
         (element) => element.name == selectedAccount.name,
       )
       .savingsBucket;
 
-  HiveList<Goal>? goals(Account selectedAccount) => user.accounts!
+  HiveList<Goal>? goals(Account selectedAccount) => user(_appStateUid)
+      .accounts!
       .firstWhere(
         (element) => element.name == selectedAccount.name,
       )
       .goals;
-  Iterable<Budget>? expenseBudgets(Account selectedAccount) => (user.accounts!
-      .firstWhere(
-        (element) => element.name == selectedAccount.name,
-      )
-      .budgets
-      ?.where(
-        (element) => element.type == BudgetType.expenseBudget,
-      ));
-  Iterable<Budget>? savings(Account selectedAccount) => (user.accounts!
+  Iterable<Budget>? expenseBudgets(Account selectedAccount) =>
+      (user(_appStateUid)
+          .accounts!
+          .firstWhere(
+            (element) => element.name == selectedAccount.name,
+          )
+          .budgets
+          ?.where(
+            (element) => element.type == BudgetType.expenseBudget,
+          ));
+  Iterable<Budget>? savings(Account selectedAccount) => (user(_appStateUid)
+      .accounts!
       .firstWhere(
         (element) => element.name == selectedAccount.name,
       )
@@ -54,13 +66,14 @@ class UserNotifier extends ChangeNotifier {
       ));
 
   Future<void> addAccount(String accountName) async {
-    final user = _userBox.values.first;
+    final user = _userBox.values.firstWhere(
+      (element) => element.uid == _appStateUid,
+    );
 
     await _accountsBox.add(Account(name: accountName));
+    user.accounts ??= HiveList(_accountsBox);
 
-    user.accounts = HiveList(_accountsBox);
-
-    user.accounts!.addAll(_accountsBox.values);
+    user.accounts!.add(_accountsBox.values.last);
 
     await user.save();
 
@@ -120,7 +133,8 @@ class UserNotifier extends ChangeNotifier {
     required String description,
     required TransactionCategory? selectedCategory,
   }) async {
-    final selectedAccount = user.accounts!
+    final selectedAccount = user(_appStateUid)
+        .accounts!
         .where((element) => element.name == selectedAccountName)
         .first;
     await _transactionsBox.add((AccountTransaction(
@@ -129,14 +143,10 @@ class UserNotifier extends ChangeNotifier {
         category: selectedCategory,
         description: description,
         type: selectedTransactionType)));
-    final temp = selectedAccount.transactions;
-    selectedAccount.transactions = HiveList(_transactionsBox);
-    if (temp != null) {
-      selectedAccount.transactions!
-          .addAll({...temp, _transactionsBox.values.last});
-    } else {
-      selectedAccount.transactions!.addAll({_transactionsBox.values.last});
-    }
+    selectedAccount.transactions ??= HiveList(_transactionsBox);
+
+    selectedAccount.transactions!.add(_transactionsBox.values.last);
+
     if (selectedTransactionType == 'Income') {
       selectedAccount.income += double.parse(amount);
       selectedAccount.balance += double.parse(amount);
@@ -227,15 +237,9 @@ class UserNotifier extends ChangeNotifier {
         fund: double.parse(goalFund),
         createdAt: currentDate,
         estimatedDate: selectedDate));
-    final temp = selectedAccount.goals;
-    selectedAccount.goals = HiveList(_goalsBox);
-    if (temp != null) {
-      selectedAccount.goals!.addAll([...temp, _goalsBox.values.last]);
-    } else {
-      selectedAccount.goals?.addAll([
-        _goalsBox.values.last,
-      ]);
-    }
+    selectedAccount.goals ??= HiveList(_goalsBox);
+
+    selectedAccount.goals!.add(_goalsBox.values.last);
 
     await selectedAccount.save();
 
@@ -263,20 +267,13 @@ class UserNotifier extends ChangeNotifier {
         type: BudgetType.savings,
         duration: int.parse(expenseCoverage)));
 
-    final temp = selectedAccount.budgets;
-    selectedAccount.budgets = HiveList(_budgetBox);
-    if (temp != null) {
-      selectedAccount.budgets?.addAll([
-        ...temp,
-        _budgetBox.values.last,
-        _budgetBox.values.elementAt(_budgetBox.values.length - 2)
-      ]);
-    } else {
-      selectedAccount.budgets?.addAll([
-        _budgetBox.values.last,
-        _budgetBox.values.elementAt(_budgetBox.values.length - 2)
-      ]);
-    }
+    selectedAccount.budgets ??= HiveList(_budgetBox);
+
+    selectedAccount.budgets?.addAll([
+      _budgetBox.values.elementAt(_budgetBox.values.length - 2),
+      _budgetBox.values.last,
+    ]);
+
     final parsedExpenseAmount = double.parse(expenseAmount);
     if (selectedAccount.savingsBucket >= parsedExpenseAmount) {
       selectedAccount.savingsBucket -= parsedExpenseAmount;

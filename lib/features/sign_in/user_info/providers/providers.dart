@@ -6,11 +6,14 @@ import '../../notifiers/user_change_notifier.dart';
 import '../models/user_model.dart';
 
 final userProvider = ChangeNotifierProvider<UserNotifier>((ref) {
-  return UserNotifier(Hive.box<AppUser>(AppBoxes.user));
+  return UserNotifier();
 });
 
 final accountsProvider = Provider(
-  (ref) => ref.watch(userProvider).user.accounts,
+  (ref) => ref
+      .watch(userProvider)
+      .user(Hive.box(AppBoxes.appState).get('currentUser'))
+      .accounts,
 );
 
 // final transactionsProvider = Provider(

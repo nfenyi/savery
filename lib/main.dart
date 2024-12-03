@@ -4,7 +4,6 @@ import 'notifications/apis/firebase_notifications_api.dart';
 import 'themes/themes.dart';
 import 'l10n/l10n.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -19,7 +18,6 @@ import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'features/onboarding/presentation/onboarding_screen.dart';
 import 'firebase_options.dart';
-import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 // import 'package:flutter_localization/flutter_localization.dart';
 // import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // import 'package:localization_il8n_arb/l10n/l10n.dart';
@@ -56,7 +54,7 @@ Future<void> registerHiveAdpapters() async {
 
 Future<void> openBoxes() async {
   await Hive.openBox(AppBoxes.appState);
-  await Hive.openBox<AppUser>(AppBoxes.user);
+  await Hive.openBox<AppUser>(AppBoxes.users);
   await Hive.openBox<Account>(AppBoxes.accounts);
   await Hive.openBox<Budget>(AppBoxes.budgets);
   await Hive.openBox<AppNotification>(AppBoxes.notifications);

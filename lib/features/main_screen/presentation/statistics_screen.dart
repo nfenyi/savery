@@ -7,12 +7,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_assets.dart';
 import 'package:savery/app_constants/app_colors.dart';
+import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/features/sign_in/user_info/providers/providers.dart';
@@ -70,12 +72,17 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
   final _amountString = 'amount';
   final _categoryString = 'category';
 
+  late final String _appStateUid;
+
   @override
   void initState() {
     super.initState();
-
-    _selectedAccount =
-        ref.read(userProvider.notifier).user.accounts?.firstOrNull;
+    _appStateUid = Hive.box(AppBoxes.appState).get('currentUser');
+    _selectedAccount = ref
+        .read(userProvider.notifier)
+        .user(_appStateUid)
+        .accounts
+        ?.firstOrNull;
     _selectedAccountName = _selectedAccount?.name;
     _reversedTransactions = _selectedAccount?.transactions?.reversed;
     _animationController =
@@ -140,7 +147,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final AppUser user = ref.watch(userProvider).user;
+    final AppUser user = ref.watch(userProvider).user(_appStateUid);
     // _selectedAccount =
     //     ref.watch(userProvider.notifier).user.accounts?.firstOrNull;
     return user.accounts != null && user.accounts!.isNotEmpty

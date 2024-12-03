@@ -76,41 +76,10 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                   ? Center(
                       child: Column(
                         children: [
-                          Lottie.asset(AppAssets.noAccount, width: 150),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const AppText(
-                                text: 'Please ',
-                                size: AppSizes.bodySmaller,
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  navigatorKey.currentState!.pop();
-                                  ref
-                                      .read(bottomNavIndexProvider.notifier)
-                                      .updateIndex(0);
-                                },
-                                child: Ink(
-                                  child: AppText(
-                                    text: 'create an account',
-                                    color: ((ref.watch(themeProvider) ==
-                                                'System') &&
-                                            (MediaQuery.platformBrightnessOf(
-                                                    context) ==
-                                                Brightness.dark))
-                                        ? AppColors.primaryDark
-                                        : AppColors.primary,
-                                    size: AppSizes.bodySmaller,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                              ),
-                              const AppText(
-                                text: ' first.',
-                                size: AppSizes.bodySmaller,
-                              ),
-                            ],
+                          Lottie.asset(AppAssets.noAccount, height: 100),
+                          const AppText(
+                            text: ' No accounts.',
+                            size: AppSizes.bodySmaller,
                           ),
                         ],
                       ),
@@ -236,23 +205,19 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                                     const Gap(45),
                                     InkWell(
                                       onTap: () async {
-                                        final shouldDelete =
-                                            await showAppInfoDialog(
-                                                context, ref,
-                                                title:
-                                                    'Are you sure you want to delete ${account.name}?',
-                                                cancelCallbackFunction: () =>
-                                                    navigatorKey.currentState!
-                                                        .pop(true),
-                                                cancelText: 'Yes',
-                                                confirmText: 'Cancel');
-                                        if (shouldDelete == true) {
+                                        await showAppInfoDialog(context, ref,
+                                            isWarning: true,
+                                            title:
+                                                'Are you sure you want to delete ${account.name}?',
+                                            cancelText: 'No',
+                                            confirmCallbackFunction: () async {
                                           await _accountsBox.deleteAt(index);
                                           setState(() {
                                             _accounts =
                                                 _accountsBox.values.toList();
                                           });
-                                        }
+                                          navigatorKey.currentState!.pop();
+                                        }, confirmText: 'Yes');
                                       },
                                       child: Ink(
                                         child: const Icon(

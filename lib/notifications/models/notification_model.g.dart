@@ -20,19 +20,22 @@ class NotificationAdapter extends TypeAdapter<AppNotification> {
       title: fields[0] as String?,
       body: fields[1] as String?,
       data: (fields[2] as Map).cast<dynamic, dynamic>(),
+      sentTime: fields[3] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, AppNotification obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
       ..write(obj.body)
       ..writeByte(2)
-      ..write(obj.data);
+      ..write(obj.data)
+      ..writeByte(3)
+      ..write(obj.sentTime);
   }
 
   @override

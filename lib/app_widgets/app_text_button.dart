@@ -5,11 +5,13 @@ class AppTextButton extends StatelessWidget {
   final Function()? callback;
   final Color? color;
   final double size;
+  final bool isUnderlined;
   const AppTextButton({
     required this.text,
     required this.callback,
     this.size = AppSizes.bodySmallest,
     this.color,
+    this.isUnderlined = false,
     super.key,
   });
 
@@ -19,6 +21,8 @@ class AppTextButton extends StatelessWidget {
       onPressed: callback,
       child: AppText(
         text: text,
+        decoration:
+            isUnderlined ? TextDecoration.underline : TextDecoration.none,
         color: color,
         size: size,
       ),

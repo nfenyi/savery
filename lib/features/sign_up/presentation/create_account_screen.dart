@@ -198,7 +198,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                       if (ref.read(authStateProvider).result ==
                           AuthResult.success) {
                         User user = FirebaseAuth.instance.currentUser!;
-                        await Hive.box<AppUser>(AppBoxes.user).add(AppUser(
+                        await Hive.box<AppUser>(AppBoxes.users).add(AppUser(
                             uid: user.uid,
                             displayName: user.displayName,
                             email: user.email,

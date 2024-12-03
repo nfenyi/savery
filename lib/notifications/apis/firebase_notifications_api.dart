@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:savery/app_constants/app_constants.dart';
+import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'package:savery/main.dart';
 import 'package:savery/notifications/models/notification_model.dart';
+import 'package:get/get_utils/get_utils.dart';
 
 import '../presentation/notifications_screen.dart';
 
@@ -32,8 +34,7 @@ class FirebaseNotificationsApi {
 // if (apnsToken != null) {
 //  // APNS token is available, make FCM plugin API requests...
 // }
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
+    await _firebaseMessaging.setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true,
@@ -41,7 +42,7 @@ class FirebaseNotificationsApi {
     final String? fcmToken = await _firebaseMessaging.getToken();
     logger.d(fcmToken);
     await Hive.box(AppBoxes.appState).put('fcmToken', fcmToken);
-    await FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
+    await _firebaseMessaging.getInitialMessage().then(handleMessage);
     FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
     FirebaseMessaging.onMessage.listen((message) {
       final notification = message.notification;
@@ -54,7 +55,7 @@ class FirebaseNotificationsApi {
               android: AndroidNotificationDetails(
                   _androidChannel.id, _androidChannel.name,
                   channelDescription: _androidChannel.description,
-                  icon: '@drawable-xxxhdpi/ic_stat_app_logo')),
+                  icon: 'ic_stat_app_logo')),
           payload: jsonEncode(message.toMap()));
     });
     //doesn''t work because the box is paused when the app is suspended
@@ -64,18 +65,19 @@ class FirebaseNotificationsApi {
 
   Future initLocalNotifications() async {
     const iOS = DarwinInitializationSettings();
-    const android =
-        AndroidInitializationSettings('@drawable-xxxhdpi/ic_stat_app_logo');
+    const android = AndroidInitializationSettings('ic_stat_app_logo');
     const settings = InitializationSettings(android: android, iOS: iOS);
 
+    // await _localNotifications.initialize(settings,
+    //     onSelectNotification: (payload) {
+    //   final message = RemoteMessage.fromMap(jsonDecode(payload!));
+    //   handleMessage(message);
+    // });
+
+    //newer version
     await _localNotifications.initialize(settings,
-        onDidReceiveNotificationResponse: (payload) {
-      final message = RemoteMessage.fromMap(jsonDecode(payload.toString()));
-      handleMessage(message);
-    }, onDidReceiveBackgroundNotificationResponse: (payload) {
-      final message = RemoteMessage.fromMap(jsonDecode(payload.toString()));
-      handleMessage(message);
-    });
+        onDidReceiveNotificationResponse: handleNotificationResponse,
+        onDidReceiveBackgroundNotificationResponse: handleNotificationResponse);
 
     final platform = _localNotifications.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
@@ -85,13 +87,49 @@ class FirebaseNotificationsApi {
 
 Future<void> handleMessage(RemoteMessage? message) async {
   if (message == null) return;
-  await Hive.box<AppNotification>(AppBoxes.notifications).add(AppNotification(
+  final appStateUid = Hive.box(AppBoxes.appState).get('currentUser');
+  final notificationsBox = Hive.box<AppNotification>(AppBoxes.notifications);
+  final newNotification = AppNotification(
       title: message.notification?.title,
       body: message.notification?.body,
-      data: message.data));
-  navigatorKey.currentState!.push(MaterialPageRoute(
-    builder: (context) => const NotificationsScreen(),
-  ));
+      sentTime: message.sentTime,
+      data: message.data);
 
-  logger.d('hello world');
+  AppUser? user =
+      Hive.box<AppUser>(AppBoxes.users).values.toList().firstWhereOrNull(
+            (element) => element.uid == appStateUid,
+          );
+  if (user == null) {
+    await notificationsBox.add(newNotification);
+    return;
+  }
+
+  HiveList<AppNotification>? userNotifications = user.notifications;
+  if (userNotifications != null) {
+    userNotifications.add(AppNotification(
+        title: message.notification?.title,
+        body: message.notification?.body,
+        sentTime: message.sentTime,
+        data: message.data));
+  } else {
+    userNotifications = HiveList(notificationsBox, objects: [
+      //in case some general messages came in while  the user was signed out, meaning these messages are for everyone
+      ...notificationsBox.values, newNotification
+    ]);
+  }
+  await user.save();
+  if (Hive.box(AppBoxes.appState).get('authenticated')) {
+    navigatorKey.currentState!.push(MaterialPageRoute(
+      builder: (context) => const NotificationsScreen(),
+    ));
+  }
+
+  // logger.d('hello world');
+}
+
+Future<void> handleNotificationResponse(
+    NotificationResponse notificationResponse) async {
+  final message =
+      RemoteMessage.fromMap(jsonDecode(notificationResponse.payload ?? ""));
+  await handleMessage(message);
 }

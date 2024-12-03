@@ -15,6 +15,7 @@ import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/features/main_screen/state/bottom_nav_index_provider.dart';
 import 'package:savery/features/new_transaction/presentation/new_transaction_screen.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
+import '../../../app_constants/app_assets.dart';
 import '../../../app_constants/app_constants.dart';
 import '../../../app_widgets/widgets.dart';
 import '../../../themes/themes.dart';
@@ -33,8 +34,9 @@ class MainScreen extends ConsumerStatefulWidget {
 
 class _MainScreenState extends ConsumerState<MainScreen> {
   Logger logger = Logger();
-  final _userBox = Hive.box<AppUser>(AppBoxes.user);
+  final _userBox = Hive.box<AppUser>(AppBoxes.users);
   final _accountBox = Hive.box<Account>(AppBoxes.accounts);
+  final _appStateUid = Hive.box(AppBoxes.appState).get('currentUser');
 
   // final int _currentIndex = 0;
 
@@ -118,7 +120,9 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           children: [
             AppText(
               text: bottomNavIndex == 0
-                  ? "Hello, ${_userBox.values.first.displayName}"
+                  ? "Hello, ${_userBox.values.firstWhere(
+                        (element) => element.uid == _appStateUid,
+                      ).displayName}"
                   : bottomNavIndex == 1
                       ? "Statistics"
                       : bottomNavIndex == 3
@@ -265,17 +269,96 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                 ),
                 label: 'Budgets',
               ),
-              BottomNavigationBarItem(
-                activeIcon: (_userBox.values.first.photoUrl != null)
-                    ? Image.network(_userBox.values.first.photoUrl!)
-                    : const Icon(
-                        Icons.person,
-                        // color: AppColors.primary,
-                        size: 27,
-                      ),
-                icon: (_userBox.values.first.photoUrl != null)
-                    ? Image.network(_userBox.values.first.photoUrl!)
-                    : const Icon(Iconsax.user),
+              const BottomNavigationBarItem(
+                activeIcon:
+                    // (_userBox.values
+                    //             .firstWhere(
+                    //               (element) => element.uid == _appStateUid,
+                    //             )
+                    //             .photoUrl !=
+                    //         null)
+                    //     ? Stack(
+                    //         alignment: Alignment.center,
+                    //         children: [
+                    //           Container(
+                    //             decoration: BoxDecoration(
+                    //                 color: ((ref.watch(themeProvider) == 'System' ||
+                    //                             ref.watch(themeProvider) ==
+                    //                                 'Dark') &&
+                    //                         (MediaQuery.platformBrightnessOf(
+                    //                                 context) ==
+                    //                             Brightness.dark))
+                    //                     ? AppColors.primaryDark
+                    //                     : AppColors.primary,
+                    //                 borderRadius: const BorderRadius.all(
+                    //                     Radius.circular(30))),
+                    //             height: 27,
+                    //             width: 27,
+                    //           ),
+                    //           CircleAvatar(
+                    //             backgroundImage: const AssetImage(
+                    //               AppAssets.noProfile,
+                    //             ),
+                    //             // maxRadius: 5,
+                    //             // minRadius: 5,
+                    //             radius: 11,
+                    //             foregroundImage: NetworkImage(_userBox.values
+                    //                 .firstWhere(
+                    //                   (element) => element.uid == _appStateUid,
+                    //                 )
+                    //                 .photoUrl!),
+                    //           ),
+                    //         ],
+                    //       )
+                    //     :
+                    Icon(
+                  Icons.person,
+                  // color: AppColors.primary,
+                  size: 27,
+                ),
+                icon:
+                    //  (_userBox.values
+                    //             .firstWhere(
+                    //               (element) => element.uid == _appStateUid,
+                    //         )
+                    //         .photoUrl !=
+                    //     null)
+                    // ? Stack(
+                    //     alignment: Alignment.center,
+                    //     children: [
+                    //       Container(
+                    //         decoration: BoxDecoration(
+                    //             // color: ((ref.watch(themeProvider) == 'System' ||
+                    //             //             ref.watch(themeProvider) ==
+                    //             //                 'Dark') &&
+                    //             //         (MediaQuery.platformBrightnessOf(
+                    //             //                 context) ==
+                    //             //             Brightness.dark))
+                    //             //     ? AppColors.primaryDark
+                    //             //     : AppColors.primary,
+                    //             color: AppColors.neutral600,
+                    //             borderRadius: const BorderRadius.all(
+                    //                 Radius.circular(30))),
+                    //         height: 27,
+                    //         width: 27,
+                    //       ),
+                    //       CircleAvatar(
+                    //         backgroundImage: const AssetImage(
+                    //           AppAssets.noProfile,
+                    //         ),
+                    //         // maxRadius: 5,
+                    //         // minRadius: 5,
+                    //         radius: 11,
+                    //         foregroundImage: NetworkImage(_userBox.values
+                    //             .firstWhere(
+                    //               (element) => element.uid == _appStateUid,
+                    //             )
+                    //             .photoUrl!),
+                    //       ),
+                    //     ],
+                    //   )
+                    // :
+                    Icon(Iconsax.user),
                 label: 'User',
               ),
             ],

@@ -39,7 +39,15 @@ class Authenticator {
     final oAuthCredential = FacebookAuthProvider.credential(accessToken.token);
 
     try {
-      await FirebaseAuth.instance.signInWithCredential(oAuthCredential);
+      final result =
+          await FirebaseAuth.instance.signInWithCredential(oAuthCredential);
+      await Hive.box<AppUser>(AppBoxes.users).add(AppUser(
+          uid: result.user!.uid,
+          displayName: result.user?.displayName,
+          email: result.user?.email,
+          photoUrl: result.user?.photoURL,
+          phoneNumber: result.user?.phoneNumber));
+      await Hive.box(AppBoxes.appState).put('currentUser', result.user!.uid);
       await Hive.box(AppBoxes.appState).put('authenticated', true);
       return AuthResult.success;
     } on FirebaseAuthException catch (e) {
@@ -54,16 +62,29 @@ class Authenticator {
         // if (providers.contains(Constants.googleCom)) {
         await loginWithGoogle(ref);
         //TODO: handle errors that can come from this function:
-        await FirebaseAuth.instance.currentUser?.linkWithCredential(
+        final result =
+            await FirebaseAuth.instance.currentUser?.linkWithCredential(
           credential,
         );
-        // }
-        return AuthResult.success;
+        if (result?.user != null) {
+          await Hive.box<AppUser>(AppBoxes.users).add(AppUser(
+              uid: result!.user!.uid,
+              displayName: result.user?.displayName,
+              email: result.user?.email,
+              photoUrl: result.user?.photoURL,
+              phoneNumber: result.user?.phoneNumber));
+          await Hive.box(AppBoxes.appState)
+              .put('currentUser', result.user!.uid);
+          return AuthResult.success;
+        } else {
+          showInfoToast('Error', context: navigatorKey.currentContext);
+          return AuthResult.failure;
+        }
       } else if (e.code == Constants.accountExistsWithDifferentCredential) {
         showInfoToast(
-          context: navigatorKey.currentContext!,
-          'It seems you signed in using your google account. Signing in with Google instead',
-        );
+            context: navigatorKey.currentContext!,
+            'It seems you signed in using your google account. Signing in with Google instead',
+            seconds: 6);
         return await loginWithGoogle(ref);
       } else {
         await showAppInfoDialog(navigatorKey.currentContext!, ref,
@@ -88,9 +109,16 @@ class Authenticator {
     );
 
     try {
-      await FirebaseAuth.instance.signInWithCredential(
+      final result = await FirebaseAuth.instance.signInWithCredential(
         oAuthCredentials,
       );
+      await Hive.box<AppUser>(AppBoxes.users).add(AppUser(
+          uid: result.user!.uid,
+          displayName: result.user?.displayName,
+          email: result.user?.email,
+          photoUrl: result.user?.photoURL,
+          phoneNumber: result.user?.phoneNumber));
+      await Hive.box(AppBoxes.appState).put('currentUser', result.user!.uid);
       await Hive.box(AppBoxes.appState).put('authenticated', true);
       return AuthResult.success;
     } on FirebaseAuthException catch (e) {
@@ -114,6 +142,14 @@ class Authenticator {
           .createUserWithEmailAndPassword(email: email, password: password);
       if (credential.user != null) {
         await credential.user!.updateDisplayName(name);
+        await Hive.box<AppUser>(AppBoxes.users).add(AppUser(
+            uid: credential.user!.uid,
+            displayName: credential.user?.displayName,
+            email: credential.user?.email,
+            photoUrl: credential.user?.photoURL,
+            phoneNumber: credential.user?.phoneNumber));
+        await Hive.box(AppBoxes.appState)
+            .put('currentUser', credential.user!.uid);
 
         await Hive.box(AppBoxes.appState).put('authenticated', true);
 
@@ -122,7 +158,6 @@ class Authenticator {
         return AuthResult.failure;
       }
     } on FirebaseAuthException catch (e) {
-      //TODO: make error message user friendly
       await showAppInfoDialog(navigatorKey.currentContext!, ref,
           title: e.message ?? e.code);
       return AuthResult.failure;
@@ -139,13 +174,14 @@ class Authenticator {
       final result = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
 
-//TODO: Do this for all functions within this class:
-      await Hive.box<AppUser>(AppBoxes.user).add(AppUser(
+      await Hive.box<AppUser>(AppBoxes.users).add(AppUser(
           uid: result.user!.uid,
           displayName: result.user?.displayName,
           email: result.user?.email,
           photoUrl: result.user?.photoURL,
           phoneNumber: result.user?.phoneNumber));
+
+      await Hive.box(AppBoxes.appState).put('currentUser', result.user!.uid);
 
       return AuthResult.success;
     } on FirebaseAuthException catch (e) {

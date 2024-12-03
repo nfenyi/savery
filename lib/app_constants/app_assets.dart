@@ -18,4 +18,5 @@ class AppAssets {
   static const emptyGoalList = 'assets/animations/empty-goal-list.json';
   static const noStatistics = 'assets/animations/no-statistics.json';
   static const noAccount = 'assets/animations/no-account.json';
+  static const noNotifications = 'assets/animations/no-notifications.json';
 }

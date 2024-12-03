@@ -10,14 +10,20 @@ class AppNotification extends HiveObject {
   final String? body;
   @HiveField(2)
   final Map data;
+  @HiveField(3)
+  final DateTime? sentTime;
 
   AppNotification(
-      {required this.title, required this.body, required this.data});
+      {required this.title,
+      required this.body,
+      required this.data,
+      required this.sentTime});
   factory AppNotification.fromJson(Map<String, dynamic> json) {
     return AppNotification(
       title: json['title'],
       body: json['body'],
       data: json['data'] ?? {},
+      sentTime: json['sentTime'],
     );
   }
 
@@ -26,6 +32,7 @@ class AppNotification extends HiveObject {
       'title': title,
       'body': body,
       'data': data,
+      'sentTime': sentTime,
     };
   }
 }

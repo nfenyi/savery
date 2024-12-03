@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:gap/gap.dart';
+import 'package:iconify_flutter/icons/heroicons.dart';
 import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
 import 'package:iconify_flutter_plus/icons/ic.dart';
 import 'package:iconify_flutter_plus/icons/la.dart';
@@ -39,9 +40,10 @@ class CategoriesScreen extends ConsumerWidget {
         navigatorKey.currentContext!,
         ref,
         title: 'Are you sure you want to delete ${category.name}?',
-        confirmText: 'No',
-        cancelText: 'Yes',
-        cancelCallbackFunction: () async {
+        confirmText: 'Yes',
+        isWarning: true,
+        cancelText: 'No',
+        confirmCallbackFunction: () async {
           await ref
               .read(categoriesProvider.notifier)
               .deleteCategory(index: index);
@@ -147,7 +149,7 @@ class CategoriesScreen extends ConsumerWidget {
                             child: GridView.builder(
                               padding: const EdgeInsets.symmetric(
                                   vertical: 15, horizontal: 10),
-                              itemCount: La.iconsList.length,
+                              itemCount: Heroicons.iconsList.length,
                               gridDelegate:
                                   const SliverGridDelegateWithMaxCrossAxisExtent(
                                       maxCrossAxisExtent: 30,
@@ -155,7 +157,7 @@ class CategoriesScreen extends ConsumerWidget {
                                       crossAxisSpacing: 8,
                                       mainAxisSpacing: 10),
                               itemBuilder: (context, index) {
-                                final icon = La.iconsList[index];
+                                final icon = Heroicons.iconsList[index];
                                 return InkWell(
                                   onTap: () {
                                     setState(() {

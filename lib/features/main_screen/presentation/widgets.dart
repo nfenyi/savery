@@ -17,16 +17,19 @@ class AccountCard extends ConsumerWidget {
   const AccountCard({
     super.key,
     required this.account,
+    required this.appStateUid,
   });
 
   final Account account;
+  final String appStateUid;
 
   @override
   Widget build(BuildContext context, ref) {
     double popupMenuHeight = 15;
-    final consumerAccount = ref.watch(userProvider).user.accounts!.firstWhere(
-          (element) => element.name == account.name,
-        );
+    final consumerAccount =
+        ref.watch(userProvider).user(appStateUid).accounts!.firstWhere(
+              (element) => element.name == account.name,
+            );
 
     return Container(
       padding: const EdgeInsets.all(10),

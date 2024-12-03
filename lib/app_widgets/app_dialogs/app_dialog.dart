@@ -5,6 +5,7 @@ Future<dynamic> showAppInfoDialog(BuildContext context, WidgetRef ref,
     String? description,
     String confirmText = 'OK',
     String? cancelText,
+    bool isWarning = false,
     void Function()? confirmCallbackFunction,
     void Function()? cancelCallbackFunction,
     bool dismissible = true}) {
@@ -90,12 +91,14 @@ Future<dynamic> showAppInfoDialog(BuildContext context, WidgetRef ref,
                   },
               child: AppText(
                 text: confirmText,
-                color: ((ref.watch(themeProvider) == 'System' ||
-                            ref.watch(themeProvider) == 'Dark') &&
-                        (MediaQuery.platformBrightnessOf(context) ==
-                            Brightness.dark))
-                    ? AppColors.primaryDark
-                    : AppColors.primary,
+                color: isWarning
+                    ? Colors.red
+                    : ((ref.watch(themeProvider) == 'System' ||
+                                ref.watch(themeProvider) == 'Dark') &&
+                            (MediaQuery.platformBrightnessOf(context) ==
+                                Brightness.dark))
+                        ? AppColors.primaryDark
+                        : AppColors.primary,
                 // weight: FontWeight.w600,
               ),
             ),
@@ -107,7 +110,7 @@ Future<dynamic> showAppInfoDialog(BuildContext context, WidgetRef ref,
                     },
                 child: AppText(
                   text: cancelText,
-                  color: Colors.red,
+                  // color: Colors.red,
                   // weight: FontWeight.w600,
                 ),
               ),

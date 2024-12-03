@@ -64,12 +64,13 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
 
   final Map<String, double> _mappedTransactions = {};
   late String _currency;
+  final _appStateUid = Hive.box(AppBoxes.users).get('currentUser');
 
   @override
   void initState() {
     super.initState();
 
-    final accounts = ref.read(userProvider).user.accounts;
+    final accounts = ref.read(userProvider).user(_appStateUid).accounts;
     _selectedAccount = widget.account ?? accounts!.first;
     _currency = _selectedAccount.currency ?? 'GHS';
     _selectedAccountName = _selectedAccount.name;
@@ -126,7 +127,8 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final HiveList<Account>? accounts = ref.watch(userProvider).user.accounts;
+    final HiveList<Account>? accounts =
+        ref.watch(userProvider).user(_appStateUid).accounts;
     _currentDate = DateTime.now();
     List<Budget>? consumerSavingsBudget =
         ref.watch(userProvider).savings(_selectedAccount)?.toList();
@@ -1217,9 +1219,10 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
       ref,
       title:
           'Are you sure you want to delete this ${budget.category!.name} budget?',
-      confirmText: 'No',
-      cancelText: 'Yes',
-      cancelCallbackFunction: () async {
+      confirmText: 'Yes',
+      isWarning: true,
+      cancelText: 'No',
+      confirmCallbackFunction: () async {
         await ref.read(userProvider.notifier).deleteExpenseBudget(
             budget: budget, selectedAccount: _selectedAccount);
         navigatorKey.currentState!.pop();

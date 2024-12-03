@@ -32,8 +32,9 @@ class UserScreen extends ConsumerStatefulWidget {
 }
 
 class _UserScreenState extends ConsumerState<UserScreen> {
-  final _userBox = Hive.box<AppUser>(AppBoxes.user);
+  final _userBox = Hive.box<AppUser>(AppBoxes.users);
   late final List<Setting> _personalSettings;
+  final _appStateUid = Hive.box(AppBoxes.appState).get('currentUser');
 
   @override
   void initState() {
@@ -109,25 +110,38 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                         borderRadius: BorderRadius.circular(80),
                         child: Container(
                           color: Colors.white,
-                          height: 120,
-                          width: 120,
+                          height: 111,
+                          width: 111,
                         ),
                       ),
                       CircleAvatar(
-                        maxRadius: 58,
-                        minRadius: 58,
+                        maxRadius: 54,
+                        minRadius: 54,
                         backgroundImage: const AssetImage(
                           AppAssets.noProfile,
                         ),
-                        foregroundImage: _userBox.values.first.photoUrl != null
-                            ? NetworkImage(_userBox.values.first.photoUrl!)
+                        foregroundImage: _userBox.values
+                                    .firstWhere(
+                                      (element) => element.uid == _appStateUid,
+                                    )
+                                    .photoUrl !=
+                                null
+                            ? NetworkImage(_userBox.values
+                                .firstWhere(
+                                  (element) => element.uid == _appStateUid,
+                                )
+                                .photoUrl!)
                             : null,
                       ),
                     ],
                   ),
                   const Gap(10),
                   AppText(
-                    text: _userBox.values.first.displayName!,
+                    text: _userBox.values
+                        .firstWhere(
+                          (element) => element.uid == _appStateUid,
+                        )
+                        .displayName!,
                     color: Colors.white,
                     size: AppSizes.bodySmall,
                   ),
@@ -182,6 +196,8 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                 ),
                 ListTile(
                   onTap: () async {
+                    showLoadingDialog(
+                        description: 'Logging you out...', ref: ref);
                     await ref.read(authStateProvider.notifier).logOut();
                     if (ref.read(authStateProvider).userId == null) {
                       await navigatorKey.currentState!.pushAndRemoveUntil(

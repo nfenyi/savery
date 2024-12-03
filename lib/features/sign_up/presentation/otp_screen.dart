@@ -61,7 +61,7 @@ class _OTPScreenState extends State<OTPScreen> {
             callback: () async {
               User user = FirebaseAuth.instance.currentUser!;
 
-              await Hive.box<AppUser>(AppBoxes.user).add(AppUser(
+              await Hive.box<AppUser>(AppBoxes.users).add(AppUser(
                   uid: user.uid,
                   displayName: user.displayName,
                   email: user.email,
@@ -145,7 +145,7 @@ class _OTPScreenState extends State<OTPScreen> {
                   User user = FirebaseAuth.instance.currentUser!;
 
                   //because phone number has been added to firebase user account
-                  await Hive.box<AppUser>(AppBoxes.user).add(AppUser(
+                  await Hive.box<AppUser>(AppBoxes.users).add(AppUser(
                       uid: user.uid,
                       displayName: user.displayName,
                       email: user.email,

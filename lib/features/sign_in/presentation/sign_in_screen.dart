@@ -36,7 +36,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _showPassword = false;
   final Box _appBox = Hive.box(AppBoxes.appState);
-  final Box<AppUser> _userBox = Hive.box(AppBoxes.user);
+  final Box<AppUser> _userBox = Hive.box(AppBoxes.users);
   bool _isLoading = false;
 
   // @override

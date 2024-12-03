@@ -14,6 +14,7 @@ import 'package:lottie/lottie.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_assets.dart';
 import 'package:savery/app_constants/app_colors.dart';
+import 'package:savery/app_constants/app_constants.dart';
 // import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_functions/app_functions.dart';
@@ -35,8 +36,7 @@ class MyGoalsScreen extends ConsumerStatefulWidget {
 
 class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
   String? _selectedAccountName;
-  late final HiveList<Account>? _accounts =
-      ref.read(userProvider).user.accounts;
+  late final HiveList<Account>? _accounts;
 
   late final List<String>? _accountNames;
   final _formKey = GlobalKey<FormState>();
@@ -50,13 +50,14 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
   late List<ValueNotifier<bool>> _showDaysMoreList;
   late List<ValueNotifier<double>> _goalAmountList;
   final _milestoneController = TextEditingController();
+  final _appStateUid = Hive.box(AppBoxes.users).get('currentUser');
 
   DateTime? _selectedDate;
 
   @override
   void initState() {
     super.initState();
-
+    _accounts = ref.read(userProvider).user(_appStateUid).accounts;
     _selectedAccount = widget.account ?? _accounts!.first;
     _selectedAccountName = _selectedAccount.name;
     _currency = _selectedAccount.currency ?? 'GHS';
@@ -1196,9 +1197,10 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
       context,
       ref,
       title: 'Are you sure you want to delete this goal?',
-      confirmText: 'No',
-      cancelText: 'Yes',
-      cancelCallbackFunction: () async {
+      confirmText: 'Yes',
+      cancelText: 'No',
+      isWarning: true,
+      confirmCallbackFunction: () async {
         await ref
             .read(userProvider.notifier)
             .deleteGoal(goal: goal, selectedAccount: _selectedAccount);

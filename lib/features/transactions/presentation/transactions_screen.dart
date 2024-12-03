@@ -158,13 +158,18 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
             // const Gap(10),
 
             AppText(
-                textAlign: TextAlign.left,
-                text: (DateTime.now().day == _dateHolder?.day)
-                    ? 'Today'
-                    : (DateTime.now().weekday - _dateHolder!.weekday == 1)
-                        ? 'Yesterday'
-                        : AppFunctions.formatDate(_dateHolder.toString(),
-                            format: r'g:i A')),
+              textAlign: TextAlign.left,
+              text: (dateTimeNow.day == _dateHolder?.day)
+                  ? AppFunctions.formatDate(_dateHolder.toString(),
+                      format: r'g:i A')
+                  : (dateTimeNow.weekday - _dateHolder!.weekday == 1)
+                      ? 'Yesterday'
+                      : (dateTimeNow.difference(_dateHolder!).inDays > 7)
+                          ? AppFunctions.formatDate(_dateHolder!.toString(),
+                              format: r'l')
+                          : AppFunctions.formatDate(_dateHolder!.toString(),
+                              format: r'j M'),
+            ),
             const Gap(10),
             // (_transactionsHolder != null && _transactionsHolder!.isNotEmpty)
             //     ?
