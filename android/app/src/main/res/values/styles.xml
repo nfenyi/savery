@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Theme applied to the Android Window while the process is starting when the OS's Dark Mode setting is off -->
-    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+    <style name="LaunchTheme" parent="Theme.AppCompat.DayNight">
         <!-- Show a splash screen on the activity. Automatically removed when
              the Flutter engine draws its first frame -->
         <item name="android:windowBackground">@drawable/launch_background</item>
@@ -19,4 +19,9 @@
     <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowBackground">?android:colorBackground</item>
     </style>
+    <string name="facebook_app_id">3816247238690368</string>
+    <string name="fb_login_protocol_scheme">fb3816247238690368</string>
+    <string name="facebook_client_token">e0c44810f0e720c777cf34f2289a54f6</string>
+    <!-- next line wasn't in facebook's setup guide -->
+    <string name="app_name">savery2</string>
 </resources>

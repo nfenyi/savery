@@ -1,5 +1,11 @@
+import 'package:gap/gap.dart';
 import 'package:savery/notifications/models/notification_model.dart';
+// import 'package:secure_application/secure_application.dart';
 
+import 'app_widgets/app_text.dart';
+import 'app_widgets/widgets.dart';
+import 'features/main_screen/app_background_check_provider/app_background_check_provider.dart';
+import 'features/sign_in/local_auth_api/local_auth_api.dart';
 import 'notifications/apis/firebase_notifications_api.dart';
 import 'themes/themes.dart';
 import 'l10n/l10n.dart';
@@ -18,10 +24,6 @@ import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'features/onboarding/presentation/onboarding_screen.dart';
 import 'firebase_options.dart';
-// import 'package:flutter_localization/flutter_localization.dart';
-// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-// import 'package:localization_il8n_arb/l10n/l10n.dart';
-// import "package:flutter_gen/gen_l10n/app_localization.dart";
 
 final Logger logger = Logger();
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

@@ -15,7 +15,7 @@ import 'package:savery/features/app_settings/presentation/app_settings_screen.da
 import 'package:savery/features/categories/presentation/categories_screen.dart';
 import 'package:savery/features/main_screen/models/settings.dart';
 import 'package:savery/features/sign_in/providers/providers.dart';
-import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
+// import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'package:savery/main.dart';
 import 'package:savery/themes/themes.dart';
@@ -23,6 +23,7 @@ import 'package:savery/themes/themes.dart';
 import '../../../app_constants/app_assets.dart';
 import '../../../app_constants/app_colors.dart';
 import '../../../notifications/presentation/notifications_screen.dart';
+import '../../sign_in/local_auth_api/local_auth_api.dart';
 
 class UserScreen extends ConsumerStatefulWidget {
   const UserScreen({super.key});
@@ -33,12 +34,16 @@ class UserScreen extends ConsumerStatefulWidget {
 
 class _UserScreenState extends ConsumerState<UserScreen> {
   final _userBox = Hive.box<AppUser>(AppBoxes.users);
+  late final AppUser _user;
   late final List<Setting> _personalSettings;
   final _appStateUid = Hive.box(AppBoxes.appState).get('currentUser');
+  late final bool _isMainUser;
 
   @override
   void initState() {
     super.initState();
+    _isMainUser = _userBox.values.first.uid ==
+        Hive.box(AppBoxes.appState).get('currentUser');
     _personalSettings = [
       Setting(
           icon: Iconsax.notification,
@@ -47,10 +52,20 @@ class _UserScreenState extends ConsumerState<UserScreen> {
               builder: (context) => const NotificationsScreen()))),
       Setting(
           icon: Icons.settings_outlined,
-          name: "Settings",
-          callback: () {
-            navigatorKey.currentState!.push(
-                MaterialPageRoute(builder: (context) => const AppSettings()));
+          name: "App Settings",
+          callback: () async {
+            if (_isMainUser) {
+              final bool hasBiometrics = await LocalAuthApi.hasBiometrics();
+              navigatorKey.currentState!.push(MaterialPageRoute(
+                  builder: (context) => AppSettings(
+                        enableBiometrics: hasBiometrics,
+                      )));
+            } else {
+              navigatorKey.currentState!.push(MaterialPageRoute(
+                  builder: (context) => AppSettings(
+                        enableBiometrics: false,
+                      )));
+            }
           }),
       Setting(
           icon: Iconsax.grid_2,
@@ -79,6 +94,9 @@ class _UserScreenState extends ConsumerState<UserScreen> {
       //   name: "Support",
       // ),
     ];
+    _user = _userBox.values.firstWhere(
+      (element) => element.uid == _appStateUid,
+    );
   }
 
   @override
@@ -120,31 +138,30 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                         backgroundImage: const AssetImage(
                           AppAssets.noProfile,
                         ),
-                        foregroundImage: _userBox.values
-                                    .firstWhere(
-                                      (element) => element.uid == _appStateUid,
-                                    )
-                                    .photoUrl !=
-                                null
-                            ? NetworkImage(_userBox.values
-                                .firstWhere(
-                                  (element) => element.uid == _appStateUid,
-                                )
-                                .photoUrl!)
+                        foregroundImage: _user.photoUrl != null
+                            ? NetworkImage(_user.photoUrl!)
                             : null,
                       ),
                     ],
                   ),
                   const Gap(10),
                   AppText(
-                    text: _userBox.values
-                        .firstWhere(
-                          (element) => element.uid == _appStateUid,
-                        )
-                        .displayName!,
+                    text: _user.displayName!,
                     color: Colors.white,
                     size: AppSizes.bodySmall,
                   ),
+                  Visibility(
+                    visible: !_isMainUser,
+                    child: const Column(
+                      children: [
+                        Gap(4),
+                        AppText(
+                          text: '(piggy-back user)',
+                          style: FontStyle.italic,
+                        ),
+                      ],
+                    ),
+                  )
                 ],
               ),
             ),
@@ -199,13 +216,14 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                     showLoadingDialog(
                         description: 'Logging you out...', ref: ref);
                     await ref.read(authStateProvider.notifier).logOut();
-                    if (ref.read(authStateProvider).userId == null) {
-                      await navigatorKey.currentState!.pushAndRemoveUntil(
-                          MaterialPageRoute(
-                              builder: (context) => const SignInScreen()), (r) {
-                        return false;
-                      });
-                    }
+                    navigatorKey.currentState!.pop();
+                    // if (ref.read(authStateProvider).userId == null) {
+                    //   await navigatorKey.currentState!.pushAndRemoveUntil(
+                    //       MaterialPageRoute(
+                    //           builder: (context) => const SignInScreen()), (r) {
+                    //     return false;
+                    //   });
+                    // }
                   },
                   contentPadding: const EdgeInsets.all(0),
                   dense: true,

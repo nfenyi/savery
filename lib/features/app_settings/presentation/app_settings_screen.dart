@@ -2,16 +2,44 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:savery/app_constants/app_colors.dart';
+import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
+import 'package:savery/main.dart';
+
 import 'package:savery/themes/themes.dart';
 
-class AppSettings extends StatelessWidget {
-  const AppSettings({super.key});
+import '../../sign_in/user_info/models/user_model.dart';
+
+class AppSettings extends StatefulWidget {
+  final bool enableBiometrics;
+  const AppSettings({super.key, required this.enableBiometrics});
+
+  @override
+  State<AppSettings> createState() => _AppSettingsState();
+}
+
+class _AppSettingsState extends State<AppSettings> {
+  late bool _userEnabledBiometrics;
+  final _userBox = Hive.box<AppUser>(AppBoxes.users);
+  // late final AppUser _user;
+
+  @override
+  void initState() {
+    super.initState();
+    _userEnabledBiometrics = Hive.box(AppBoxes.appState)
+        .get('enableBiometrics', defaultValue: false);
+
+    // _user = userBox.values.firstWhere(
+    //   (element) => element.uid == _appStateUid,
+    // );
+  }
 
   @override
   Widget build(BuildContext context) {
+    // logger.d(Hive.box(AppBoxes.appState).get('currentUser'));
     return Scaffold(
       appBar: AppBar(
         title: const AppText(
@@ -21,14 +49,30 @@ class AppSettings extends StatelessWidget {
         ),
       ),
       body: ListView(
-        children: const [
-          ListTile(
+        children: [
+          const ListTile(
             title: AppText(text: 'Theme', size: AppSizes.bodySmall),
             trailing: ThemeDropdownButton(),
           ),
-          ListTile(
+          const ListTile(
             title: AppText(text: 'Language', size: AppSizes.bodySmall),
             trailing: ThemeDropdownButton(),
+          ),
+          Visibility(
+            visible: (widget.enableBiometrics),
+            child: ListTile(
+              title: const AppText(
+                  text: 'Enable biometrics', size: AppSizes.bodySmall),
+              trailing: Switch.adaptive(
+                  value: _userEnabledBiometrics,
+                  onChanged: (newValue) async {
+                    await Hive.box(AppBoxes.appState)
+                        .put('enableBiometrics', newValue);
+                    setState(() {
+                      _userEnabledBiometrics = newValue;
+                    });
+                  }),
+            ),
           ),
         ],
       ),

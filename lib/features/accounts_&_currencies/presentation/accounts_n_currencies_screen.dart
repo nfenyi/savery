@@ -15,7 +15,6 @@ import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/features/accounts_&_currencies/services/api_constants.dart';
 import 'package:savery/features/accounts_&_currencies/services/api_services.dart';
-import 'package:savery/features/main_screen/state/bottom_nav_index_provider.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'package:savery/main.dart';
 

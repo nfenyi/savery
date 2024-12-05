@@ -20,10 +20,15 @@ class Authenticator {
   String? get email => FirebaseAuth.instance.currentUser?.email;
 
   Future<void> logOut() async {
-    await FirebaseAuth.instance.signOut();
-    await GoogleSignIn().signOut();
-    await FacebookAuth.instance.logOut();
-    await Hive.box(AppBoxes.appState).put('authenticated', false);
+    try {
+      await FirebaseAuth.instance.signOut();
+      await GoogleSignIn().signOut();
+      await FacebookAuth.instance.logOut();
+      await Hive.box(AppBoxes.appState).put('authenticated', false);
+    } on Exception catch (e) {
+      showInfoToast(e.toString(), context: navigatorKey.currentContext);
+      navigatorKey.currentState!.pop();
+    }
 
     // await appStateBox.put('user', {});
   }

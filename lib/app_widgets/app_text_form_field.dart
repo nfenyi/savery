@@ -93,8 +93,8 @@ class AppTextFormField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    logger.d(((ref.watch(themeProvider) == 'System') &&
-        (MediaQuery.platformBrightnessOf(context) == Brightness.dark)));
+    // logger.d(((ref.watch(themeProvider) == 'System') &&
+    //     (MediaQuery.platformBrightnessOf(context) == Brightness.dark)));
     return TextFormField(
       textAlign: textAlign,
       controller: controller,
