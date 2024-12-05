@@ -199,10 +199,10 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                 iconStyleData: IconStyleData(
                   icon: FaIcon(
                     FontAwesomeIcons.chevronDown,
-                    color: ((ref.watch(themeProvider) == 'System' ||
-                                ref.watch(themeProvider) == 'Dark') &&
-                            (MediaQuery.platformBrightnessOf(context) ==
-                                Brightness.dark))
+                    color: (ref.watch(themeProvider) == 'System' &&
+                                MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark) ||
+                            ref.watch(themeProvider) == 'Dark'
                         ? AppColors.primaryDark
                         : AppColors.primary,
                   ),
@@ -216,10 +216,11 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                             style: TextStyle(
                               fontSize: AppSizes.bodySmaller,
                               fontWeight: FontWeight.w500,
-                              color: ((ref.watch(themeProvider) == 'System') &&
-                                      (MediaQuery.platformBrightnessOf(
-                                              context) ==
-                                          Brightness.dark))
+                              color: (ref.watch(themeProvider) == 'System' &&
+                                          MediaQuery.platformBrightnessOf(
+                                                  context) ==
+                                              Brightness.dark) ||
+                                      ref.watch(themeProvider) == 'Dark'
                                   ? Colors.white
                                   : Colors.black,
                             ),
@@ -287,10 +288,10 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                   height: AppSizes.dropDownBoxHeight,
                   padding: const EdgeInsets.only(right: 10.0),
                   decoration: BoxDecoration(
-                    color: ((ref.watch(themeProvider) == 'System' ||
-                                ref.watch(themeProvider) == 'Dark') &&
-                            (MediaQuery.platformBrightnessOf(context) ==
-                                Brightness.dark))
+                    color: (ref.watch(themeProvider) == 'System' &&
+                                MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark) ||
+                            ref.watch(themeProvider) == 'Dark'
                         ? const Color.fromARGB(255, 32, 25, 33)
                         : Colors.white,
                     border: Border.all(
@@ -305,10 +306,10 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                   elevation: 1,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20.0),
-                    color: ((ref.watch(themeProvider) == 'System' ||
-                                ref.watch(themeProvider) == 'Dark') &&
-                            (MediaQuery.platformBrightnessOf(context) ==
-                                Brightness.dark))
+                    color: (ref.watch(themeProvider) == 'System' &&
+                                MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark) ||
+                            ref.watch(themeProvider) == 'Dark'
                         ? const Color.fromARGB(255, 32, 25, 33)
                         : Colors.white,
                   ),
@@ -355,10 +356,10 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
               child: Ink(
                 child: d_border.DottedBorder(
                     padding: const EdgeInsets.symmetric(vertical: 10),
-                    color: ((ref.watch(themeProvider) == 'System' ||
-                                ref.watch(themeProvider) == 'Dark') &&
-                            (MediaQuery.platformBrightnessOf(context) ==
-                                Brightness.dark))
+                    color: (ref.watch(themeProvider) == 'System' &&
+                                MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark) ||
+                            ref.watch(themeProvider) == 'Dark'
                         ? AppColors.primaryDark
                         : AppColors.primary,
                     borderType: d_border.BorderType.RRect,
@@ -369,10 +370,11 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                       children: [
                         Icon(
                           Icons.add_circle,
-                          color: ((ref.watch(themeProvider) == 'System' ||
-                                      ref.watch(themeProvider) == 'Dark') &&
-                                  (MediaQuery.platformBrightnessOf(context) ==
-                                      Brightness.dark))
+                          color: (ref.watch(themeProvider) == 'System' &&
+                                      MediaQuery.platformBrightnessOf(
+                                              context) ==
+                                          Brightness.dark) ||
+                                  ref.watch(themeProvider) == 'Dark'
                               ? AppColors.primaryDark
                               : AppColors.primary,
                           // size: 5,
@@ -687,9 +689,11 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                         style: GoogleFonts.manrope(
                           fontSize: AppSizes.bodySmaller,
                           fontWeight: FontWeight.w500,
-                          color: ((ref.watch(themeProvider) == 'System') &&
-                                  (MediaQuery.platformBrightnessOf(context) ==
-                                      Brightness.dark))
+                          color: (ref.watch(themeProvider) == 'System' &&
+                                      MediaQuery.platformBrightnessOf(
+                                              context) ==
+                                          Brightness.dark) ||
+                                  ref.watch(themeProvider) == 'Dark'
                               ? AppColors.primaryDark
                               : AppColors.primary,
                         ),
@@ -702,10 +706,11 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                         iconStyleData: IconStyleData(
                           icon: FaIcon(
                             FontAwesomeIcons.chevronDown,
-                            color: ((ref.watch(themeProvider) == 'System' ||
-                                        ref.watch(themeProvider) == 'Dark') &&
-                                    (MediaQuery.platformBrightnessOf(context) ==
-                                        Brightness.dark))
+                            color: (ref.watch(themeProvider) == 'System' &&
+                                        MediaQuery.platformBrightnessOf(
+                                                context) ==
+                                            Brightness.dark) ||
+                                    ref.watch(themeProvider) == 'Dark'
                                 ? AppColors.primaryDark
                                 : AppColors.primary,
                           ),
@@ -719,11 +724,13 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                     style: TextStyle(
                                       fontSize: AppSizes.bodySmaller,
                                       fontWeight: FontWeight.w500,
-                                      color: ((ref.watch(themeProvider) ==
-                                                  'System') &&
-                                              (MediaQuery.platformBrightnessOf(
-                                                      context) ==
-                                                  Brightness.dark))
+                                      color: (ref.watch(themeProvider) ==
+                                                      'System' &&
+                                                  MediaQuery
+                                                          .platformBrightnessOf(
+                                                              context) ==
+                                                      Brightness.dark) ||
+                                              ref.watch(themeProvider) == 'Dark'
                                           ? Colors.white
                                           : Colors.black,
                                     ),
@@ -756,10 +763,11 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                           height: AppSizes.dropDownBoxHeight,
                           padding: const EdgeInsets.only(right: 10.0),
                           decoration: BoxDecoration(
-                            color: ((ref.watch(themeProvider) == 'System' ||
-                                        ref.watch(themeProvider) == 'Dark') &&
-                                    (MediaQuery.platformBrightnessOf(context) ==
-                                        Brightness.dark))
+                            color: (ref.watch(themeProvider) == 'System' &&
+                                        MediaQuery.platformBrightnessOf(
+                                                context) ==
+                                            Brightness.dark) ||
+                                    ref.watch(themeProvider) == 'Dark'
                                 ? const Color.fromARGB(255, 32, 25, 33)
                                 : Colors.white,
                             border: Border.all(
@@ -774,10 +782,11 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                           elevation: 1,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10.0),
-                            color: ((ref.watch(themeProvider) == 'System' ||
-                                        ref.watch(themeProvider) == 'Dark') &&
-                                    (MediaQuery.platformBrightnessOf(context) ==
-                                        Brightness.dark))
+                            color: (ref.watch(themeProvider) == 'System' &&
+                                        MediaQuery.platformBrightnessOf(
+                                                context) ==
+                                            Brightness.dark) ||
+                                    ref.watch(themeProvider) == 'Dark'
                                 ? const Color.fromARGB(255, 32, 25, 33)
                                 : Colors.white,
                           ),
@@ -835,10 +844,10 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                 },
                 child: AppText(
                   text: 'OK',
-                  color: ((ref.watch(themeProvider) == 'System' ||
-                              ref.watch(themeProvider) == 'Dark') &&
-                          (MediaQuery.platformBrightnessOf(context) ==
-                              Brightness.dark))
+                  color: (ref.watch(themeProvider) == 'System' &&
+                              MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark) ||
+                          ref.watch(themeProvider) == 'Dark'
                       ? AppColors.primaryDark
                       : AppColors.primary,
                   weight: FontWeight.w600,
@@ -881,10 +890,11 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                         iconStyleData: IconStyleData(
                           icon: FaIcon(
                             FontAwesomeIcons.chevronDown,
-                            color: ((ref.watch(themeProvider) == 'System' ||
-                                        ref.watch(themeProvider) == 'Dark') &&
-                                    (MediaQuery.platformBrightnessOf(context) ==
-                                        Brightness.dark))
+                            color: (ref.watch(themeProvider) == 'System' &&
+                                        MediaQuery.platformBrightnessOf(
+                                                context) ==
+                                            Brightness.dark) ||
+                                    ref.watch(themeProvider) == 'Dark'
                                 ? AppColors.primaryDark
                                 : AppColors.primary,
                           ),
@@ -898,11 +908,13 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                     style: TextStyle(
                                       fontSize: AppSizes.bodySmaller,
                                       fontWeight: FontWeight.w500,
-                                      color: ((ref.watch(themeProvider) ==
-                                                  'System') &&
-                                              (MediaQuery.platformBrightnessOf(
-                                                      context) ==
-                                                  Brightness.dark))
+                                      color: (ref.watch(themeProvider) ==
+                                                      'System' &&
+                                                  MediaQuery
+                                                          .platformBrightnessOf(
+                                                              context) ==
+                                                      Brightness.dark) ||
+                                              ref.watch(themeProvider) == 'Dark'
                                           ? Colors.white
                                           : Colors.black,
                                     ),
@@ -935,10 +947,11 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                           height: AppSizes.dropDownBoxHeight,
                           padding: const EdgeInsets.only(right: 10.0),
                           decoration: BoxDecoration(
-                            color: ((ref.watch(themeProvider) == 'System' ||
-                                        ref.watch(themeProvider) == 'Dark') &&
-                                    (MediaQuery.platformBrightnessOf(context) ==
-                                        Brightness.dark))
+                            color: (ref.watch(themeProvider) == 'System' &&
+                                        MediaQuery.platformBrightnessOf(
+                                                context) ==
+                                            Brightness.dark) ||
+                                    ref.watch(themeProvider) == 'Dark'
                                 ? const Color.fromARGB(255, 32, 25, 33)
                                 : Colors.white,
                             border: Border.all(
@@ -953,10 +966,11 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                           elevation: 1,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10.0),
-                            color: ((ref.watch(themeProvider) == 'System' ||
-                                        ref.watch(themeProvider) == 'Dark') &&
-                                    (MediaQuery.platformBrightnessOf(context) ==
-                                        Brightness.dark))
+                            color: (ref.watch(themeProvider) == 'System' &&
+                                        MediaQuery.platformBrightnessOf(
+                                                context) ==
+                                            Brightness.dark) ||
+                                    ref.watch(themeProvider) == 'Dark'
                                 ? const Color.fromARGB(255, 32, 25, 33)
                                 : Colors.white,
                           ),
@@ -1025,10 +1039,10 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                 },
                 child: AppText(
                   text: 'OK',
-                  color: ((ref.watch(themeProvider) == 'System' ||
-                              ref.watch(themeProvider) == 'Dark') &&
-                          (MediaQuery.platformBrightnessOf(context) ==
-                              Brightness.dark))
+                  color: (ref.watch(themeProvider) == 'System' &&
+                              MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark) ||
+                          ref.watch(themeProvider) == 'Dark'
                       ? AppColors.primaryDark
                       : AppColors.primary,
                   weight: FontWeight.w600,
@@ -1098,10 +1112,10 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                 },
                 child: AppText(
                   text: 'Update',
-                  color: ((ref.watch(themeProvider) == 'System' ||
-                              ref.watch(themeProvider) == 'Dark') &&
-                          (MediaQuery.platformBrightnessOf(context) ==
-                              Brightness.dark))
+                  color: (ref.watch(themeProvider) == 'System' &&
+                              MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark) ||
+                          ref.watch(themeProvider) == 'Dark'
                       ? AppColors.primaryDark
                       : AppColors.primary,
                   weight: FontWeight.w600,
@@ -1197,10 +1211,10 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                 },
                 child: AppText(
                   text: 'Update',
-                  color: ((ref.watch(themeProvider) == 'System' ||
-                              ref.watch(themeProvider) == 'Dark') &&
-                          (MediaQuery.platformBrightnessOf(context) ==
-                              Brightness.dark))
+                  color: (ref.watch(themeProvider) == 'System' &&
+                              MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark) ||
+                          ref.watch(themeProvider) == 'Dark'
                       ? AppColors.primaryDark
                       : AppColors.primary,
                   weight: FontWeight.w600,

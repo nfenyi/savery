@@ -148,10 +148,11 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                             style: TextStyle(
                               fontSize: AppSizes.bodySmaller,
                               fontWeight: FontWeight.w500,
-                              color: ((ref.watch(themeProvider) == 'System') &&
-                                      (MediaQuery.platformBrightnessOf(
-                                              context) ==
-                                          Brightness.dark))
+                              color: (ref.watch(themeProvider) == 'System' &&
+                                          MediaQuery.platformBrightnessOf(
+                                                  context) ==
+                                              Brightness.dark) ||
+                                      ref.watch(themeProvider) == 'Dark'
                                   ? Colors.white
                                   : Colors.black,
                             ),
@@ -198,10 +199,10 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                   height: AppSizes.dropDownBoxHeight,
                   padding: const EdgeInsets.only(right: 10.0),
                   decoration: BoxDecoration(
-                    color: ((ref.watch(themeProvider) == 'System' ||
-                                ref.watch(themeProvider) == 'Dark') &&
-                            (MediaQuery.platformBrightnessOf(context) ==
-                                Brightness.dark))
+                    color: (ref.watch(themeProvider) == 'System' &&
+                                MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark) ||
+                            ref.watch(themeProvider) == 'Dark'
                         ? const Color.fromARGB(255, 32, 25, 33)
                         : Colors.white,
                     border: Border.all(
@@ -216,10 +217,10 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                   elevation: 1,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.0),
-                    color: ((ref.watch(themeProvider) == 'System' ||
-                                ref.watch(themeProvider) == 'Dark') &&
-                            (MediaQuery.platformBrightnessOf(context) ==
-                                Brightness.dark))
+                    color: (ref.watch(themeProvider) == 'System' &&
+                                MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark) ||
+                            ref.watch(themeProvider) == 'Dark'
                         ? const Color.fromARGB(255, 32, 25, 33)
                         : Colors.white,
                   ),

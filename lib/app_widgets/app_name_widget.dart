@@ -9,11 +9,12 @@ class AppNameWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return AppText(
       text: 'SAVERY',
-      color: ((ref.watch(themeProvider) == 'System' ||
-                  ref.watch(themeProvider) == 'Dark') &&
-              (MediaQuery.platformBrightnessOf(context) == Brightness.dark))
+      color: ((ref.watch(themeProvider) == 'System' &&
+                  MediaQuery.platformBrightnessOf(context) ==
+                      Brightness.dark) ||
+              ref.watch(themeProvider) == 'Dark'
           ? AppColors.primaryDark
-          : AppColors.primaryDark,
+          : AppColors.primary),
       weight: FontWeight.w900,
       size: AppSizes.heading1,
     );

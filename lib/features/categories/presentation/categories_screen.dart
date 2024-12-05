@@ -90,10 +90,10 @@ class CategoriesScreen extends ConsumerWidget {
                   },
                   child: AppText(
                     text: 'Add',
-                    color: ((ref.watch(themeProvider) == 'System' ||
-                                ref.watch(themeProvider) == 'Dark') &&
-                            (MediaQuery.platformBrightnessOf(context) ==
-                                Brightness.dark))
+                    color: (ref.watch(themeProvider) == 'System' &&
+                                MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark) ||
+                            ref.watch(themeProvider) == 'Dark'
                         ? AppColors.primaryDark
                         : AppColors.primary,
                     weight: FontWeight.w600,
@@ -235,10 +235,10 @@ class CategoriesScreen extends ConsumerWidget {
                     },
                     child: AppText(
                       text: 'Add',
-                      color: ((ref.watch(themeProvider) == 'System' ||
-                                  ref.watch(themeProvider) == 'Dark') &&
-                              (MediaQuery.platformBrightnessOf(context) ==
-                                  Brightness.dark))
+                      color: (ref.watch(themeProvider) == 'System' &&
+                                  MediaQuery.platformBrightnessOf(context) ==
+                                      Brightness.dark) ||
+                              ref.watch(themeProvider) == 'Dark'
                           ? AppColors.primaryDark
                           : AppColors.primary,
                       weight: FontWeight.w600,
@@ -299,10 +299,11 @@ class CategoriesScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 7, vertical: 7),
                       decoration: BoxDecoration(
-                          color: ((ref.watch(themeProvider) == 'System' ||
-                                      ref.watch(themeProvider) == 'Dark') &&
-                                  (MediaQuery.platformBrightnessOf(context) ==
-                                      Brightness.dark))
+                          color: (ref.watch(themeProvider) == 'System' &&
+                                      MediaQuery.platformBrightnessOf(
+                                              context) ==
+                                          Brightness.dark) ||
+                                  ref.watch(themeProvider) == 'Dark'
                               ? AppColors.primaryDark.withOpacity(0.1)
                               : AppColors.primary.withOpacity(0.1),
                           borderRadius:
@@ -310,10 +311,10 @@ class CategoriesScreen extends ConsumerWidget {
                       // width: Adaptive.w(5),
                       child: Iconify(
                         category.icon,
-                        color: ((ref.watch(themeProvider) == 'System' ||
-                                    ref.watch(themeProvider) == 'Dark') &&
-                                (MediaQuery.platformBrightnessOf(context) ==
-                                    Brightness.dark))
+                        color: (ref.watch(themeProvider) == 'System' &&
+                                    MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark) ||
+                                ref.watch(themeProvider) == 'Dark'
                             ? AppColors.primaryDark
                             : AppColors.primary,
                         size: 25,

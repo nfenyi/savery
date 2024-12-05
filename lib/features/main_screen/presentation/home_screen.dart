@@ -142,10 +142,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: AppSizes.horizontalPaddingSmall),
                     child: d_border.DottedBorder(
-                        color: ((ref.watch(themeProvider) == 'System' ||
-                                    ref.watch(themeProvider) == 'Dark') &&
-                                (MediaQuery.platformBrightnessOf(context) ==
-                                    Brightness.dark))
+                        color: (ref.watch(themeProvider) == 'System' &&
+                                    MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark) ||
+                                ref.watch(themeProvider) == 'Dark'
                             ? AppColors.primaryDark
                             : AppColors.primary,
                         borderType: d_border.BorderType.RRect,
@@ -210,15 +210,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             },
                             child: Ink(
                               child: d_border.DottedBorder(
-                                  color:
-                                      ((ref.watch(themeProvider) == 'System' ||
-                                                  ref.watch(themeProvider) ==
-                                                      'Dark') &&
-                                              (MediaQuery.platformBrightnessOf(
+                                  color: (ref.watch(themeProvider) ==
+                                                  'System' &&
+                                              MediaQuery.platformBrightnessOf(
                                                       context) ==
-                                                  Brightness.dark))
-                                          ? AppColors.primaryDark
-                                          : AppColors.primary,
+                                                  Brightness.dark) ||
+                                          ref.watch(themeProvider) == 'Dark'
+                                      ? AppColors.primaryDark
+                                      : AppColors.primary,
                                   borderType: d_border.BorderType.RRect,
                                   radius: const Radius.circular(10),
                                   child: Column(
@@ -337,11 +336,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         final transaction = reversedTransactions[index];
                         return Container(
                           decoration: BoxDecoration(
-                              color: ((ref.watch(themeProvider) == 'System' ||
-                                          ref.watch(themeProvider) == 'Dark') &&
-                                      (MediaQuery.platformBrightnessOf(
-                                              context) ==
-                                          Brightness.dark))
+                              color: (ref.watch(themeProvider) == 'System' &&
+                                          MediaQuery.platformBrightnessOf(
+                                                  context) ==
+                                              Brightness.dark) ||
+                                      ref.watch(themeProvider) == 'Dark'
                                   ? const Color.fromARGB(255, 39, 32, 39)
                                   : Colors.grey.shade100,
                               borderRadius: BorderRadius.circular(15)),
@@ -537,10 +536,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 },
                 child: AppText(
                   text: 'OK',
-                  color: ((ref.watch(themeProvider) == 'System' ||
-                              ref.watch(themeProvider) == 'Dark') &&
-                          (MediaQuery.platformBrightnessOf(context) ==
-                              Brightness.dark))
+                  color: (ref.watch(themeProvider) == 'System' &&
+                              MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark) ||
+                          ref.watch(themeProvider) == 'Dark'
                       ? AppColors.primaryDark
                       : AppColors.primary,
                   weight: FontWeight.w600,
@@ -591,10 +590,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 },
                 child: AppText(
                   text: 'OK',
-                  color: ((ref.watch(themeProvider) == 'System' ||
-                              ref.watch(themeProvider) == 'Dark') &&
-                          (MediaQuery.platformBrightnessOf(context) ==
-                              Brightness.dark))
+                  color: (ref.watch(themeProvider) == 'System' &&
+                              MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark) ||
+                          ref.watch(themeProvider) == 'Dark'
                       ? AppColors.primaryDark
                       : AppColors.primary,
                   weight: FontWeight.w600,

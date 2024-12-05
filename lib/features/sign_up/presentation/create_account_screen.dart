@@ -56,10 +56,10 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                   children: [
                     AppText(
                       text: 'CREATE ACCOUNT',
-                      color: ((ref.watch(themeProvider) == 'System' ||
-                                  ref.watch(themeProvider) == 'Dark') &&
-                              (MediaQuery.platformBrightnessOf(context) ==
-                                  Brightness.dark))
+                      color: (ref.watch(themeProvider) == 'System' &&
+                                  MediaQuery.platformBrightnessOf(context) ==
+                                      Brightness.dark) ||
+                              ref.watch(themeProvider) == 'Dark'
                           ? AppColors.primaryDark
                           : AppColors.primary,
                       weight: FontWeight.bold,
@@ -160,10 +160,10 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                       child: AppText(
                         text: 'Terms and Conditions',
                         decoration: TextDecoration.underline,
-                        color: ((ref.watch(themeProvider) == 'System' ||
-                                    ref.watch(themeProvider) == 'Dark') &&
-                                (MediaQuery.platformBrightnessOf(context) ==
-                                    Brightness.dark))
+                        color: (ref.watch(themeProvider) == 'System' &&
+                                    MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark) ||
+                                ref.watch(themeProvider) == 'Dark'
                             ? AppColors.primaryDark
                             : AppColors.primary,
                       ),
@@ -227,10 +227,10 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                   const Gap(10),
                   AppText(
                     text: 'Or Log In with',
-                    color: ((ref.watch(themeProvider) == 'System' ||
-                                ref.watch(themeProvider) == 'Dark') &&
-                            (MediaQuery.platformBrightnessOf(context) ==
-                                Brightness.dark))
+                    color: (ref.watch(themeProvider) == 'System' &&
+                                MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark) ||
+                            ref.watch(themeProvider) == 'Dark'
                         ? AppColors.neutral300
                         : AppColors.neutral500,
                   ),
@@ -255,10 +255,10 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                   const Gap(20),
                   CircularIconButton(
                     icon: FontAwesomeIcons.apple,
-                    color: ((ref.watch(themeProvider) == 'System' ||
-                                ref.watch(themeProvider) == 'Dark') &&
-                            (MediaQuery.platformBrightnessOf(context) ==
-                                Brightness.dark))
+                    color: (ref.watch(themeProvider) == 'System' &&
+                                MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark) ||
+                            ref.watch(themeProvider) == 'Dark'
                         ? Colors.white
                         : Colors.black,
                   ),
@@ -286,10 +286,10 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                       child: AppText(
                         text: "Sign In",
                         decoration: TextDecoration.underline,
-                        color: ((ref.watch(themeProvider) == 'System' ||
-                                    ref.watch(themeProvider) == 'Dark') &&
-                                (MediaQuery.platformBrightnessOf(context) ==
-                                    Brightness.dark))
+                        color: (ref.watch(themeProvider) == 'System' &&
+                                    MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark) ||
+                                ref.watch(themeProvider) == 'Dark'
                             ? AppColors.primaryDark
                             : AppColors.primary,
                       ),

@@ -76,10 +76,10 @@ class AppGradientButton extends ConsumerWidget {
           alignment: Alignment.center,
           child: isLoading
               ? AppLoader(
-                  color: ((ref.watch(themeProvider) == 'System' ||
-                              ref.watch(themeProvider) == 'Dark') &&
-                          (MediaQuery.platformBrightnessOf(context) ==
-                              Brightness.dark))
+                  color: (ref.watch(themeProvider) == 'System' &&
+                              MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark) ||
+                          ref.watch(themeProvider) == 'Dark'
                       ? const Color.fromARGB(255, 104, 88, 131)
                       : AppColors.primary,
                 )

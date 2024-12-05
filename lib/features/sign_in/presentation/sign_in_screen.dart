@@ -59,20 +59,20 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 const AppNameWidget(),
                 AppText(
                   text: 'Simplify your expenses',
-                  color: ((ref.watch(themeProvider) == 'System' ||
-                              ref.watch(themeProvider) == 'Dark') &&
-                          (MediaQuery.platformBrightnessOf(context) ==
-                              Brightness.dark))
+                  color: (ref.watch(themeProvider) == 'System' &&
+                              MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark) ||
+                          ref.watch(themeProvider) == 'Dark'
                       ? const Color.fromARGB(255, 162, 166, 173)
                       : Colors.grey,
                 ),
                 const Gap(20),
                 AppText(
                   text: 'SIGN IN',
-                  color: ((ref.watch(themeProvider) == 'System' ||
-                              ref.watch(themeProvider) == 'Dark') &&
-                          (MediaQuery.platformBrightnessOf(context) ==
-                              Brightness.dark))
+                  color: (ref.watch(themeProvider) == 'System' &&
+                              MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark) ||
+                          ref.watch(themeProvider) == 'Dark'
                       ? AppColors.primaryDark
                       : AppColors.primary,
                   weight: FontWeight.bold,
@@ -133,10 +133,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               child: AppText(
                 text: 'Forgot Password?',
                 decoration: TextDecoration.underline,
-                color: ((ref.watch(themeProvider) == 'System' ||
-                            ref.watch(themeProvider) == 'Dark') &&
-                        (MediaQuery.platformBrightnessOf(context) ==
-                            Brightness.dark))
+                color: (ref.watch(themeProvider) == 'System' &&
+                            MediaQuery.platformBrightnessOf(context) ==
+                                Brightness.dark) ||
+                        ref.watch(themeProvider) == 'Dark'
                     ? AppColors.primaryDark
                     : AppColors.primary,
               ),
@@ -190,10 +190,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               const Gap(10),
               AppText(
                 text: 'Or Log In with',
-                color: ((ref.watch(themeProvider) == 'System' ||
-                            ref.watch(themeProvider) == 'Dark') &&
-                        (MediaQuery.platformBrightnessOf(context) ==
-                            Brightness.dark))
+                color: (ref.watch(themeProvider) == 'System' &&
+                            MediaQuery.platformBrightnessOf(context) ==
+                                Brightness.dark) ||
+                        ref.watch(themeProvider) == 'Dark'
                     ? AppColors.neutral300
                     : AppColors.neutral500,
               ),
@@ -231,10 +231,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   }
                 },
                 icon: FontAwesomeIcons.facebookF,
-                color: ((ref.watch(themeProvider) == 'System' ||
-                            ref.watch(themeProvider) == 'Dark') &&
-                        (MediaQuery.platformBrightnessOf(context) ==
-                            Brightness.dark))
+                color: (ref.watch(themeProvider) == 'System' &&
+                            MediaQuery.platformBrightnessOf(context) ==
+                                Brightness.dark) ||
+                        ref.watch(themeProvider) == 'Dark'
                     ? Colors.blue[300]
                     : Colors.blue[900],
               ),
@@ -272,10 +272,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   showInfoToast('Coming soon.', context: context);
                 },
                 icon: FontAwesomeIcons.apple,
-                color: ((ref.watch(themeProvider) == 'System' ||
-                            ref.watch(themeProvider) == 'Dark') &&
-                        (MediaQuery.platformBrightnessOf(context) ==
-                            Brightness.dark))
+                color: (ref.watch(themeProvider) == 'System' &&
+                            MediaQuery.platformBrightnessOf(context) ==
+                                Brightness.dark) ||
+                        ref.watch(themeProvider) == 'Dark'
                     ? Colors.white
                     : Colors.black,
               ),
@@ -299,10 +299,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   child: AppText(
                     text: "Sign Up",
                     decoration: TextDecoration.underline,
-                    color: ((ref.watch(themeProvider) == 'System' ||
-                                ref.watch(themeProvider) == 'Dark') &&
-                            (MediaQuery.platformBrightnessOf(context) ==
-                                Brightness.dark))
+                    color: (ref.watch(themeProvider) == 'System' &&
+                                MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark) ||
+                            ref.watch(themeProvider) == 'Dark'
                         ? AppColors.primaryDark
                         : AppColors.primary,
                   ),

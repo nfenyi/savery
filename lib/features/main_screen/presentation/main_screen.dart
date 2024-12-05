@@ -173,10 +173,10 @@ class _MainScreenState extends ConsumerState<MainScreen>
           centerTitle: bottomNavIndex != 0 ? true : false,
           backgroundColor: bottomNavIndex != 4
               ? null
-              : ((ref.watch(themeProvider) == 'System' ||
-                          ref.watch(themeProvider) == 'Dark') &&
-                      (MediaQuery.platformBrightnessOf(context) ==
-                          Brightness.dark))
+              : (ref.watch(themeProvider) == 'System' &&
+                          MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark) ||
+                      ref.watch(themeProvider) == 'Dark'
                   ? AppColors.primaryDark
                   : AppColors.primary,
           actions:
@@ -203,10 +203,10 @@ class _MainScreenState extends ConsumerState<MainScreen>
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent),
           child: Container(
-            decoration: ((ref.watch(themeProvider) == 'System' ||
-                        ref.watch(themeProvider) == 'Dark') &&
-                    (MediaQuery.platformBrightnessOf(context) ==
-                        Brightness.dark))
+            decoration: (ref.watch(themeProvider) == 'System' &&
+                        MediaQuery.platformBrightnessOf(context) ==
+                            Brightness.dark) ||
+                    ref.watch(themeProvider) == 'Dark'
                 ? const BoxDecoration(
                     border:
                         Border(top: BorderSide(color: AppColors.neutral800)))
@@ -227,10 +227,10 @@ class _MainScreenState extends ConsumerState<MainScreen>
                   ref.read(bottomNavIndexProvider.notifier).updateIndex(value);
                 }
               },
-              backgroundColor: ((ref.watch(themeProvider) == 'System' ||
-                          ref.watch(themeProvider) == 'Dark') &&
-                      (MediaQuery.platformBrightnessOf(context) ==
-                          Brightness.dark))
+              backgroundColor: (ref.watch(themeProvider) == 'System' &&
+                          MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark) ||
+                      ref.watch(themeProvider) == 'Dark'
                   ? const Color.fromARGB(255, 32, 25, 33)
                   : Colors.white,
               elevation: 5,
@@ -268,10 +268,10 @@ class _MainScreenState extends ConsumerState<MainScreen>
                 BottomNavigationBarItem(
                   activeIcon: Iconify(
                     MaterialSymbols.insert_chart_rounded,
-                    color: ((ref.watch(themeProvider) == 'System' ||
-                                ref.watch(themeProvider) == 'Dark') &&
-                            (MediaQuery.platformBrightnessOf(context) ==
-                                Brightness.dark))
+                    color: (ref.watch(themeProvider) == 'System' &&
+                                MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark) ||
+                            ref.watch(themeProvider) == 'Dark'
                         ? AppColors.primaryDark
                         : AppColors.primary,
                     size: 27,
@@ -407,10 +407,10 @@ class _MainScreenState extends ConsumerState<MainScreen>
               const AppNameWidget(),
               AppText(
                 text: 'Simplify your expenses',
-                color: ((ref.watch(themeProvider) == 'System' ||
-                            ref.watch(themeProvider) == 'Dark') &&
-                        (MediaQuery.platformBrightnessOf(context) ==
-                            Brightness.dark))
+                color: (ref.watch(themeProvider) == 'System' &&
+                            MediaQuery.platformBrightnessOf(context) ==
+                                Brightness.dark) ||
+                        ref.watch(themeProvider) == 'Dark'
                     ? const Color.fromARGB(255, 162, 166, 173)
                     : Colors.grey,
               ),

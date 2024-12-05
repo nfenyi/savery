@@ -59,28 +59,26 @@ class AppButton extends ConsumerWidget {
         alignment: alignment,
         decoration: decoration ??
             BoxDecoration(
-              color: isSecondary
-                  ? Colors.transparent
-                  : buttonColor ??
-                      (((ref.watch(themeProvider) == 'System' ||
-                                  ref.watch(themeProvider) == 'Dark') &&
-                              (MediaQuery.platformBrightnessOf(context) ==
-                                  Brightness.dark))
-                          ? AppColors.primaryDark
-                          : AppColors.primary),
-              borderRadius: BorderRadius.circular(borderRadius),
-              border: isSecondary
-                  ? Border.all(
-                      width: 1,
-                      color: ((ref.watch(themeProvider) == 'System' ||
-                                  ref.watch(themeProvider) == 'Dark') &&
-                              (MediaQuery.platformBrightnessOf(context) ==
-                                  Brightness.dark))
-                          ? AppColors.primaryDark
-                          : AppColors.primary,
-                    )
-                  : null,
-            ),
+                color: isSecondary
+                    ? Colors.transparent
+                    : buttonColor ??
+                        ((ref.watch(themeProvider) == 'System' &&
+                                    MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark) ||
+                                ref.watch(themeProvider) == 'Dark'
+                            ? AppColors.primaryDark
+                            : AppColors.primary),
+                borderRadius: BorderRadius.circular(borderRadius),
+                border: isSecondary
+                    ? Border.all(
+                        width: 1,
+                        color: (ref.watch(themeProvider) == 'System' &&
+                                    MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark) ||
+                                ref.watch(themeProvider) == 'Dark'
+                            ? AppColors.primaryDark
+                            : AppColors.primary)
+                    : null),
         child: isLoading
             ? const AppLoader()
             : icon == null
@@ -89,10 +87,11 @@ class AppButton extends ConsumerWidget {
                     size: textSize ?? AppSizes.bodySmaller,
                     color: isSecondary
                         ? buttonColor ??
-                            (((ref.watch(themeProvider) == 'System' ||
-                                        ref.watch(themeProvider) == 'Dark') &&
-                                    (MediaQuery.platformBrightnessOf(context) ==
-                                        Brightness.dark))
+                            ((ref.watch(themeProvider) == 'System' &&
+                                        MediaQuery.platformBrightnessOf(
+                                                context) ==
+                                            Brightness.dark) ||
+                                    ref.watch(themeProvider) == 'Dark'
                                 ? AppColors.primaryDark
                                 : AppColors.primary)
                         : textColor,
@@ -111,12 +110,11 @@ class AppButton extends ConsumerWidget {
                             size: textSize ?? AppSizes.bodySmaller,
                             color: isSecondary
                                 ? buttonColor ??
-                                    (((ref.watch(themeProvider) == 'System' ||
-                                                ref.watch(themeProvider) ==
-                                                    'Dark') &&
-                                            (MediaQuery.platformBrightnessOf(
-                                                    context) ==
-                                                Brightness.dark))
+                                    ((ref.watch(themeProvider) == 'System' &&
+                                                MediaQuery.platformBrightnessOf(
+                                                        context) ==
+                                                    Brightness.dark) ||
+                                            ref.watch(themeProvider) == 'Dark'
                                         ? AppColors.primaryDark
                                         : AppColors.primary)
                                 : textColor,

@@ -87,12 +87,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: AppSizes.horizontalPaddingSmall),
                         separatorBuilder: (context, index) => Divider(
-                          color: (((ref.watch(themeProvider) == 'System' ||
-                                      ref.watch(themeProvider) == 'Dark') &&
-                                  (MediaQuery.platformBrightnessOf(context) ==
-                                      Brightness.dark))
+                          color: (ref.watch(themeProvider) == 'System' &&
+                                      MediaQuery.platformBrightnessOf(
+                                              context) ==
+                                          Brightness.dark) ||
+                                  ref.watch(themeProvider) == 'Dark'
                               ? AppColors.neutral500
-                              : AppColors.neutral300),
+                              : AppColors.neutral300,
                         ),
                         itemBuilder: (context, index) {
                           final notification = notifications[index];
@@ -124,16 +125,15 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                                               notification.sentTime.toString(),
                                               format: r'j M'),
                             ),
-                            leading: Iconify(
-                              Heroicons.megaphone,
-                              color: (((ref.watch(themeProvider) == 'System' ||
-                                          ref.watch(themeProvider) == 'Dark') &&
-                                      (MediaQuery.platformBrightnessOf(
-                                              context) ==
-                                          Brightness.dark))
-                                  ? Colors.white
-                                  : AppColors.neutral500),
-                            ),
+                            leading: Iconify(Heroicons.megaphone,
+                                color: (ref.watch(themeProvider) == 'System' &&
+                                            MediaQuery.platformBrightnessOf(
+                                                    context) ==
+                                                Brightness.dark) ||
+                                        ref.watch(themeProvider) == 'Dark'
+                                    ? Colors.white
+                                    : AppColors.neutral500),
+
                             // contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                             title: AppText(
                               text: notification.title ?? '⚠️',

@@ -106,12 +106,14 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                                         iconStyleData: IconStyleData(
                                           icon: FaIcon(
                                             FontAwesomeIcons.chevronDown,
-                                            color: ((ref.watch(themeProvider) ==
-                                                        'System') &&
-                                                    (MediaQuery
-                                                            .platformBrightnessOf(
-                                                                context) ==
-                                                        Brightness.dark))
+                                            color: (ref.watch(themeProvider) ==
+                                                            'System' &&
+                                                        MediaQuery
+                                                                .platformBrightnessOf(
+                                                                    context) ==
+                                                            Brightness.dark) ||
+                                                    ref.watch(themeProvider) ==
+                                                        'Dark'
                                                 ? AppColors.primaryDark
                                                 : AppColors.primary,
                                           ),

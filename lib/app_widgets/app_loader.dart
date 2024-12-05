@@ -21,10 +21,10 @@ class AppLoader extends ConsumerWidget {
         secondRingColor: secondRingColor,
         thirdRingColor: thirdRingColor,
         color: color ??
-            (((ref.watch(themeProvider) == 'System' ||
-                        ref.watch(themeProvider) == 'Dark') &&
-                    (MediaQuery.platformBrightnessOf(context) ==
-                        Brightness.dark))
+            ((ref.watch(themeProvider) == 'System' &&
+                        MediaQuery.platformBrightnessOf(context) ==
+                            Brightness.dark) ||
+                    ref.watch(themeProvider) == 'Dark'
                 ? AppColors.primaryDark
                 : AppColors.primary),
         size: size,

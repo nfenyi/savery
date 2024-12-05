@@ -104,9 +104,10 @@ class ThemeDropdownButton extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: AppSizes.bodySmaller,
                       fontWeight: FontWeight.w500,
-                      color: ((ref.watch(themeProvider) == 'System') &&
-                              (MediaQuery.platformBrightnessOf(context) ==
-                                  Brightness.dark))
+                      color: (ref.watch(themeProvider) == 'System' &&
+                                  MediaQuery.platformBrightnessOf(context) ==
+                                      Brightness.dark) ||
+                              ref.watch(themeProvider) == 'Dark'
                           ? Colors.white
                           : Colors.black,
                     ),
@@ -126,10 +127,10 @@ class ThemeDropdownButton extends ConsumerWidget {
           height: AppSizes.dropDownBoxHeight,
           padding: const EdgeInsets.only(right: 10.0),
           decoration: BoxDecoration(
-            color: ((ref.watch(themeProvider) == 'System' ||
-                        ref.watch(themeProvider) == 'Dark') &&
-                    (MediaQuery.platformBrightnessOf(context) ==
-                        Brightness.dark))
+            color: (ref.watch(themeProvider) == 'System' &&
+                        MediaQuery.platformBrightnessOf(context) ==
+                            Brightness.dark) ||
+                    ref.watch(themeProvider) == 'Dark'
                 ? const Color.fromARGB(255, 32, 25, 33)
                 : Colors.white,
             border: Border.all(
@@ -144,10 +145,10 @@ class ThemeDropdownButton extends ConsumerWidget {
           elevation: 1,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10.0),
-            color: ((ref.watch(themeProvider) == 'System' ||
-                        ref.watch(themeProvider) == 'Dark') &&
-                    (MediaQuery.platformBrightnessOf(context) ==
-                        Brightness.dark))
+            color: (ref.watch(themeProvider) == 'System' &&
+                        MediaQuery.platformBrightnessOf(context) ==
+                            Brightness.dark) ||
+                    ref.watch(themeProvider) == 'Dark'
                 ? const Color.fromARGB(255, 32, 25, 33)
                 : Colors.white,
           ),
@@ -187,9 +188,10 @@ class LanguageDropdownButton extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: AppSizes.bodySmaller,
                       fontWeight: FontWeight.w500,
-                      color: ((ref.watch(themeProvider) == 'System') &&
-                              (MediaQuery.platformBrightnessOf(context) ==
-                                  Brightness.dark))
+                      color: (ref.watch(themeProvider) == 'System' &&
+                                  MediaQuery.platformBrightnessOf(context) ==
+                                      Brightness.dark) ||
+                              ref.watch(themeProvider) == 'Dark'
                           ? Colors.white
                           : Colors.black,
                     ),
@@ -227,10 +229,10 @@ class LanguageDropdownButton extends ConsumerWidget {
           elevation: 1,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10.0),
-            color: ((ref.watch(themeProvider) == 'System' ||
-                        ref.watch(themeProvider) == 'Dark') &&
-                    (MediaQuery.platformBrightnessOf(context) ==
-                        Brightness.dark))
+            color: (ref.watch(themeProvider) == 'System' &&
+                        MediaQuery.platformBrightnessOf(context) ==
+                            Brightness.dark) ||
+                    ref.watch(themeProvider) == 'Dark'
                 ? const Color.fromARGB(255, 32, 25, 33)
                 : Colors.white,
           ),

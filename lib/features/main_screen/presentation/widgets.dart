@@ -35,9 +35,10 @@ class AccountCard extends ConsumerWidget {
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
-        gradient: ((ref.watch(themeProvider) == 'System' ||
-                    ref.watch(themeProvider) == 'Dark') &&
-                (MediaQuery.platformBrightnessOf(context) == Brightness.dark))
+        gradient: (ref.watch(themeProvider) == 'System' &&
+                    MediaQuery.platformBrightnessOf(context) ==
+                        Brightness.dark) ||
+                ref.watch(themeProvider) == 'Dark'
             ? const LinearGradient(colors: [
                 Color.fromARGB(255, 172, 84, 136),
                 Color.fromARGB(255, 122, 91, 183)
@@ -140,12 +141,11 @@ class AccountCard extends ConsumerWidget {
                               value: 0,
                               child: AppText(
                                 text: 'Budget',
-                                color: ((ref.watch(themeProvider) == 'System' ||
-                                            ref.watch(themeProvider) ==
-                                                'Dark') &&
-                                        (MediaQuery.platformBrightnessOf(
-                                                context) ==
-                                            Brightness.dark))
+                                color: (ref.watch(themeProvider) == 'System' &&
+                                            MediaQuery.platformBrightnessOf(
+                                                    context) ==
+                                                Brightness.dark) ||
+                                        ref.watch(themeProvider) == 'Dark'
                                     ? AppColors.primaryDark
                                     : AppColors.primary,
                               ),
@@ -216,12 +216,11 @@ class AccountCard extends ConsumerWidget {
                               value: 0,
                               child: AppText(
                                 text: 'Budget',
-                                color: ((ref.watch(themeProvider) == 'System' ||
-                                            ref.watch(themeProvider) ==
-                                                'Dark') &&
-                                        (MediaQuery.platformBrightnessOf(
-                                                context) ==
-                                            Brightness.dark))
+                                color: (ref.watch(themeProvider) == 'System' &&
+                                            MediaQuery.platformBrightnessOf(
+                                                    context) ==
+                                                Brightness.dark) ||
+                                        ref.watch(themeProvider) == 'Dark'
                                     ? AppColors.primaryDark
                                     : AppColors.primary,
                               ),

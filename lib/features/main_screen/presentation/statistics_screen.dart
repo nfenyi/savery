@@ -171,23 +171,21 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                       iconSize: 12.0,
                     ),
                     items: user.accounts
-                        ?.map(
-                          (e) => e.name,
-                        )
-                        .map((item) => DropdownMenuItem(
-                              value: item,
+                        ?.map((item) => DropdownMenuItem(
+                              value: item.name,
                               child: Text(
-                                item,
+                                item.name,
                                 style: GoogleFonts.manrope(
                                   fontSize: AppSizes.bodySmaller,
                                   fontWeight: FontWeight.w500,
-                                  color:
-                                      ((ref.watch(themeProvider) == 'System') &&
-                                              (MediaQuery.platformBrightnessOf(
+                                  color: (ref.watch(themeProvider) ==
+                                                  'System' &&
+                                              MediaQuery.platformBrightnessOf(
                                                       context) ==
-                                                  Brightness.dark))
-                                          ? Colors.white
-                                          : Colors.black,
+                                                  Brightness.dark) ||
+                                          ref.watch(themeProvider) == 'Dark'
+                                      ? Colors.white
+                                      : Colors.black,
                                 ),
                               ),
                             ))
@@ -280,10 +278,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                       height: AppSizes.dropDownBoxHeight,
                       padding: const EdgeInsets.only(right: 10.0),
                       decoration: BoxDecoration(
-                        color: ((ref.watch(themeProvider) == 'System' ||
-                                    ref.watch(themeProvider) == 'Dark') &&
-                                (MediaQuery.platformBrightnessOf(context) ==
-                                    Brightness.dark))
+                        color: (ref.watch(themeProvider) == 'System' &&
+                                    MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark) ||
+                                ref.watch(themeProvider) == 'Dark'
                             ? const Color.fromARGB(255, 32, 25, 33)
                             : Colors.white,
                         border: Border.all(
@@ -298,10 +296,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                       elevation: 1,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20.0),
-                        color: ((ref.watch(themeProvider) == 'System' ||
-                                    ref.watch(themeProvider) == 'Dark') &&
-                                (MediaQuery.platformBrightnessOf(context) ==
-                                    Brightness.dark))
+                        color: (ref.watch(themeProvider) == 'System' &&
+                                    MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark) ||
+                                ref.watch(themeProvider) == 'Dark'
                             ? const Color.fromARGB(255, 32, 25, 33)
                             : Colors.white,
                       ),
@@ -316,17 +314,17 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                   children: [
                     Expanded(
                       child: CupertinoSlidingSegmentedControl(
-                        backgroundColor:
-                            ((ref.watch(themeProvider) == 'System' ||
-                                        ref.watch(themeProvider) == 'Dark') &&
-                                    (MediaQuery.platformBrightnessOf(context) ==
-                                        Brightness.dark))
-                                ? const Color.fromARGB(255, 32, 25, 33)
-                                : Colors.grey.shade100,
-                        thumbColor: ((ref.watch(themeProvider) == 'System' ||
-                                    ref.watch(themeProvider) == 'Dark') &&
-                                (MediaQuery.platformBrightnessOf(context) ==
-                                    Brightness.dark))
+                        backgroundColor: (ref.watch(themeProvider) ==
+                                        'System' &&
+                                    MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark) ||
+                                ref.watch(themeProvider) == 'Dark'
+                            ? const Color.fromARGB(255, 32, 25, 33)
+                            : Colors.grey.shade100,
+                        thumbColor: (ref.watch(themeProvider) == 'System' &&
+                                    MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark) ||
+                                ref.watch(themeProvider) == 'Dark'
                             ? AppColors.primaryDark
                             : AppColors.primary,
                         children: {
@@ -954,15 +952,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                               iconStyleData: IconStyleData(
                                 icon: FaIcon(
                                   FontAwesomeIcons.chevronDown,
-                                  color:
-                                      ((ref.watch(themeProvider) == 'System' ||
-                                                  ref.watch(themeProvider) ==
-                                                      'Dark') &&
-                                              (MediaQuery.platformBrightnessOf(
+                                  color: (ref.watch(themeProvider) ==
+                                                  'System' &&
+                                              MediaQuery.platformBrightnessOf(
                                                       context) ==
-                                                  Brightness.dark))
-                                          ? AppColors.primaryDark
-                                          : AppColors.primary,
+                                                  Brightness.dark) ||
+                                          ref.watch(themeProvider) == 'Dark'
+                                      ? AppColors.primaryDark
+                                      : AppColors.primary,
                                 ),
                                 iconSize: 12.0,
                               ),
@@ -977,12 +974,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                           style: GoogleFonts.manrope(
                                             fontSize: AppSizes.bodySmaller,
                                             fontWeight: FontWeight.w500,
-                                            color: ((ref.watch(themeProvider) ==
-                                                        'System') &&
-                                                    (MediaQuery
-                                                            .platformBrightnessOf(
-                                                                context) ==
-                                                        Brightness.dark))
+                                            color: (ref.watch(themeProvider) ==
+                                                            'System' &&
+                                                        MediaQuery
+                                                                .platformBrightnessOf(
+                                                                    context) ==
+                                                            Brightness.dark) ||
+                                                    ref.watch(themeProvider) ==
+                                                        'Dark'
                                                 ? AppColors.primaryDark
                                                 : AppColors.primary,
                                           ),
@@ -1001,13 +1000,12 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                 height: AppSizes.dropDownBoxHeight,
                                 padding: const EdgeInsets.only(right: 10.0),
                                 decoration: BoxDecoration(
-                                  color: ((ref.watch(themeProvider) ==
-                                                  'System' ||
-                                              ref.watch(themeProvider) ==
-                                                  'Dark') &&
-                                          (MediaQuery.platformBrightnessOf(
-                                                  context) ==
-                                              Brightness.dark))
+                                  color: (ref.watch(themeProvider) ==
+                                                  'System' &&
+                                              MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark) ||
+                                          ref.watch(themeProvider) == 'Dark'
                                       ? const Color.fromARGB(255, 32, 25, 33)
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(20.0),
@@ -1018,13 +1016,12 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                 elevation: 1,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20.0),
-                                  color: ((ref.watch(themeProvider) ==
-                                                  'System' ||
-                                              ref.watch(themeProvider) ==
-                                                  'Dark') &&
-                                          (MediaQuery.platformBrightnessOf(
-                                                  context) ==
-                                              Brightness.dark))
+                                  color: (ref.watch(themeProvider) ==
+                                                  'System' &&
+                                              MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark) ||
+                                          ref.watch(themeProvider) == 'Dark'
                                       ? const Color.fromARGB(255, 32, 25, 33)
                                       : Colors.white,
                                 ),
@@ -1157,13 +1154,12 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                   _transactionsHolder.entries.elementAt(index);
                               return Container(
                                 decoration: BoxDecoration(
-                                    color: ((ref.watch(themeProvider) ==
-                                                    'System' ||
-                                                ref.watch(themeProvider) ==
-                                                    'Dark') &&
-                                            (MediaQuery.platformBrightnessOf(
-                                                    context) ==
-                                                Brightness.dark))
+                                    color: (ref.watch(themeProvider) ==
+                                                    'System' &&
+                                                MediaQuery.platformBrightnessOf(
+                                                        context) ==
+                                                    Brightness.dark) ||
+                                            ref.watch(themeProvider) == 'Dark'
                                         ? const Color.fromARGB(255, 39, 32, 39)
                                         : Colors.grey.shade100,
                                     borderRadius: BorderRadius.circular(15)),

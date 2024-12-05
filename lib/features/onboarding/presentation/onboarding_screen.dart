@@ -133,42 +133,41 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             children: [
                               Container(
                                 decoration: BoxDecoration(
-                                  gradient:
-                                      ((ref.watch(themeProvider) == 'System' ||
-                                                  ref.watch(themeProvider) ==
-                                                      'Dark') &&
-                                              (MediaQuery.platformBrightnessOf(
+                                  gradient: (ref.watch(themeProvider) ==
+                                                  'System' &&
+                                              MediaQuery.platformBrightnessOf(
                                                       context) ==
-                                                  Brightness.dark))
-                                          ? const RadialGradient(colors: [
-                                              Color.fromARGB(255, 90, 85, 97),
-                                              // ((ref.watch(themeProvider) == 'System') &&
-                                              //         (MediaQuery.platformBrightnessOf(
-                                              //                 context) ==
-                                              //             Brightness.dark))
-                                              //     ? const Color.fromARGB(
-                                              //         255, 32, 25, 33)
-                                              // :
-                                              Color.fromARGB(255, 32, 25, 33)
-                                            ])
-                                          : const RadialGradient(
-                                              colors: [
-                                                Color.fromARGB(
-                                                  255,
-                                                  174,
-                                                  145,
-                                                  233,
-                                                ),
-                                                // ((ref.watch(themeProvider) == 'System') &&
-                                                //         (MediaQuery.platformBrightnessOf(
-                                                //                 context) ==
-                                                //             Brightness.dark))
-                                                //     ? const Color.fromARGB(
-                                                //         255, 32, 25, 33)
-                                                // :
-                                                Colors.white
-                                              ],
+                                                  Brightness.dark) ||
+                                          ref.watch(themeProvider) == 'Dark'
+                                      ? const RadialGradient(colors: [
+                                          Color.fromARGB(255, 90, 85, 97),
+                                          // ((ref.watch(themeProvider) == 'System') &&
+                                          //         (MediaQuery.platformBrightnessOf(
+                                          //                 context) ==
+                                          //             Brightness.dark))
+                                          //     ? const Color.fromARGB(
+                                          //         255, 32, 25, 33)
+                                          // :
+                                          Color.fromARGB(255, 32, 25, 33)
+                                        ])
+                                      : const RadialGradient(
+                                          colors: [
+                                            Color.fromARGB(
+                                              255,
+                                              174,
+                                              145,
+                                              233,
                                             ),
+                                            // ((ref.watch(themeProvider) == 'System') &&
+                                            //         (MediaQuery.platformBrightnessOf(
+                                            //                 context) ==
+                                            //             Brightness.dark))
+                                            //     ? const Color.fromARGB(
+                                            //         255, 32, 25, 33)
+                                            // :
+                                            Colors.white
+                                          ],
+                                        ),
                                 ),
                                 child: Image.asset(
                                   AppAssets.onboarding1,
@@ -195,42 +194,41 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             children: [
                               Container(
                                 decoration: BoxDecoration(
-                                  gradient:
-                                      ((ref.watch(themeProvider) == 'System' ||
-                                                  ref.watch(themeProvider) ==
-                                                      'Dark') &&
-                                              (MediaQuery.platformBrightnessOf(
+                                  gradient: (ref.watch(themeProvider) ==
+                                                  'System' &&
+                                              MediaQuery.platformBrightnessOf(
                                                       context) ==
-                                                  Brightness.dark))
-                                          ? const RadialGradient(colors: [
-                                              Color.fromARGB(255, 90, 85, 97),
-                                              // ((ref.watch(themeProvider) == 'System') &&
-                                              //         (MediaQuery.platformBrightnessOf(
-                                              //                 context) ==
-                                              //             Brightness.dark))
-                                              //     ? const Color.fromARGB(
-                                              //         255, 32, 25, 33)
-                                              // :
-                                              Color.fromARGB(255, 32, 25, 33)
-                                            ])
-                                          : const RadialGradient(
-                                              colors: [
-                                                Color.fromARGB(
-                                                  255,
-                                                  174,
-                                                  145,
-                                                  233,
-                                                ),
-                                                // ((ref.watch(themeProvider) == 'System') &&
-                                                //         (MediaQuery.platformBrightnessOf(
-                                                //                 context) ==
-                                                //             Brightness.dark))
-                                                //     ? const Color.fromARGB(
-                                                //         255, 32, 25, 33)
-                                                // :
-                                                Colors.white
-                                              ],
+                                                  Brightness.dark) ||
+                                          ref.watch(themeProvider) == 'Dark'
+                                      ? const RadialGradient(colors: [
+                                          Color.fromARGB(255, 90, 85, 97),
+                                          // ((ref.watch(themeProvider) == 'System') &&
+                                          //         (MediaQuery.platformBrightnessOf(
+                                          //                 context) ==
+                                          //             Brightness.dark))
+                                          //     ? const Color.fromARGB(
+                                          //         255, 32, 25, 33)
+                                          // :
+                                          Color.fromARGB(255, 32, 25, 33)
+                                        ])
+                                      : const RadialGradient(
+                                          colors: [
+                                            Color.fromARGB(
+                                              255,
+                                              174,
+                                              145,
+                                              233,
                                             ),
+                                            // ((ref.watch(themeProvider) == 'System') &&
+                                            //         (MediaQuery.platformBrightnessOf(
+                                            //                 context) ==
+                                            //             Brightness.dark))
+                                            //     ? const Color.fromARGB(
+                                            //         255, 32, 25, 33)
+                                            // :
+                                            Colors.white
+                                          ],
+                                        ),
                                 ),
                                 child: Image.asset(
                                   AppAssets.onboarding2,
@@ -257,42 +255,41 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             children: [
                               Container(
                                 decoration: BoxDecoration(
-                                  gradient:
-                                      ((ref.watch(themeProvider) == 'System' ||
-                                                  ref.watch(themeProvider) ==
-                                                      'Dark') &&
-                                              (MediaQuery.platformBrightnessOf(
+                                  gradient: (ref.watch(themeProvider) ==
+                                                  'System' &&
+                                              MediaQuery.platformBrightnessOf(
                                                       context) ==
-                                                  Brightness.dark))
-                                          ? const RadialGradient(colors: [
-                                              Color.fromARGB(255, 90, 85, 97),
-                                              // ((ref.watch(themeProvider) == 'System') &&
-                                              //         (MediaQuery.platformBrightnessOf(
-                                              //                 context) ==
-                                              //             Brightness.dark))
-                                              //     ? const Color.fromARGB(
-                                              //         255, 32, 25, 33)
-                                              // :
-                                              Color.fromARGB(255, 32, 25, 33)
-                                            ])
-                                          : const RadialGradient(
-                                              colors: [
-                                                Color.fromARGB(
-                                                  255,
-                                                  174,
-                                                  145,
-                                                  233,
-                                                ),
-                                                // ((ref.watch(themeProvider) == 'System') &&
-                                                //         (MediaQuery.platformBrightnessOf(
-                                                //                 context) ==
-                                                //             Brightness.dark))
-                                                //     ? const Color.fromARGB(
-                                                //         255, 32, 25, 33)
-                                                // :
-                                                Colors.white
-                                              ],
+                                                  Brightness.dark) ||
+                                          ref.watch(themeProvider) == 'Dark'
+                                      ? const RadialGradient(colors: [
+                                          Color.fromARGB(255, 90, 85, 97),
+                                          // ((ref.watch(themeProvider) == 'System') &&
+                                          //         (MediaQuery.platformBrightnessOf(
+                                          //                 context) ==
+                                          //             Brightness.dark))
+                                          //     ? const Color.fromARGB(
+                                          //         255, 32, 25, 33)
+                                          // :
+                                          Color.fromARGB(255, 32, 25, 33)
+                                        ])
+                                      : const RadialGradient(
+                                          colors: [
+                                            Color.fromARGB(
+                                              255,
+                                              174,
+                                              145,
+                                              233,
                                             ),
+                                            // ((ref.watch(themeProvider) == 'System') &&
+                                            //         (MediaQuery.platformBrightnessOf(
+                                            //                 context) ==
+                                            //             Brightness.dark))
+                                            //     ? const Color.fromARGB(
+                                            //         255, 32, 25, 33)
+                                            // :
+                                            Colors.white
+                                          ],
+                                        ),
                                 ),
                                 child: Image.asset(
                                   AppAssets.onboarding3,
@@ -327,13 +324,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     },
                     controller: _pageController,
                     effect: SlideEffect(
-                        activeDotColor:
-                            ((ref.watch(themeProvider) == 'System' ||
-                                        ref.watch(themeProvider) == 'Dark') &&
-                                    (MediaQuery.platformBrightnessOf(context) ==
-                                        Brightness.dark))
-                                ? Colors.white
-                                : Colors.black,
+                        activeDotColor: (ref.watch(themeProvider) == 'System' &&
+                                    MediaQuery.platformBrightnessOf(context) ==
+                                        Brightness.dark) ||
+                                ref.watch(themeProvider) == 'Dark'
+                            ? Colors.white
+                            : Colors.black,
                         dotHeight: 6,
                         radius: 200,
                         dotWidth: 6,

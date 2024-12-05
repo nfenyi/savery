@@ -228,10 +228,11 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
                           padding: const EdgeInsets.only(
                               right: 17, left: 17, bottom: 20, top: 4),
                           // width: Adaptive.w(40),
-                          color: ((ref.watch(themeProvider) == 'System' ||
-                                      ref.watch(themeProvider) == 'Dark') &&
-                                  (MediaQuery.platformBrightnessOf(context) ==
-                                      Brightness.dark))
+                          color: (ref.watch(themeProvider) == 'System' &&
+                                      MediaQuery.platformBrightnessOf(
+                                              context) ==
+                                          Brightness.dark) ||
+                                  ref.watch(themeProvider) == 'Dark'
                               ? AppColors.primaryDark
                               : AppColors.primary,
                           child: Column(

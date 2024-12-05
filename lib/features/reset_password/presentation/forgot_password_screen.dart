@@ -42,10 +42,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   children: [
                     AppText(
                       text: 'Forgot Password?',
-                      color: ((ref.watch(themeProvider) == 'System' ||
-                                  ref.watch(themeProvider) == 'Dark') &&
-                              (MediaQuery.platformBrightnessOf(context) ==
-                                  Brightness.dark))
+                      color: (ref.watch(themeProvider) == 'System' &&
+                                  MediaQuery.platformBrightnessOf(context) ==
+                                      Brightness.dark) ||
+                              ref.watch(themeProvider) == 'Dark'
                           ? AppColors.primaryDark
                           : AppColors.primary,
                       weight: FontWeight.bold,

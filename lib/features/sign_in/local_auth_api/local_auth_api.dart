@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:savery/main.dart';
 
 class LocalAuthApi {
   static final _auth = LocalAuthentication();
@@ -23,7 +22,6 @@ class LocalAuthApi {
               biometricOnly: true,
               sensitiveTransaction: true));
     } on PlatformException catch (_) {
-      logger.d(_);
       return false;
     }
   }

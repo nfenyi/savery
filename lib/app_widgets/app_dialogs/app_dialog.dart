@@ -40,12 +40,12 @@ Future<dynamic> showAppInfoDialog(BuildContext context, WidgetRef ref,
                   },
               child: AppText(
                 text: confirmText,
-                color: ((ref.watch(themeProvider) == 'System' ||
-                            ref.watch(themeProvider) == 'Dark') &&
-                        (MediaQuery.platformBrightnessOf(context) ==
-                            Brightness.dark))
+                color: ((ref.watch(themeProvider) == 'System' &&
+                            MediaQuery.platformBrightnessOf(context) ==
+                                Brightness.dark) ||
+                        ref.watch(themeProvider) == 'Dark'
                     ? AppColors.primaryDark
-                    : AppColors.primary,
+                    : AppColors.primary),
                 // weight: FontWeight.w600,
               ),
             ),
@@ -93,12 +93,12 @@ Future<dynamic> showAppInfoDialog(BuildContext context, WidgetRef ref,
                 text: confirmText,
                 color: isWarning
                     ? Colors.red
-                    : ((ref.watch(themeProvider) == 'System' ||
-                                ref.watch(themeProvider) == 'Dark') &&
-                            (MediaQuery.platformBrightnessOf(context) ==
-                                Brightness.dark))
+                    : ((ref.watch(themeProvider) == 'System' &&
+                                MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark) ||
+                            ref.watch(themeProvider) == 'Dark'
                         ? AppColors.primaryDark
-                        : AppColors.primary,
+                        : AppColors.primary),
                 // weight: FontWeight.w600,
               ),
             ),

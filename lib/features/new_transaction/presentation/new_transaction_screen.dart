@@ -423,15 +423,15 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                               style: GoogleFonts.manrope(
                                                 fontSize: AppSizes.bodySmaller,
                                                 fontWeight: FontWeight.w500,
-                                                color: ((ref.watch(themeProvider) ==
-                                                                'System' ||
-                                                            ref.watch(
-                                                                    themeProvider) ==
-                                                                'Dark') &&
-                                                        (MediaQuery
-                                                                .platformBrightnessOf(
+                                                color: (ref.watch(themeProvider) ==
+                                                                'System' &&
+                                                            MediaQuery.platformBrightnessOf(
                                                                     context) ==
-                                                            Brightness.dark))
+                                                                Brightness
+                                                                    .dark) ||
+                                                        ref.watch(
+                                                                themeProvider) ==
+                                                            'Dark'
                                                     ? Colors.white
                                                     : Colors.black,
                                               ),
@@ -475,13 +475,13 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                     elevation: 1,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(20.0),
-                                      color: ((ref.watch(themeProvider) ==
-                                                      'System' ||
-                                                  ref.watch(themeProvider) ==
-                                                      'Dark') &&
-                                              (MediaQuery.platformBrightnessOf(
-                                                      context) ==
-                                                  Brightness.dark))
+                                      color: (ref.watch(themeProvider) ==
+                                                      'System' &&
+                                                  MediaQuery
+                                                          .platformBrightnessOf(
+                                                              context) ==
+                                                      Brightness.dark) ||
+                                              ref.watch(themeProvider) == 'Dark'
                                           ? const Color.fromARGB(
                                               255, 32, 25, 33)
                                           : Colors.white,
@@ -528,24 +528,24 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                     },
                                     showDragHandle: true,
                                     options: BoardDateTimeOptions(
-                                      activeColor: ((ref.watch(themeProvider) ==
-                                                      'System' ||
-                                                  ref.watch(themeProvider) ==
-                                                      'Dark') &&
-                                              (MediaQuery.platformBrightnessOf(
-                                                      context) ==
-                                                  Brightness.dark))
+                                      activeColor: (ref.watch(themeProvider) ==
+                                                      'System' &&
+                                                  MediaQuery
+                                                          .platformBrightnessOf(
+                                                              context) ==
+                                                      Brightness.dark) ||
+                                              ref.watch(themeProvider) == 'Dark'
                                           ? AppColors.primaryDark
                                           : AppColors.primary,
                                       // backgroundColor: Colors.white,
-                                      foregroundColor: ((ref.watch(
+                                      foregroundColor: (ref.watch(
                                                           themeProvider) ==
-                                                      'System' ||
-                                                  ref.watch(themeProvider) ==
-                                                      'Dark') &&
-                                              (MediaQuery.platformBrightnessOf(
-                                                      context) ==
-                                                  Brightness.dark))
+                                                      'System' &&
+                                                  MediaQuery
+                                                          .platformBrightnessOf(
+                                                              context) ==
+                                                      Brightness.dark) ||
+                                              ref.watch(themeProvider) == 'Dark'
                                           ? const Color.fromARGB(
                                               255, 78, 79, 91)
                                           : AppColors.neutral100,
@@ -684,9 +684,10 @@ class TileIcon extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
         width: double.infinity,
-        color: ((ref.watch(themeProvider) == 'System' ||
-                    ref.watch(themeProvider) == 'Dark') &&
-                (MediaQuery.platformBrightnessOf(context) == Brightness.dark))
+        color: (ref.watch(themeProvider) == 'System' &&
+                    MediaQuery.platformBrightnessOf(context) ==
+                        Brightness.dark) ||
+                ref.watch(themeProvider) == 'Dark'
             ? AppColors.primaryDark.withOpacity(0.1)
             : AppColors.primary.withOpacity(0.1),
         child: Column(
@@ -702,10 +703,10 @@ class TileIcon extends ConsumerWidget {
             ),
             AppText(
               text: category.name,
-              color: ((ref.watch(themeProvider) == 'System' ||
-                          ref.watch(themeProvider) == 'Dark') &&
-                      (MediaQuery.platformBrightnessOf(context) ==
-                          Brightness.dark))
+              color: (ref.watch(themeProvider) == 'System' &&
+                          MediaQuery.platformBrightnessOf(context) ==
+                              Brightness.dark) ||
+                      ref.watch(themeProvider) == 'Dark'
                   ? AppColors.primaryDark
                   : AppColors.primary,
               size: AppSizes.bodySmallest,

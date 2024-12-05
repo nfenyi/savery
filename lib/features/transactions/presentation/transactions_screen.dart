@@ -179,10 +179,11 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                     final transaction = _reversedTransactions![index];
                     return Container(
                       decoration: BoxDecoration(
-                          color: ((ref.watch(themeProvider) == 'System' ||
-                                      ref.watch(themeProvider) == 'Dark') &&
-                                  (MediaQuery.platformBrightnessOf(context) ==
-                                      Brightness.dark))
+                          color: (ref.watch(themeProvider) == 'System' &&
+                                      MediaQuery.platformBrightnessOf(
+                                              context) ==
+                                          Brightness.dark) ||
+                                  ref.watch(themeProvider) == 'Dark'
                               ? const Color.fromARGB(255, 39, 32, 39)
                               : Colors.grey.shade100,
                           borderRadius: BorderRadius.circular(15)),
