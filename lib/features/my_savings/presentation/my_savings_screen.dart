@@ -15,6 +15,7 @@ import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/extensions/context_extenstions.dart';
 
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 
@@ -88,7 +89,6 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
   Widget build(BuildContext context) {
     //  return PopScope(
     //TODO: to implement this in another way
-//seems to not work because of canonicalization?
 // //try creating a button to handle the equality and pass the result to canPop
 //       canPop: (null ==
 //           _canPops.firstWhereOrNull(
@@ -114,9 +114,9 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
             horizontal: AppSizes.horizontalPaddingSmall),
         child: Column(
           children: [
-            const AppText(
-                text:
-                    'You can set how much you wish to save out from your budget here.'),
+            AppText(text: context.localizations.set_savings_notice
+                // 'You can set how much you wish to save out from your budget here.'
+                ),
             const Gap(10),
             DropdownButtonHideUnderline(
               child: DropdownButton2<String>(
@@ -128,8 +128,9 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                       _selectedAccountName == null ? Colors.grey : Colors.black,
                 ),
                 isExpanded: true,
-                hint: const AppText(
-                  text: 'Select an account',
+                hint: AppText(
+                  text: context.localizations.select_account,
+                  // 'Select an account',
                   overflow: TextOverflow.ellipsis,
                   color: Colors.grey,
                 ),
@@ -380,9 +381,10 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Lottie.asset(AppAssets.emptyList, height: 200),
-                      const AppText(
-                          text:
-                              'Please create some budgets under this account first')
+                      AppText(
+                        text: context.localizations.create_budgets_first_notice,
+                        // 'Please create some budgets under this account first'
+                      )
                     ],
                   ))
           ],

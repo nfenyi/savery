@@ -9,6 +9,7 @@ import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/features/my_goals/presentation/my_goals_screen.dart';
 import 'package:savery/main.dart';
 import '../../../themes/themes.dart';
@@ -54,12 +55,14 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AppText(
-            text: 'Choose the way you save...',
+          AppText(
+            text: context.localizations.budget_screen_header_message,
+            //  'Choose the way you save...',
             size: AppSizes.heading2,
           ),
-          const AppText(
-            text: 'Plan your own motivation for saving!',
+          AppText(
+            text: context.localizations.budget_screen_subheader_message,
+            // 'Plan your own motivation for saving!',
             size: AppSizes.body,
             style: FontStyle.italic,
           ),
@@ -76,12 +79,93 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
                           onTap: () {
                             if (_user.accounts == null ||
                                 _user.accounts!.isEmpty) {
-                              showInfoToast('Please create an account first',
+                              showInfoToast(
+                                  context.localizations
+                                      .create_an_account_first_toast_info,
+                                  // 'Please create an account first',
                                   context: context);
                             } else {
                               navigatorKey.currentState!.push(MaterialPageRoute(
                                 builder: (context) => const MyGoalsScreen(),
                               ));
+                            }
+                          },
+                          child: Ink(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Container(
+                                padding: const EdgeInsets.only(
+                                    right: 17, left: 17, bottom: 20, top: 4),
+                                // width: Adaptive.w(40),
+                                color: Colors.green,
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Icon(
+                                          Icons.more_horiz,
+                                          color: Colors.white,
+                                        )
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        ClipOval(
+                                          child: Container(
+                                            padding: const EdgeInsets.all(15),
+                                            color: Colors.grey.shade100
+                                                .withOpacity(0.6),
+                                            child: const Icon(
+                                              FontAwesomeIcons.paperPlane,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                        const Gap(5),
+                                        AppText(
+                                          text: context.localizations.my_goals,
+
+                                          // 'My Goals',
+                                          isWhite: true,
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox.shrink()
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const Gap(5),
+                      Expanded(
+                        child: InkWell(
+                          onTap: () {
+                            if (_user.accounts == null ||
+                                _user.accounts!.isEmpty) {
+                              showInfoToast(
+                                  context.localizations
+                                      .create_an_account_first_toast_info,
+                                  // 'Please create an account first',
+                                  context: context);
+                            } else {
+                              if (_budgets.isNotEmpty) {
+                                navigatorKey.currentState!
+                                    .push(MaterialPageRoute(
+                                  builder: (context) => const MySavingsScreen(),
+                                ));
+                              } else {
+                                showInfoToast(
+                                    context.localizations
+                                        .create_an_expense_budget_first_toast_info,
+                                    // 'Please create an expense budget first',
+                                    context: context);
+                              }
                             }
                           },
                           child: Ink(
@@ -114,85 +198,16 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
                                             color: Colors.grey.shade100
                                                 .withOpacity(0.6),
                                             child: const Icon(
-                                              FontAwesomeIcons.paperPlane,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                        const Gap(5),
-                                        const AppText(
-                                          text: 'My Goals',
-                                          isWhite: true,
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox.shrink()
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const Gap(5),
-                      Expanded(
-                        child: InkWell(
-                          onTap: () {
-                            if (_user.accounts == null ||
-                                _user.accounts!.isEmpty) {
-                              showInfoToast('Please create an account first',
-                                  context: context);
-                            } else {
-                              if (_budgets.isNotEmpty) {
-                                navigatorKey.currentState!
-                                    .push(MaterialPageRoute(
-                                  builder: (context) => const MySavingsScreen(),
-                                ));
-                              } else {
-                                showInfoToast(
-                                    'Please create an expense budget first',
-                                    context: context);
-                              }
-                            }
-                          },
-                          child: Ink(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Container(
-                                padding: const EdgeInsets.only(
-                                    right: 17, left: 17, bottom: 20, top: 4),
-                                // width: Adaptive.w(40),
-                                color: const Color.fromARGB(255, 133, 67, 246),
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Icon(
-                                          Icons.more_horiz,
-                                          color: Colors.white,
-                                        )
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        ClipOval(
-                                          child: Container(
-                                            padding: const EdgeInsets.all(15),
-                                            color: Colors.grey.shade100
-                                                .withOpacity(0.6),
-                                            child: const Icon(
                                               FontAwesomeIcons.heart,
                                               color: Colors.white,
                                             ),
                                           ),
                                         ),
                                         const Gap(5),
-                                        const AppText(
-                                          text: 'My Savings',
+                                        AppText(
+                                          text:
+                                              context.localizations.my_savings,
+                                          // 'My Savings',
                                           isWhite: true,
                                         ),
                                       ],
@@ -213,7 +228,10 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
                   child: InkWell(
                     onTap: () {
                       if (_user.accounts == null || _user.accounts!.isEmpty) {
-                        showInfoToast('Please create an account first',
+                        showInfoToast(
+                            context.localizations
+                                .create_an_account_first_toast_info,
+                            // 'Please create an account first',
                             context: context);
                       } else {
                         navigatorKey.currentState!.push(MaterialPageRoute(
@@ -262,8 +280,10 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
                                     ),
                                   ),
                                   const Gap(5),
-                                  const AppText(
-                                    text: 'My Expense Budgets',
+                                  AppText(
+                                    text: context
+                                        .localizations.my_expense_budgets,
+                                    // 'My Expense Budgets',
                                     isWhite: true,
                                   ),
                                 ],

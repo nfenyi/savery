@@ -18,6 +18,7 @@ import 'package:savery/app_constants/app_assets.dart';
 import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/features/new_transaction/models/transaction_category_model.dart';
 import 'package:savery/features/onboarding/onboarding_texts.dart';
 import 'package:savery/features/onboarding/presentation/widgets.dart';
@@ -44,17 +45,26 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   // final _textWidgetPageController = PageController(initialPage: 0);
   final List<OnboardingText> _onboardingTexts = [
     OnboardingText(
-        headerText: "Save for your dreams!",
-        bodyText:
-            "Set financial goals. save money. and buy stocks. All the financial tools for your goals in one place"),
+        headerText:
+            navigatorKey.currentContext!.localizations.save_for_your_goals,
+        //  "Save for your dreams!",
+        bodyText: navigatorKey.currentContext!.localizations.onboarding_body1
+        // "Set financial goals. save money. and buy stocks. All the financial tools for your goals in one place"
+        ),
     OnboardingText(
-        headerText: "Quick analysis of all",
-        bodyText:
-            "All expenses by cards ate reflected automatically in the application. and the analytics system helps to Control them"),
+        headerText:
+            navigatorKey.currentContext!.localizations.onboarding_header2,
+        //  "Quick analysis of all",
+        bodyText: navigatorKey.currentContext!.localizations.onboarding_body2
+        // "All expenses by cards ate reflected automatically in the application. and the analytics system helps to Control them"
+        ),
     OnboardingText(
-        headerText: "Tips to optimize spendings!",
-        bodyText:
-            "The system notices where you're slipping on the budget and tells you how to optimize costs"),
+        headerText:
+            navigatorKey.currentContext!.localizations.onboarding_header3,
+        //  "Tips to optimize spendings!",
+        bodyText: navigatorKey.currentContext!.localizations.onboarding_body3
+        // "The system notices where you're slipping on the budget and tells you how to optimize costs"
+        ),
   ];
 
   @override
@@ -81,22 +91,65 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               });
               await _transactionCategoriesBox.addAll([
                 TransactionCategory(
-                    icon: Teenyicons.gift_outline, name: 'Gifts'),
-                TransactionCategory(icon: La.stethoscope, name: 'Health'),
+                    icon: Teenyicons.gift_outline,
+                    name: navigatorKey.currentContext!.localizations.gifts
+                    //  'Gifts'
+                    ),
+                TransactionCategory(
+                    icon: La.stethoscope,
+                    name: navigatorKey.currentContext!.localizations.health
+                    // 'Health'
+                    ),
                 TransactionCategory(
                     icon: MaterialSymbols.directions_car_outline_rounded,
-                    name: 'Car'),
-                TransactionCategory(icon: Arcticons.chess, name: 'Game'),
-                TransactionCategory(icon: AkarIcons.utensils, name: 'Cafe'),
-                TransactionCategory(icon: Tabler.plane_tilt, name: 'Travel'),
+                    name: navigatorKey.currentContext!.localizations.car
+                    //  'Car'
+                    ),
                 TransactionCategory(
-                    icon: Ph.lightbulb_filament_light, name: 'Utility'),
-                TransactionCategory(icon: Ic.round_face_2, name: 'Care'),
-                TransactionCategory(icon: Heroicons.tv, name: 'Devices'),
-                TransactionCategory(icon: Bxs.bowl_rice, name: 'Food'),
+                    icon: Arcticons.chess,
+                    name: navigatorKey.currentContext!.localizations.game
+                    //  'Game'
+                    ),
                 TransactionCategory(
-                    icon: Ph.shopping_cart_thin, name: 'Shopping'),
-                TransactionCategory(icon: MdiLight.truck, name: 'Transport'),
+                  icon: AkarIcons.utensils,
+                  name: navigatorKey.currentContext!.localizations.cafe,
+                  // 'Cafe'
+                ),
+                TransactionCategory(
+                    icon: Tabler.plane_tilt,
+                    name: navigatorKey.currentContext!.localizations.travel
+                    // 'Travel'
+                    ),
+                TransactionCategory(
+                  icon: Ph.lightbulb_filament_light,
+                  name: navigatorKey.currentContext!.localizations.utility,
+                  // 'Utility'
+                ),
+                TransactionCategory(
+                    icon: Ic.round_face_2,
+                    name: navigatorKey.currentContext!.localizations.care
+                    // 'Care'
+                    ),
+                TransactionCategory(
+                    icon: Heroicons.tv,
+                    name: navigatorKey.currentContext!.localizations.devices
+                    //  'Devices'
+                    ),
+                TransactionCategory(
+                    icon: Bxs.bowl_rice,
+                    name: navigatorKey.currentContext!.localizations.food
+                    // 'Food'
+                    ),
+                TransactionCategory(
+                  icon: Ph.shopping_cart_thin,
+                  name: navigatorKey.currentContext!.localizations.shopping,
+                  // 'Shopping'
+                ),
+                TransactionCategory(
+                    icon: MdiLight.truck,
+                    name: navigatorKey.currentContext!.localizations.transport
+                    //  'Transport'
+                    ),
               ]);
               await navigatorKey.currentState!.pushReplacement(
                 MaterialPageRoute(
@@ -338,7 +391,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     count: _onboardingTexts.length),
                 const Gap(30),
                 AppGradientButton(
-                  text: currentPage != 2 ? 'NEXT' : 'GET STARTED',
+                  text: currentPage != 2
+                      ? navigatorKey.currentContext!.localizations.next_caps
+                      // 'NEXT'
+                      : navigatorKey
+                          .currentContext!.localizations.get_started_caps,
+                  // 'GET STARTED',
                   callback: () async {
                     if (currentPage != 2) {
                       await _pageController.nextPage(
@@ -351,30 +409,76 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       });
                       await _transactionCategoriesBox.addAll([
                         TransactionCategory(
-                            icon: Teenyicons.gift_outline, name: 'Gifts'),
+                            icon: Teenyicons.gift_outline,
+                            name:
+                                navigatorKey.currentContext!.localizations.gifts
+                            //  'Gifts'
+                            ),
                         TransactionCategory(
-                            icon: La.stethoscope, name: 'Health'),
+                            icon: La.stethoscope,
+                            name: navigatorKey
+                                .currentContext!.localizations.health
+                            // 'Health'
+                            ),
                         TransactionCategory(
                             icon:
                                 MaterialSymbols.directions_car_outline_rounded,
-                            name: 'Car'),
+                            name: navigatorKey.currentContext!.localizations.car
+                            //  'Car'
+                            ),
                         TransactionCategory(
-                            icon: Arcticons.chess, name: 'Game'),
+                            icon: Arcticons.chess,
+                            name:
+                                navigatorKey.currentContext!.localizations.game
+                            //  'Game'
+                            ),
                         TransactionCategory(
-                            icon: AkarIcons.utensils, name: 'Cafe'),
+                          icon: AkarIcons.utensils,
+                          name: navigatorKey.currentContext!.localizations.cafe,
+                          // 'Cafe'
+                        ),
                         TransactionCategory(
-                            icon: Tabler.plane_tilt, name: 'Travel'),
+                            icon: Tabler.plane_tilt,
+                            name: navigatorKey
+                                .currentContext!.localizations.travel
+                            // 'Travel'
+                            ),
                         TransactionCategory(
-                            icon: Ph.lightbulb_filament_light, name: 'Utility'),
+                          icon: Ph.lightbulb_filament_light,
+                          name: navigatorKey
+                              .currentContext!.localizations.utility,
+                          // 'Utility'
+                        ),
                         TransactionCategory(
-                            icon: Ic.round_face_2, name: 'Care'),
+                            icon: Ic.round_face_2,
+                            name:
+                                navigatorKey.currentContext!.localizations.care
+                            // 'Care'
+                            ),
                         TransactionCategory(
-                            icon: Heroicons.tv, name: 'Devices'),
-                        TransactionCategory(icon: Bxs.bowl_rice, name: 'Food'),
+                            icon: Heroicons.tv,
+                            name: navigatorKey
+                                .currentContext!.localizations.devices
+                            //  'Devices'
+                            ),
                         TransactionCategory(
-                            icon: Ph.shopping_cart_thin, name: 'Shopping'),
+                            icon: Bxs.bowl_rice,
+                            name:
+                                navigatorKey.currentContext!.localizations.food
+                            // 'Food'
+                            ),
                         TransactionCategory(
-                            icon: MdiLight.truck, name: 'Transport'),
+                          icon: Ph.shopping_cart_thin,
+                          name: navigatorKey
+                              .currentContext!.localizations.shopping,
+                          // 'Shopping'
+                        ),
+                        TransactionCategory(
+                            icon: MdiLight.truck,
+                            name: navigatorKey
+                                .currentContext!.localizations.transport
+                            //  'Transport'
+                            ),
                       ]);
                       await navigatorKey.currentState!
                           .pushReplacement(MaterialPageRoute(
@@ -391,6 +495,3 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 }
-
-
-// 

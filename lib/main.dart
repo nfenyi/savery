@@ -1,5 +1,8 @@
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:gap/gap.dart';
+import 'package:savery/features/main_screen/state/localization.dart';
 import 'package:savery/notifications/models/notification_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // import 'package:secure_application/secure_application.dart';
 
 import 'app_widgets/app_text.dart';
@@ -77,16 +80,20 @@ class Savery extends StatelessWidget {
       return Consumer(
         builder: (context, ref, child) {
           var theme = ref.watch(themeProvider);
+          logger.d(ref.read(languageProvider));
           return GetMaterialApp(
             debugShowCheckedModeBanner: false,
             builder: FToastBuilder(),
             supportedLocales: L10n.all,
-            locale: const Locale('en'),
-            localizationsDelegates: [
-              // AppLocalizations.delegate,
-              // GlobalMaterialLocalizations.delegate,
-              // GlobalWidgetsLocalizations.delegate,
-              // GlobalCupertinoLocalizations.delegate
+            locale: ref.watch(languageProvider) == 'Français'
+                ? const Locale('fr')
+                : const Locale('en'),
+
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate
             ],
             title: 'Flutter Demo',
             themeMode: theme == 'System'

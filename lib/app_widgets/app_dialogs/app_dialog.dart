@@ -3,7 +3,7 @@ part of '../widgets.dart';
 Future<dynamic> showAppInfoDialog(BuildContext context, WidgetRef ref,
     {required String title,
     String? description,
-    String confirmText = 'OK',
+    String? confirmText,
     String? cancelText,
     bool isWarning = false,
     void Function()? confirmCallbackFunction,
@@ -39,7 +39,7 @@ Future<dynamic> showAppInfoDialog(BuildContext context, WidgetRef ref,
                     navigatorKey.currentState!.pop();
                   },
               child: AppText(
-                text: confirmText,
+                text: confirmText ?? context.localizations.ok,
                 color: ((ref.watch(themeProvider) == 'System' &&
                             MediaQuery.platformBrightnessOf(context) ==
                                 Brightness.dark) ||
@@ -72,7 +72,7 @@ Future<dynamic> showAppInfoDialog(BuildContext context, WidgetRef ref,
           title: AppText(
             text: title,
             size: AppSizes.bodySmall,
-            color: title == 'Success' ? Colors.green : null,
+            color: title == context.localizations.success ? Colors.green : null,
             // weight: FontWeight.w600,
           ),
           content: description != null
@@ -90,7 +90,7 @@ Future<dynamic> showAppInfoDialog(BuildContext context, WidgetRef ref,
                     navigatorKey.currentState!.pop();
                   },
               child: AppText(
-                text: confirmText,
+                text: confirmText ?? context.localizations.ok,
                 color: isWarning
                     ? Colors.red
                     : ((ref.watch(themeProvider) == 'System' &&

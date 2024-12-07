@@ -19,6 +19,7 @@ import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/features/main_screen/presentation/main_screen.dart';
 import 'package:savery/features/new_transaction/models/transaction_category_model.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
@@ -64,7 +65,7 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
 
   final Map<String, double> _mappedTransactions = {};
   late String _currency;
-  final _appStateUid = Hive.box(AppBoxes.users).get('currentUser');
+  final _appStateUid = Hive.box(AppBoxes.appState).get('currentUser');
 
   @override
   void initState() {
@@ -145,8 +146,9 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const AppText(
-            text: 'My Expense Budgets',
+          title: AppText(
+            text: context.localizations.expenses,
+            // 'My Expense Budgets',
             weight: FontWeight.bold,
             size: AppSizes.bodySmall,
           ),
@@ -162,18 +164,24 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                   padding: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(7),
-                    color: Colors.grey[100],
+                    color: (ref.watch(themeProvider) == 'System' &&
+                                MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark) ||
+                            ref.watch(themeProvider) == 'Dark'
+                        ? Colors.grey[600]
+                        : Colors.grey[100],
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.warning_amber_rounded,
                         color: Colors.amber,
                         size: 18,
                       ),
-                      Gap(7),
+                      const Gap(7),
                       AppText(
-                        text: 'These reset after the set duration is past',
+                        text: context.localizations.expense_budget_notice,
+                        //  'These reset after the set duration is past',
                         size: AppSizes.bodySmallest,
                         // weight: FontWeight.bold,
                         // style: FontStyle.italic,
@@ -191,8 +199,9 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                       _selectedAccountName == null ? Colors.grey : Colors.black,
                 ),
                 isExpanded: true,
-                hint: const AppText(
-                  text: 'Select an account',
+                hint: AppText(
+                  text: context.localizations.select_account,
+                  //  'Select an account',
                   overflow: TextOverflow.ellipsis,
                   color: Colors.grey,
                 ),
@@ -380,8 +389,9 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                           // size: 5,
                         ),
                         const Gap(5),
-                        const AppText(
-                          text: 'Create New Budget',
+                        AppText(
+                          text: context.localizations.create_new_budget,
+                          // 'Create New Budget',
                           weight: FontWeight.bold,
                           size: AppSizes.heading6,
                         ),
@@ -421,7 +431,10 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                 Future.delayed(const Duration(seconds: 3), () {
                                   showInfoToast(
                                       seconds: 5,
-                                      'Seems you have gone overbudget for ${expenseBudget.category!.name}. Please increase the ${expenseBudget.category!.name} budget so your balance can be tracked accordingly.',
+                                      navigatorKey.currentContext!.localizations
+                                          .over_budget_toast_info(
+                                              expenseBudget.category!.name),
+                                      // 'Seems you have gone overbudget for ${expenseBudget.category!.name}. Please increase the ${expenseBudget.category!.name} budget so your balance can be tracked accordingly.',
                                       context: navigatorKey.currentContext!);
                                 });
                               }
@@ -625,9 +638,11 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                                           (value <=
                                                                   (1 -
                                                                       savingsFraction))
-                                                              ? const AppText(
-                                                                  text:
-                                                                      'saving',
+                                                              ? AppText(
+                                                                  text: context
+                                                                      .localizations
+                                                                      .saving_small_text,
+                                                                  // 'saving',
                                                                   style: FontStyle
                                                                       .italic,
                                                                   color: Colors
@@ -657,7 +672,10 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Lottie.asset(AppAssets.emptyList, height: 200),
-                      const AppText(text: 'No expense budgets added yet')
+                      AppText(
+                        text: context.localizations.no_exp_budget_yet,
+                        //  'No expense budgets added yet.'
+                      )
                     ],
                   )),
           ]),
@@ -682,7 +700,9 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const RequiredText('Category'),
+                    RequiredText(context.localizations.category
+                        // 'Category'
+                        ),
                     const Gap(12),
                     DropdownButtonHideUnderline(
                       child: DropdownButton2<String>(
@@ -698,8 +718,9 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                               : AppColors.primary,
                         ),
                         isExpanded: true,
-                        hint: const AppText(
-                          text: 'Select a category',
+                        hint: AppText(
+                          text: context.localizations.select_a_category,
+                          // 'Select a category',
                           overflow: TextOverflow.ellipsis,
                           color: Colors.grey,
                         ),
@@ -743,7 +764,8 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                             if (expenseBudgets.any(
                                 (element) => element.category!.name == value)) {
                               showInfoToast(
-                                  'This category already exists in your list of budgets',
+                                  context.localizations.category_already_exists,
+                                  // 'This category already exists in your list of budgets',
                                   context: context);
                               setState(() {
                                 selectedCategory = null;
@@ -797,7 +819,10 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                       ),
                     ),
                     const Gap(12),
-                    const RequiredText('Expense Amount'),
+                    RequiredText(
+                      context.localizations.expense_amount,
+                      // 'Expense Amount'
+                    ),
                     const Gap(12),
                     AppTextFormField(
                       controller: _expenseAmountController,
@@ -813,15 +838,19 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                       ]),
                     ),
                     const Gap(12),
-                    const RequiredText('Expense Coverage Duration'),
+                    RequiredText(
+                      context.localizations.expense_coverage_duration,
+                      // 'Expense Coverage Duration'
+                    ),
                     const Gap(12),
                     AppTextFormField(
                       controller: _expenseCoverageController,
                       hintText: '30',
                       keyboardType:
                           const TextInputType.numberWithOptions(decimal: true),
-                      suffixIcon: const AppText(
-                        text: 'days',
+                      suffixIcon: AppText(
+                        text: context.localizations.days_small_text,
+                        // 'days',
                         color: Colors.grey,
                       ),
                       validator: FormBuilderValidators.compose([
@@ -843,7 +872,8 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                   }
                 },
                 child: AppText(
-                  text: 'OK',
+                  text: context.localizations.ok,
+                  // 'OK',
                   color: (ref.watch(themeProvider) == 'System' &&
                               MediaQuery.platformBrightnessOf(context) ==
                                   Brightness.dark) ||
@@ -868,7 +898,10 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const RequiredText('Category'),
+                    RequiredText(
+                      context.localizations.category,
+                      // 'Category'
+                    ),
                     const Gap(12),
                     DropdownButtonHideUnderline(
                       child: DropdownButton2<String>(
@@ -882,8 +915,9 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                               Colors.black,
                         ),
                         isExpanded: true,
-                        hint: const AppText(
-                          text: 'Select a category',
+                        hint: AppText(
+                          text: context.localizations.select_a_category,
+                          //  'Select a category',
                           overflow: TextOverflow.ellipsis,
                           color: Colors.grey,
                         ),
@@ -927,7 +961,8 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                             if (expenseBudgets.any(
                                 (element) => element.category!.name == value)) {
                               showInfoToast(
-                                  'This category already exists in your list of budgets',
+                                  context.localizations.category_already_exists,
+                                  // 'This category already exists in your list of budgets',
                                   context: context);
                               setState(() {
                                 selectedCategory = null;
@@ -981,7 +1016,10 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                       ),
                     ),
                     const Gap(12),
-                    const RequiredText('Expense Amount'),
+                    RequiredText(
+                      context.localizations.expense_amount,
+                      // 'Expense Amount'
+                    ),
                     const Gap(12),
                     AppTextFormField(
                       controller: _expenseAmountController,
@@ -997,15 +1035,19 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                       ]),
                     ),
                     const Gap(12),
-                    const RequiredText('Expense Coverage Duration'),
+                    RequiredText(
+                      context.localizations.expense_coverage_duration,
+                      // 'Expense Coverage Duration'
+                    ),
                     const Gap(12),
                     AppTextFormField(
                       controller: _expenseCoverageController,
                       hintText: '30',
                       keyboardType:
                           const TextInputType.numberWithOptions(decimal: true),
-                      suffixIcon: const AppText(
-                        text: 'days',
+                      suffixIcon: AppText(
+                        text: context.localizations.days_small_text,
+                        //  'days',
                         color: Colors.grey,
                       ),
                       validator: FormBuilderValidators.compose([
@@ -1038,7 +1080,8 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                   }
                 },
                 child: AppText(
-                  text: 'OK',
+                  text: context.localizations.ok,
+                  // 'OK',
                   color: (ref.watch(themeProvider) == 'System' &&
                               MediaQuery.platformBrightnessOf(context) ==
                                   Brightness.dark) ||
@@ -1073,7 +1116,9 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const RequiredText('Goal'),
+                    RequiredText(context.localizations.goal
+                        // 'Goal'
+                        ),
                     const Gap(12),
                     AppTextFormField(
                       controller: _expenseAmountController,
@@ -1083,7 +1128,10 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                       ]),
                     ),
                     const Gap(12),
-                    const RequiredText('Amount'),
+                    RequiredText(
+                      context.localizations.amount,
+                      // 'Amount'
+                    ),
                     const Gap(12),
                     AppTextFormField(
                       controller: _expenseAmountController,
@@ -1099,7 +1147,10 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                       ]),
                     ),
                     const Gap(12),
-                    const RequiredText('Estimated Date'),
+                    RequiredText(
+                      context.localizations.estimated_date,
+                      // 'Estimated Date'
+                    ),
                     const Gap(12),
                   ],
                 ),
@@ -1111,7 +1162,8 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                   if (_formKey.currentState!.validate()) {}
                 },
                 child: AppText(
-                  text: 'Update',
+                  text: context.localizations.update,
+                  // 'Update',
                   color: (ref.watch(themeProvider) == 'System' &&
                               MediaQuery.platformBrightnessOf(context) ==
                                   Brightness.dark) ||
@@ -1160,7 +1212,11 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                       ],
                     ),
                     const Gap(20),
-                    const RequiredText('Expense Amount'),
+                    RequiredText(
+                      context.localizations.expense_amount,
+
+                      // 'Expense Amount'
+                    ),
                     const Gap(12),
                     AppTextFormField(
                       controller: _expenseAmountController,
@@ -1176,15 +1232,20 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                       ]),
                     ),
                     const Gap(12),
-                    const RequiredText('Expense Coverage Duration'),
+                    RequiredText(
+                      context.localizations.expense_coverage_duration,
+
+                      // 'Expense Coverage Duration'
+                    ),
                     const Gap(12),
                     AppTextFormField(
                       controller: _expenseCoverageController,
                       hintText: '30',
                       keyboardType:
                           const TextInputType.numberWithOptions(decimal: true),
-                      suffixIcon: const AppText(
-                        text: 'days',
+                      suffixIcon: AppText(
+                        text: context.localizations.days_small_text,
+                        //  'days',
                         color: Colors.grey,
                       ),
                       validator: FormBuilderValidators.compose([
@@ -1210,7 +1271,8 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                   }
                 },
                 child: AppText(
-                  text: 'Update',
+                  text: context.localizations.update,
+                  //  'Update',
                   color: (ref.watch(themeProvider) == 'System' &&
                               MediaQuery.platformBrightnessOf(context) ==
                                   Brightness.dark) ||
@@ -1231,11 +1293,14 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
     await showAppInfoDialog(
       context,
       ref,
-      title:
-          'Are you sure you want to delete this ${budget.category!.name} budget?',
-      confirmText: 'Yes',
+      title: context.localizations.delete_budget_notice(budget.category!.name),
+      // 'Are you sure you want to delete this ${budget.category!.name} budget?',
+      confirmText: navigatorKey.currentContext!.localizations.yes,
+      //  'Yes',
       isWarning: true,
-      cancelText: 'No',
+      cancelText:
+          //  navigatorKey.currentContext!.localizations.no,
+          'No',
       confirmCallbackFunction: () async {
         await ref.read(userProvider.notifier).deleteExpenseBudget(
             budget: budget, selectedAccount: _selectedAccount);

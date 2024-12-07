@@ -13,6 +13,7 @@ import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/features/accounts_&_currencies/services/api_constants.dart';
 import 'package:savery/features/accounts_&_currencies/services/api_services.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
@@ -54,8 +55,8 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const AppText(
-            text: 'Accounts & Currencies',
+          title: AppText(
+            text: context.localizations.accounts_n_currencies,
             weight: FontWeight.bold,
             size: AppSizes.bodySmall,
           ),
@@ -66,8 +67,8 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const AppText(
-                text: 'Accounts',
+              AppText(
+                text: context.localizations.accounts,
                 weight: FontWeight.bold,
                 size: AppSizes.bodySmall,
               ),
@@ -76,8 +77,8 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                       child: Column(
                         children: [
                           Lottie.asset(AppAssets.noAccount, height: 100),
-                          const AppText(
-                            text: ' No accounts.',
+                          AppText(
+                            text: context.localizations.no_accounts,
                             size: AppSizes.bodySmaller,
                           ),
                         ],
@@ -208,8 +209,10 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                                       onTap: () async {
                                         await showAppInfoDialog(context, ref,
                                             isWarning: true,
-                                            title:
-                                                'Are you sure you want to delete ${account.name}?',
+                                            title: context.localizations
+                                                .delete_account_warning_message(
+                                                    account.name),
+                                            // 'Are you sure you want to delete ${account.name}?',
                                             cancelText: 'No',
                                             confirmCallbackFunction: () async {
                                           await _accountsBox.deleteAt(index);
@@ -249,8 +252,9 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                           ),
                         ]),
               const Gap(50),
-              const AppText(
-                text: 'Exchange Rates',
+              AppText(
+                text: context.localizations.exchange_rates,
+                // 'Exchange Rates',
                 weight: FontWeight.bold,
                 size: AppSizes.bodySmall,
               ),
@@ -279,7 +283,10 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                                   color: Colors.deepPurple,
                                 ),
                               ),
-                              title: const Text('Dollar'),
+                              title: Text(
+                                context.localizations.dollar,
+                                // 'Dollar'
+                              ),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -310,7 +317,9 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                                   color: Colors.deepPurple,
                                 ),
                               ),
-                              title: const Text('Pound'),
+                              title: Text(context.localizations.pound
+                                  // 'Pound'
+                                  ),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -341,9 +350,9 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                                   size: 15,
                                 ),
                               ),
-                              title: const Text(
-                                'Euro',
-                              ),
+                              title: Text(context.localizations.euro
+                                  // 'Euro',
+                                  ),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -384,9 +393,10 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                               ),
                             ),
                             const Gap(10),
-                            const AppText(
-                              text:
-                                  'Could not retrieve rates. Please check your internet connection',
+                            AppText(
+                              text: context.localizations
+                                  .exchange_rates_fetch_failure_message,
+                              // 'Could not retrieve rates. Please check your internet connection',
                               textAlign: TextAlign.center,
                             )
                           ],

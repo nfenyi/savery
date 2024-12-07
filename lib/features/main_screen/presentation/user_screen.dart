@@ -9,6 +9,7 @@ import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/features/accounts_&_currencies/presentation/accounts_n_currencies_screen.dart';
 import 'package:savery/features/accounts_&_currencies/services/api_services.dart';
 import 'package:savery/features/app_settings/presentation/app_settings_screen.dart';
@@ -35,7 +36,7 @@ class UserScreen extends ConsumerStatefulWidget {
 class _UserScreenState extends ConsumerState<UserScreen> {
   final _userBox = Hive.box<AppUser>(AppBoxes.users);
   late final AppUser _user;
-  late final List<Setting> _personalSettings;
+  late List<Setting> _personalSettings;
   final _appStateUid = Hive.box(AppBoxes.appState).get('currentUser');
   late final bool _isMainUser;
 
@@ -44,15 +45,24 @@ class _UserScreenState extends ConsumerState<UserScreen> {
     super.initState();
     _isMainUser = _userBox.values.first.uid ==
         Hive.box(AppBoxes.appState).get('currentUser');
+    _user = _userBox.values.firstWhere(
+      (element) => element.uid == _appStateUid,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     _personalSettings = [
       Setting(
           icon: Iconsax.notification,
-          name: "Notifications",
+          name: context.localizations.notifications,
+          //  "Notifications",
           callback: () => navigatorKey.currentState!.push(MaterialPageRoute(
               builder: (context) => const NotificationsScreen()))),
       Setting(
           icon: Icons.settings_outlined,
-          name: "App Settings",
+          name: context.localizations.app_settings,
+          //  "App Settings",
           callback: () async {
             if (_isMainUser) {
               final bool hasBiometrics = await LocalAuthApi.hasBiometrics();
@@ -62,24 +72,28 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                       )));
             } else {
               navigatorKey.currentState!.push(MaterialPageRoute(
-                  builder: (context) => AppSettings(
+                  builder: (context) => const AppSettings(
                         enableBiometrics: false,
                       )));
             }
           }),
       Setting(
           icon: Iconsax.grid_2,
-          name: "Categories",
+          name: context.localizations.categories,
+          //  "Categories",
           callback: () {
             navigatorKey.currentState!.push(MaterialPageRoute(
                 builder: (context) => const CategoriesScreen()));
           }),
       Setting(
           icon: FontAwesomeIcons.chartLine,
-          name: "Accounts & Currencies",
+          name: context.localizations.accounts_n_currencies,
+          //  "Accounts & Currencies",
           callback: () async {
             showLoadingDialog(
-                description: 'Fetching exchange rates...', ref: ref);
+                description: context.localizations.fetching_exchange_rates,
+                // 'Fetching exchange rates...',
+                ref: ref);
             final response = await ApiServices().fetchExchangeRates();
             navigatorKey.currentState!.pop();
             navigatorKey.currentState!.push(MaterialPageRoute(
@@ -94,13 +108,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
       //   name: "Support",
       // ),
     ];
-    _user = _userBox.values.firstWhere(
-      (element) => element.uid == _appStateUid,
-    );
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return SafeArea(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,11 +160,12 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                   ),
                   Visibility(
                     visible: !_isMainUser,
-                    child: const Column(
+                    child: Column(
                       children: [
-                        Gap(4),
+                        const Gap(4),
                         AppText(
-                          text: '(piggy-back user)',
+                          text: context.localizations.piggy_back_user,
+                          // '(piggy-back user)',
                           style: FontStyle.italic,
                         ),
                       ],
@@ -173,8 +182,9 @@ class _UserScreenState extends ConsumerState<UserScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AppText(
-                  text: 'Personal Settings',
+                AppText(
+                  text: context.localizations.personal_settings,
+                  // 'Personal Settings',
                   size: AppSizes.bodySmall,
                   weight: FontWeight.bold,
                 ),
@@ -214,7 +224,9 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                 ListTile(
                   onTap: () async {
                     showLoadingDialog(
-                        description: 'Logging you out...', ref: ref);
+                        description: context.localizations.logging_you_out,
+                        //  'Logging you out...',
+                        ref: ref);
                     await ref.read(authStateProvider.notifier).logOut();
                     navigatorKey.currentState!.pop();
                     // if (ref.read(authStateProvider).userId == null) {
@@ -231,8 +243,9 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                     Iconsax.logout,
                     color: Colors.red,
                   ),
-                  title: const AppText(
-                    text: 'Log Out',
+                  title: AppText(
+                    text: context.localizations.log_out,
+                    // 'Log Out',
                     weight: FontWeight.w900,
                     color: Colors.red,
                   ),

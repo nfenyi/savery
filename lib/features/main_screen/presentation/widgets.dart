@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:savery/app_constants/app_colors.dart';
+import 'package:savery/extensions/context_extenstions.dart';
+
 import 'package:savery/features/my_budgets/presentation/my_expense_budgets_screen.dart';
 import 'package:savery/features/my_goals/presentation/my_goals_screen.dart';
 import 'package:savery/features/sign_in/user_info/providers/providers.dart';
@@ -74,13 +76,15 @@ class AccountCard extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (consumerAccount.balance >= 0)
-                const AppText(
-                  text: 'Unbudgeted Balance',
+                AppText(
+                  text: context.localizations.unbudgeted_balance,
+                  //  'Unbudgeted Balance',
                   isWhite: true,
                 ),
               if (consumerAccount.balance < 0)
-                const AppText(
-                  text: 'Deficit',
+                AppText(
+                  text: context.localizations.deficit,
+                  //  'Deficit',
                   isWhite: true,
                 ),
               Row(
@@ -140,7 +144,8 @@ class AccountCard extends ConsumerWidget {
                               height: popupMenuHeight,
                               value: 0,
                               child: AppText(
-                                text: 'Budget',
+                                text: context.localizations.budget,
+                                // 'Budget',
                                 color: (ref.watch(themeProvider) == 'System' &&
                                             MediaQuery.platformBrightnessOf(
                                                     context) ==
@@ -155,8 +160,9 @@ class AccountCard extends ConsumerWidget {
                               height: popupMenuHeight,
                               value: 1,
 
-                              child: const AppText(
-                                text: 'Add to Bucket',
+                              child: AppText(
+                                text: context.localizations.add_to_bucket,
+                                //  'Add to Bucket',
                                 color: Colors.green,
                               ),
                               // onPressed: () {
@@ -165,7 +171,8 @@ class AccountCard extends ConsumerWidget {
                             ),
                           ],
                           child: AppText(
-                            text: 'Delegate',
+                            text: context.localizations.delegate_string,
+                            //  'Delegate',
                             color: Colors.green[200],
                             decoration: TextDecoration.underline,
                           ),
@@ -215,7 +222,8 @@ class AccountCard extends ConsumerWidget {
                               height: popupMenuHeight,
                               value: 0,
                               child: AppText(
-                                text: 'Budget',
+                                text: context.localizations.budget,
+                                // 'Budget',
                                 color: (ref.watch(themeProvider) == 'System' &&
                                             MediaQuery.platformBrightnessOf(
                                                     context) ==
@@ -230,8 +238,9 @@ class AccountCard extends ConsumerWidget {
                               height: popupMenuHeight,
                               value: 1,
 
-                              child: const AppText(
-                                text: 'Goal milestones',
+                              child: AppText(
+                                text: context.localizations.goal_milestones,
+                                //  'Goal milestones',
                                 color: Colors.green,
                               ),
                               // onPressed: () {
@@ -241,7 +250,8 @@ class AccountCard extends ConsumerWidget {
                           ],
 
                           child: AppText(
-                            text: 'Adjust',
+                            text: context.localizations.adjust,
+                            // 'Adjust',
                             color: Colors.red[200],
                             decoration: TextDecoration.underline,
                           ),
@@ -279,8 +289,9 @@ class AccountCard extends ConsumerWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const AppText(
-                              text: 'Income',
+                            AppText(
+                              text: context.localizations.income,
+                              // 'Income',
                               isWhite: true,
                             ),
                             AppText(
@@ -319,8 +330,9 @@ class AccountCard extends ConsumerWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const AppText(
-                              text: 'Expenses',
+                            AppText(
+                              text: context.localizations.expenses,
+                              //  'Expenses',
                               isWhite: true,
                             ),
                             AppText(

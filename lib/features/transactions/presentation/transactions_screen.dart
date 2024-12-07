@@ -12,6 +12,8 @@ import 'package:savery/app_constants/app_colors.dart';
 // import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
+import 'package:savery/extensions/context_extenstions.dart';
+import 'package:savery/main.dart';
 
 import '../../../app_functions/app_functions.dart';
 import '../../../themes/themes.dart';
@@ -62,8 +64,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     return Scaffold(
       appBar: AppBar(
         // centerTitle: true,
-        title: const AppText(
-          text: 'Transactions',
+        title: AppText(
+          text: navigatorKey.currentContext!.localizations.transactions,
+          // 'Transactions',
           weight: FontWeight.bold,
           size: AppSizes.bodySmall,
         ),
@@ -163,7 +166,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                   ? AppFunctions.formatDate(_dateHolder.toString(),
                       format: r'g:i A')
                   : (dateTimeNow.weekday - _dateHolder!.weekday == 1)
-                      ? 'Yesterday'
+                      ? navigatorKey.currentContext!.localizations.yesterday
+                      // 'Yesterday'
                       : (dateTimeNow.difference(_dateHolder!).inDays > 7)
                           ? AppFunctions.formatDate(_dateHolder!.toString(),
                               format: r'l')
@@ -226,7 +230,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                         ),
                         title: AppText(
                             text: transaction.type == 'Income'
-                                ? "Income"
+                                ? navigatorKey
+                                    .currentContext!.localizations.income
+                                // "Income"
                                 : transaction.category!.name),
                         subtitle: AppText(
                           text: transaction.description,

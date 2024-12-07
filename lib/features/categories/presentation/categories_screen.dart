@@ -8,11 +8,11 @@ import 'package:gap/gap.dart';
 import 'package:iconify_flutter/icons/heroicons.dart';
 import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
 import 'package:iconify_flutter_plus/icons/ic.dart';
-import 'package:iconify_flutter_plus/icons/la.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/features/categories/providers/categories_provider.dart';
 import 'package:savery/features/new_transaction/models/transaction_category_model.dart';
 import 'package:savery/main.dart';
@@ -69,7 +69,10 @@ class CategoriesScreen extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const RequiredText('Goal'),
+                      RequiredText(
+                        context.localizations.goal,
+                        // 'Goal'
+                      ),
                       const Gap(12),
                       AppTextFormField(
                         controller: categoryNameController,
@@ -89,7 +92,8 @@ class CategoriesScreen extends ConsumerWidget {
                     if (formKey.currentState!.validate()) {}
                   },
                   child: AppText(
-                    text: 'Add',
+                    text: context.localizations.add,
+                    // 'Add',
                     color: (ref.watch(themeProvider) == 'System' &&
                                 MediaQuery.platformBrightnessOf(context) ==
                                     Brightness.dark) ||
@@ -113,13 +117,17 @@ class CategoriesScreen extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const AppText(
-                        text: 'New Category',
+                      AppText(
+                        text: context.localizations.new_category,
+                        // 'New Category',
                         weight: FontWeight.bold,
                         size: 15,
                       ),
                       const Gap(27),
-                      const RequiredText('Name'),
+                      RequiredText(
+                        context.localizations.name,
+                        // 'Name'
+                      ),
                       const Gap(12),
                       AppTextFormField(
                         controller: categoryNameController,
@@ -130,7 +138,8 @@ class CategoriesScreen extends ConsumerWidget {
                       ),
                       const Gap(12),
                       AppText(
-                        text: 'Pick an icon',
+                        text: context.localizations.pick_an_icon,
+                        //  'Pick an icon',
                         color: pickAColorColor,
                       ),
                       const Gap(5),
@@ -224,7 +233,10 @@ class CategoriesScreen extends ConsumerWidget {
                           selectedIcon = null;
                           navigatorKey.currentState!.pop();
                         } else {
-                          showInfoToast('Please pick an icon.',
+                          showInfoToast(
+                              context.localizations.pick_an_icon_toast_info,
+
+                              // 'Please pick an icon.',
                               context: context);
 
                           setState(() {
@@ -234,7 +246,8 @@ class CategoriesScreen extends ConsumerWidget {
                       }
                     },
                     child: AppText(
-                      text: 'Add',
+                      text: context.localizations.add,
+                      //  'Add',
                       color: (ref.watch(themeProvider) == 'System' &&
                                   MediaQuery.platformBrightnessOf(context) ==
                                       Brightness.dark) ||
@@ -254,8 +267,9 @@ class CategoriesScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const AppText(
-          text: 'Categories',
+        title: AppText(
+          text: context.localizations.categories,
+          // 'Categories',
           weight: FontWeight.bold,
           size: AppSizes.bodySmall,
         ),

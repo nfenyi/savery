@@ -10,6 +10,7 @@ import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/features/sign_up/presentation/terms_and_condition_webview.dart';
 import 'package:savery/main.dart';
 
@@ -55,7 +56,9 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                 child: Column(
                   children: [
                     AppText(
-                      text: 'CREATE ACCOUNT',
+                      text: navigatorKey
+                          .currentContext!.localizations.create_account,
+                      // 'CREATE ACCOUNT',
                       color: (ref.watch(themeProvider) == 'System' &&
                                   MediaQuery.platformBrightnessOf(context) ==
                                       Brightness.dark) ||
@@ -66,9 +69,10 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                       size: AppSizes.heading6,
                     ),
                     const Gap(10),
-                    const AppText(
-                      text:
-                          'Fill your information below or register with your social account',
+                    AppText(
+                      text: navigatorKey
+                          .currentContext!.localizations.fill_info_prompt,
+                      // 'Fill your information below or register with your social account',
                       textAlign: TextAlign.center,
                       color: Colors.grey,
                     ),
@@ -81,7 +85,9 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const RequiredText('Name'),
+                    RequiredText(navigatorKey.currentContext!.localizations.name
+                        // 'Name'
+                        ),
                     const Gap(12),
                     AppTextFormField(
                       controller: _nameController,
@@ -93,7 +99,11 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                     const Gap(
                       20,
                     ),
-                    const RequiredText('Email'),
+                    RequiredText(
+                        navigatorKey.currentContext!.localizations.email
+
+                        // 'Email'
+                        ),
                     const Gap(
                       12,
                     ),
@@ -108,7 +118,11 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                     const Gap(
                       20,
                     ),
-                    const RequiredText('Password'),
+                    RequiredText(
+                        navigatorKey.currentContext!.localizations.password
+
+                        // 'Password'
+                        ),
                     const Gap(12),
                     AppTextFormField(
                       obscureText: !_showPassword,
@@ -150,7 +164,11 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                     ),
                   ),
                   const Gap(4),
-                  const AppText(text: 'Agree With'),
+                  AppText(
+                      text:
+                          navigatorKey.currentContext!.localizations.agree_with
+                      //  'Agree With'
+                      ),
                   SizedBox(
                     // color: Colors.amber,
                     width: 137,
@@ -158,7 +176,9 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                       style: TextButton.styleFrom(
                           padding: const EdgeInsets.all(0)),
                       child: AppText(
-                        text: 'Terms and Conditions',
+                        text: navigatorKey
+                            .currentContext!.localizations.terms_and_conditions,
+                        // 'Terms and Conditions',
                         decoration: TextDecoration.underline,
                         color: (ref.watch(themeProvider) == 'System' &&
                                     MediaQuery.platformBrightnessOf(context) ==
@@ -179,7 +199,8 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
               ),
               const Gap(30),
               AppGradientButton(
-                text: 'Sign Up',
+                text: navigatorKey.currentContext!.localizations.sign_up,
+                // 'Sign Up',
                 callback: () async {
                   setState(() {
                     _isLoading = true;
@@ -212,7 +233,9 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                       }
                     } else {
                       showInfoToast(
-                          "Please accept our Terms and Conditions to continue",
+                          navigatorKey.currentContext!.localizations
+                              .accept_terms_and_conditions,
+                          // "Please accept our Terms and Conditions to continue",
                           context: context);
                     }
                   }
@@ -226,7 +249,9 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                   const Expanded(child: Divider()),
                   const Gap(10),
                   AppText(
-                    text: 'Or Log In with',
+                    text: navigatorKey
+                        .currentContext!.localizations.or_log_in_with,
+                    // 'Or Log In with',
                     color: (ref.watch(themeProvider) == 'System' &&
                                 MediaQuery.platformBrightnessOf(context) ==
                                     Brightness.dark) ||
@@ -268,7 +293,11 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const AppText(text: "Already have an account?"),
+                  AppText(
+                      text: navigatorKey
+                          .currentContext!.localizations.already_have_an_account
+                      // "Already have an account?"
+                      ),
                   const Gap(3),
                   SizedBox(
                     height: 20,
@@ -284,7 +313,9 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                         return false;
                       }),
                       child: AppText(
-                        text: "Sign In",
+                        text: navigatorKey.currentContext!.localizations
+                            .sign_in_beginning_caps,
+                        //  "Sign In",
                         decoration: TextDecoration.underline,
                         color: (ref.watch(themeProvider) == 'System' &&
                                     MediaQuery.platformBrightnessOf(context) ==

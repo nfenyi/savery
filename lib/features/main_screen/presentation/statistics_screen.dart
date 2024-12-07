@@ -17,6 +17,7 @@ import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
+import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/features/sign_in/user_info/providers/providers.dart';
 
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -95,7 +96,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
           final amount = transaction.amount;
           final type = transaction.type;
 
-          if (type == 'Income') {
+          if (type == context.localizations.income) {
             _dayIncomeMap[hour] = {
               _amountString:
                   (_dayIncomeMap[hour]?[_amountString] ?? 0) + amount,
@@ -159,8 +160,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                   child: DropdownButton2<String>(
                     alignment: Alignment.center,
                     isExpanded: true,
-                    hint: const AppText(
-                      text: 'Accounts',
+                    hint: AppText(
+                      text: context.localizations.accounts,
+                      //  'Accounts',
                       overflow: TextOverflow.ellipsis,
                     ),
                     iconStyleData: const IconStyleData(
@@ -236,7 +238,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                     _getTransactionHour(transaction.date);
                                 final amount = transaction.amount;
                                 final type = transaction.type;
-                                if (type == 'Income') {
+                                if (type == context.localizations.income) {
                                   _dayIncomeMap[hour] = {
                                     _amountString: (_dayIncomeMap[hour]
                                                 ?[_amountString] ??
@@ -269,7 +271,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                           }
                           _transactionsHolder = _dayIncomeMap;
 
-                          _selectedSortBy == 'Sort by date';
+                          _selectedSortBy == context.localizations.sort_by_date;
                           _inIncomeView = true;
                         });
                       }
@@ -345,22 +347,26 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                 )
                               ]),
                           1: AppText(
-                            text: 'Day',
+                            text: context.localizations.day,
+                            //  'Day',
                             isWhite: _periodFilter == 1 ? true : false,
                           ),
                           2: AppText(
-                            text: 'Week',
+                            text: context.localizations.week,
+                            //  'Week',
                             isWhite: _periodFilter == 2 ? true : false,
                           ),
                           3: AppText(
-                            text: 'Month',
+                            text: context.localizations.month,
+                            // 'Month',
                             isWhite: _periodFilter == 3 ? true : false,
                           ),
                           4: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 AppText(
-                                  text: 'Year',
+                                  text: context.localizations.year,
+                                  // 'Year',
                                   isWhite: _periodFilter == 4 ? true : false,
                                 ),
                                 const Gap(4),
@@ -389,7 +395,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                           _getTransactionHour(transaction.date);
                                       final amount = transaction.amount;
                                       final type = transaction.type;
-                                      if (type == 'Income') {
+                                      if (type ==
+                                          context.localizations.income) {
                                         _dayIncomeMap[hour] = {
                                           _amountString: (_dayIncomeMap[hour]
                                                       ?[_amountString] ??
@@ -444,8 +451,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                         (transaction.date
                                                 .difference(_dateTimeNow) <
                                             const Duration(days: 7))) {
-                                      final day =
-                                          _getTransactionDay(transaction.date);
+                                      final day = _getTransactionDay(
+                                          transaction.date, context);
                                       final amount = transaction.amount;
                                       final type = transaction.type;
                                       if (type == 'Income') {
@@ -515,8 +522,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                       in _reversedTransactions!) {
                                     if (transaction.date.month ==
                                         _dateTimeNow.month) {
-                                      final week =
-                                          _getTransactionWeek(transaction.date);
+                                      final week = _getTransactionWeek(
+                                          transaction.date, context);
                                       final amount = transaction.amount;
                                       final type = transaction.type;
                                       if (type == 'Income') {
@@ -597,7 +604,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                         (transaction.date.year ==
                                             _dateTimeNow.year)) {
                                       final month = _getTransactionMonth(
-                                          transaction.date);
+                                          context, transaction.date);
                                       final amount = transaction.amount;
                                       final type = transaction.type;
                                       if (type == 'Income') {
@@ -787,15 +794,16 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Row(
+                              Row(
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Iconsax.arrow_down,
                                     color: AppColors.neutral500,
                                     size: 15,
                                   ),
                                   AppText(
-                                    text: 'Income',
+                                    text: context.localizations.income,
+                                    // 'Income',
                                     color: AppColors.neutral500,
                                   )
                                 ],
@@ -858,15 +866,16 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Row(
+                              Row(
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Iconsax.arrow_up_3,
                                     size: 15,
                                     color: AppColors.neutral500,
                                   ),
                                   AppText(
-                                    text: 'Expenses',
+                                    text: context.localizations.expenses,
+                                    // 'Expenses',
                                     color: AppColors.neutral500,
                                   )
                                 ],
@@ -936,8 +945,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton2<String>(
                               alignment: Alignment.centerRight,
-                              hint: const AppText(
-                                text: 'Sort by',
+                              hint: AppText(
+                                text: context.localizations.sort_by,
+                                //  'Sort by',
                                 // color: ((ref.watch(themeProvider) == 'System' ||
                                 //             ref.watch(themeProvider) ==
                                 //                 'Dark') &&
@@ -964,8 +974,10 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                 iconSize: 12.0,
                               ),
                               items: [
-                                'Sort by date',
-                                'Sort by categories',
+                                context.localizations.sort_by_date,
+                                context.localizations.sort_by_categories,
+                                // 'Sort by date',
+                                // 'Sort by categories',
                               ]
                                   .map((item) => DropdownMenuItem(
                                         value: item,
@@ -1038,7 +1050,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                 if (!_inIncomeView)
                   // if (_transactionsList != null && _transactionsList!.isNotEmpty)
                   if (_transactionsHolder.isNotEmpty)
-                    _selectedSortBy == 'Sort by categories'
+                    _selectedSortBy == context.localizations.sort_by_categories
+                        // 'Sort by categories'
                         ? SfCircularChart(
                             margin: const EdgeInsets.all(0),
                             // tooltipBehavior: TooltipBehavior(enable: true),
@@ -1088,7 +1101,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                     data.value[_amountString],
                                 pointColorMapper: (MapEntry data, _) =>
                                     getCategoryColor(
-                                        data.value[_categoryString].name),
+                                        data.value[_categoryString].name,
+                                        context),
                                 innerRadius: '40%',
                                 dataLabelSettings: DataLabelSettings(
                                     builder: (data, point, series, pointIndex,
@@ -1098,7 +1112,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                               '${(data.value[_amountString] / _periodFilter == 0 ? _overallIncome : _periodFilter == 1 ? _overallDayIncome : _periodFilter == 2 ? _overallWeekIncome : _periodFilter == 3 ? _overallMonthIncome : _overallYearIncome) * 100}%',
                                           size: AppSizes.bodySmall,
                                           color: getCategoryColor(
-                                              data.value[_categoryString].name),
+                                              data.value[_categoryString].name,
+                                              context),
                                         ),
                                     // dataLabelSettings:  DataLabelSettings(builder: (data, point, series, pointIndex, seriesIndex) => AppText(text: '${(data/{_selectedAccount!.expenses}) * 100}'),
                                     isVisible: true,
@@ -1177,14 +1192,16 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                         color: _inIncomeView
                                             ? ((ref.watch(themeProvider) ==
                                                         'System') &&
-                                                    (MediaQuery.platformBrightnessOf(
-                                                            context) ==
+                                                    (MediaQuery.platformBrightnessOf(context) ==
                                                         Brightness.dark))
                                                 ? AppColors.primaryDark
                                                     .withOpacity(0.1)
                                                 : AppColors.primary
                                                     .withOpacity(0.1)
-                                            : _selectedSortBy == 'Sort by date'
+                                            : _selectedSortBy ==
+                                                    context.localizations
+                                                        .sort_by_date
+                                                // 'Sort by date'
                                                 ? ((ref.watch(themeProvider) ==
                                                             'System') &&
                                                         (MediaQuery.platformBrightnessOf(
@@ -1194,9 +1211,11 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                                         .withOpacity(0.1)
                                                     : AppColors.primary
                                                         .withOpacity(0.1)
-                                                : getCategoryColor(transaction
-                                                        .value[_categoryString]
-                                                        .name)!
+                                                : getCategoryColor(
+                                                        transaction
+                                                            .value[_categoryString]
+                                                            .name,
+                                                        context)!
                                                     .withOpacity(0.1),
                                         child: _inIncomeView
                                             ? Icon(
@@ -1229,12 +1248,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                                         transaction
                                                             .value[
                                                                 _categoryString]
-                                                            .name),
+                                                            .name,
+                                                        context),
                                               )),
                                   ),
                                   title: AppText(
                                     text: _inIncomeView
-                                        ? "Income"
+                                        ? context.localizations.income
+                                        // "Income"
                                         : transaction
                                             .value[_categoryString].name,
                                   ),
@@ -1274,11 +1295,18 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                               AppText(
                                   text: _periodFilter == 0
                                       ? _inIncomeView
-                                          ? 'No Incomes'
-                                          : 'No Expenses'
+                                          ? context.localizations.no_incomes
+                                          // 'No Incomes'
+                                          : context.localizations.no_expenses
+                                      //  'No Expenses'
                                       : _inIncomeView
-                                          ? 'No Incomes during this period.'
-                                          : 'No Expenses during this period'),
+                                          ? context.localizations
+                                              .no_incomes_during_this_period
+                                          // 'No Incomes during this period.'
+                                          : context.localizations
+                                              .no_expenses_during_this_period
+                                  // 'No Expenses during this period'
+                                  ),
                               SizedBox(
                                 height: Adaptive.h(20),
                               )
@@ -1309,7 +1337,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                           ..duration = _animationController.duration
                           ..forward();
                       }, height: 180, fit: BoxFit.fill),
-                      const AppText(text: 'No transactions made yet'),
+                      AppText(text: context.localizations.no_transactions_yet
+                          //  'No transactions made yet'
+                          ),
                       SizedBox(
                         height: Adaptive.h(10),
                       )
@@ -1321,38 +1351,33 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
           );
   }
 
-  Color? getCategoryColor(String name) {
-    switch (name) {
-      case 'Gifts':
-        return Colors.orange[400];
-
-      case 'Health':
-        return Colors.green[400];
-      case 'Car':
-        return Colors.red;
-      case 'Game':
-        return Colors.teal;
-      case 'Cafe':
-        return Colors.blueGrey;
-
-      case 'Travel':
-        return Colors.brown;
-      case 'Utility':
-        return Colors.lime[800];
-      case 'Care':
-        return Colors.pink[400];
-      case 'Devices':
-        return Colors.blue[100];
-
-      case 'Food':
-        return AppColors.primaryDark;
-      case 'Shopping':
-        return Colors.blue[900];
-      case 'Transport':
-        return Colors.grey;
-
-      default:
-        return getRandomColor();
+  Color? getCategoryColor(String name, BuildContext context) {
+    if (name == context.localizations.gifts) {
+      return Colors.orange[400];
+    } else if (name == context.localizations.health) {
+      return Colors.green[400];
+    } else if (name == context.localizations.car) {
+      return Colors.red;
+    } else if (name == context.localizations.game) {
+      return Colors.teal;
+    } else if (name == context.localizations.cafe) {
+      return Colors.blueGrey;
+    } else if (name == context.localizations.travel) {
+      return Colors.brown;
+    } else if (name == context.localizations.utility) {
+      return Colors.lime[800];
+    } else if (name == context.localizations.care) {
+      return Colors.pink[400];
+    } else if (name == context.localizations.devices) {
+      return Colors.blue[100];
+    } else if (name == context.localizations.food) {
+      return AppColors.primaryDark;
+    } else if (name == context.localizations.shopping) {
+      return Colors.blue[900];
+    } else if (name == context.localizations.transport) {
+      return Colors.grey;
+    } else {
+      return getRandomColor();
     }
   }
 
@@ -1376,23 +1401,23 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
     }
   }
 
-  String _getTransactionDay(DateTime date) {
+  String _getTransactionDay(DateTime date, BuildContext context) {
     switch (date.weekday) {
       case 1:
-        return 'Mon';
+        return context.localizations.monday.substring(0, 3);
       case 2:
-        return 'Tue';
+        return context.localizations.tuesday.substring(0, 3);
       case 3:
-        return 'Wed';
+        return context.localizations.wednesday.substring(0, 3);
       case 4:
-        return 'Thu';
+        return context.localizations.thursday.substring(0, 3);
       case 5:
-        return 'Fri';
+        return context.localizations.friday.substring(0, 3);
       case 6:
-        return 'Sat';
+        return context.localizations.saturday.substring(0, 3);
 
       default:
-        return 'Sun';
+        return context.localizations.sunday.substring(0, 3);
     }
   }
 
@@ -1416,49 +1441,49 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
     }
   }
 
-  String _getTransactionWeek(DateTime date) {
+  String _getTransactionWeek(DateTime date, BuildContext context) {
     switch (date.day) {
       case < 8:
-        return 'Week 1';
+        return context.localizations.week1;
       case > 7 && < 15:
-        return 'Week 2';
+        return context.localizations.week2;
       case > 14 && < 22:
-        return 'Week 3';
+        return context.localizations.week3;
       case > 21 && < 29:
-        return 'Week 4';
+        return context.localizations.week4;
 
       default:
-        return 'Week 5';
+        return context.localizations.week5;
     }
   }
 
-  String _getTransactionMonth(DateTime date) {
+  String _getTransactionMonth(BuildContext context, DateTime date) {
     switch (date.month) {
       case 1:
-        return 'Jan';
+        return context.localizations.january.substring(0, 3);
       case 2:
-        return 'Feb';
+        return context.localizations.february.substring(0, 3);
       case 3:
-        return 'Mar';
+        return context.localizations.march.substring(0, 3);
       case 4:
-        return 'Apr';
+        return context.localizations.april.substring(0, 3);
       case 5:
-        return 'May';
+        return context.localizations.may.substring(0, 3);
       case 6:
-        return 'Jun';
+        return context.localizations.june.substring(0, 3);
       case 7:
-        return 'Jul';
+        return context.localizations.july.substring(0, 3);
       case 8:
-        return 'Aug';
+        return context.localizations.august.substring(0, 3);
       case 9:
-        return 'Sep';
+        return context.localizations.september.substring(0, 3);
       case 10:
-        return 'Oct';
+        return context.localizations.october.substring(0, 3);
       case 11:
-        return 'Nov';
+        return context.localizations.november.substring(0, 3);
 
       default:
-        return 'Dec';
+        return context.localizations.december.substring(0, 3);
     }
   }
 

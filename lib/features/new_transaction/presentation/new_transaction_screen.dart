@@ -16,6 +16,7 @@ import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_functions/app_functions.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/features/main_screen/state/bottom_nav_index_provider.dart';
 import 'package:savery/features/main_screen/state/rebuild_stats_screen_provider.dart';
 import 'package:savery/features/new_transaction/models/transaction_category_model.dart';
@@ -114,8 +115,9 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
             ),
           ),
         ),
-        title: const AppText(
-          text: 'New Transaction',
+        title: AppText(
+          text: context.localizations.new_transaction,
+          // 'New Transaction',
           weight: FontWeight.bold,
           size: AppSizes.bodySmall,
         ),
@@ -139,7 +141,8 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                     },
                     width: 130,
                     padding: const EdgeInsets.all(12),
-                    text: 'Income',
+                    text: context.localizations.income,
+                    //  'Income',
                     isSecondary: _selectedTransactionType == 'Expense',
                     textSize: 17,
                     iconFirst: true,
@@ -202,7 +205,10 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                   suffixIcon: AppText(text: _currency),
                                   validator: FormBuilderValidators.compose([
                                     FormBuilderValidators.required(
-                                        errorText: 'Provide figure')
+                                        errorText:
+                                            context.localizations.provide_figure
+                                        //  'Provide figure'
+                                        )
                                   ]),
                                 ),
                               ),
@@ -210,7 +216,8 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                 // fontWeight: FontWeight.bold,
                                 controller: _descriptionController,
                                 borderType: BorderType.underline,
-                                hintText: 'Description',
+                                hintText: context.localizations.description,
+                                // 'Description',
                                 hintStyleColor: Colors.grey,
                                 validator: FormBuilderValidators.compose(
                                     [FormBuilderValidators.required()]),
@@ -224,7 +231,8 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                           left: 12, right: 5),
                                       title: AppText(
                                         text: _selectedCategory == null
-                                            ? 'Category'
+                                            ? context.localizations.category
+                                            // 'Category'
                                             : _selectedCategory!.name,
                                         // weight: _selectedCategory == null
                                         //     ? null
@@ -293,9 +301,11 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                                         children: [
                                                           const SizedBox
                                                               .shrink(),
-                                                          const AppText(
-                                                            text:
-                                                                "Select the category",
+                                                          AppText(
+                                                            text: context
+                                                                .localizations
+                                                                .select_the_category,
+                                                            // "Select the category",
                                                             size: AppSizes
                                                                 .bodySmaller,
                                                             // weight: FontWeight.bold,
@@ -403,8 +413,9 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                     color: Colors.black,
                                   ),
                                   isExpanded: true,
-                                  hint: const AppText(
-                                    text: 'Select an account',
+                                  hint: AppText(
+                                    text: context.localizations.select_account,
+                                    // 'Select an account',
                                     overflow: TextOverflow.ellipsis,
                                     color: Colors.grey,
                                   ),
@@ -498,7 +509,8 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                               ListTile(
                                 title: Text(
                                   _selectedDate == null
-                                      ? 'Date'
+                                      ? context.localizations.date
+                                      // 'Date'
                                       : AppFunctions.formatDate(
                                           _selectedDate.toString(),
                                           format: 'j M Y, g:i A'),
@@ -576,7 +588,8 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                     Column(
                       children: [
                         AppGradientButton(
-                          text: 'Save',
+                          text: context.localizations.save,
+                          //  'Save',
                           callback: () async {
                             if (_formKey.currentState!.validate() &&
                                 _selectedAccountName != null &&
@@ -608,7 +621,10 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                   _categoryColor = Colors.red;
                                 });
                                 showInfoToast(
-                                    'Please create a ${_selectedCategory!.name} budget for this transaction for this account first.',
+                                    context.localizations
+                                        .please_create_budget_for_this_transactioin_first(
+                                            _selectedCategory!.name),
+                                    // 'Please create a ${_selectedCategory!.name} budget for this transaction for this account first.',
                                     context: context);
                               } else {
                                 await ref
@@ -637,7 +653,9 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                 setState(() {
                                   _accountNameColor = Colors.red;
                                 });
-                                showInfoToast('Please select an account',
+                                showInfoToast(
+                                    context.localizations.select_account,
+                                    // 'Please select an account',
                                     context: context);
                               } else {
                                 setState(() {
@@ -648,7 +666,9 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                 setState(() {
                                   _dateColor = Colors.red;
                                 });
-                                showInfoToast('Please pick a date',
+                                showInfoToast(
+                                    context.localizations.pick_a_date_info,
+                                    // 'Please pick a date',
                                     context: context);
                               } else {
                                 setState(() {
@@ -658,7 +678,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                             }
                           },
                         ),
-                        Gap(20),
+                        const Gap(20),
                       ],
                     ),
                   ],

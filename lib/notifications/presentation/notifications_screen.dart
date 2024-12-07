@@ -7,6 +7,7 @@ import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
 import 'package:lottie/lottie.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/features/sign_in/user_info/providers/providers.dart';
 import 'package:savery/main.dart';
 import 'package:savery/notifications/models/notification_model.dart';
@@ -52,8 +53,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
 
     return Scaffold(
         appBar: AppBar(
-          title: const AppText(
-            text: 'Notifications',
+          title: AppText(
+            text: navigatorKey.currentContext!.localizations.notifications,
+            //  'Notifications',
             weight: FontWeight.bold,
             size: AppSizes.bodySmall,
           ),
@@ -64,20 +66,28 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               Align(
                 alignment: Alignment.centerRight,
                 child: AppTextButton(
-                    text: 'Clear',
+                    text: navigatorKey.currentContext!.localizations.clear,
+                    // 'Clear',
                     isUnderlined: true,
                     callback: () async {
-                      await showAppInfoDialog(context, ref, isWarning: true,
-                          confirmCallbackFunction: () {
-                        setState(() {
-                          consumerUser.notifications?.clear();
-                        });
-                        navigatorKey.currentState!.pop();
-                      },
-                          title:
-                              'Are you sure you want to clear all current notifications?',
-                          cancelText: 'Cancel',
-                          confirmText: 'Yes');
+                      await showAppInfoDialog(
+                        context, ref, isWarning: true,
+                        confirmCallbackFunction: () {
+                          setState(() {
+                            consumerUser.notifications?.clear();
+                          });
+                          navigatorKey.currentState!.pop();
+                        },
+                        title: navigatorKey.currentContext!.localizations
+                            .clear_current_notifications_prompt,
+                        // 'Are you sure you want to clear all current notifications?',
+                        cancelText:
+                            navigatorKey.currentContext!.localizations.cancel,
+                        //  'Cancel',
+                        confirmText:
+                            navigatorKey.currentContext!.localizations.yes,
+                        // 'Yes'
+                      );
                     }),
               ),
             Expanded(
@@ -112,7 +122,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                                                   notification.sentTime!)
                                               .inDays ==
                                           1)
-                                      ? 'Yesterday'
+                                      ? navigatorKey.currentContext!
+                                          .localizations.yesterday
+                                      //  'Yesterday'
                                       : (dateTimeNow
                                                   .difference(
                                                       notification.sentTime!)
@@ -156,7 +168,11 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                       children: [
                         Lottie.asset(AppAssets.noNotifications, width: 150),
                         const Gap(10),
-                        const AppText(text: 'No notifications'),
+                        AppText(
+                          text: navigatorKey
+                              .currentContext!.localizations.no_notifications,
+                          // 'No notifications'
+                        ),
                       ],
                     )),
             ),

@@ -8,6 +8,7 @@ import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/features/main_screen/presentation/main_screen.dart';
 import 'package:savery/main.dart';
 
@@ -74,7 +75,8 @@ class _OTPScreenState extends State<OTPScreen> {
                 return false;
               });
             },
-            text: 'Skip',
+            text: navigatorKey.currentContext!.localizations.skip,
+            // 'Skip',
           ),
         ],
       ),
@@ -87,16 +89,18 @@ class _OTPScreenState extends State<OTPScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const AppText(
-                    text: 'ENTER CODE',
+                  AppText(
+                    text: navigatorKey.currentContext!.localizations.enter_code,
+                    // 'ENTER CODE',
                     color: AppColors.primary,
                     weight: FontWeight.bold,
                     size: AppSizes.heading6,
                   ),
                   const Gap(5),
-                  const AppText(
-                    text:
-                        "We've sent an SMS with an activation code to phone +374 99123 123",
+                  AppText(
+                    text: navigatorKey
+                        .currentContext!.localizations.sent_sms_prompt,
+                    // "We've sent an SMS with an activation code to phone +233 509 428 913",
                     // textAlign: TextAlign.left,
                     color: Colors.grey,
                   ),
@@ -114,7 +118,9 @@ class _OTPScreenState extends State<OTPScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       AppTextButton(
-                        text: 'Send code again',
+                        text: navigatorKey
+                            .currentContext!.localizations.send_code_again,
+                        //  'Send code again',
                         callback: _hasTimedOut ? () {} : null,
                         color: _hasTimedOut
                             ? AppColors.primary
@@ -140,7 +146,8 @@ class _OTPScreenState extends State<OTPScreen> {
                 ],
               ),
               AppGradientButton(
-                text: 'Verify',
+                text: navigatorKey.currentContext!.localizations.verify,
+                // 'Verify',
                 callback: () async {
                   User user = FirebaseAuth.instance.currentUser!;
 

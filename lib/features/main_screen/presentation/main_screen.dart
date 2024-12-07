@@ -13,11 +13,13 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
+import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/features/main_screen/state/bottom_nav_index_provider.dart';
 import 'package:savery/features/new_transaction/presentation/new_transaction_screen.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import '../../../app_constants/app_constants.dart';
 import '../../../app_widgets/widgets.dart';
+import '../../../main.dart';
 import '../../../themes/themes.dart';
 import '../app_background_check_provider/app_background_check_provider.dart';
 import '../state/rebuild_stats_screen_provider.dart';
@@ -149,15 +151,19 @@ class _MainScreenState extends ConsumerState<MainScreen>
             children: [
               AppText(
                 text: bottomNavIndex == 0
-                    ? "Hello, ${_userBox.values.firstWhere(
+                    ? "${context.localizations.hello}, ${_userBox.values.firstWhere(
                           (element) => element.uid == _appStateUid,
                         ).displayName}"
                     : bottomNavIndex == 1
-                        ? "Statistics"
+                        ? navigatorKey.currentContext!.localizations.statistics
+                        // "Statistics"
                         : bottomNavIndex == 3
-                            ? "Budgets"
+                            ? navigatorKey.currentContext!.localizations.budgets
+                            //  "Budgets"
                             : bottomNavIndex == 4
-                                ? 'Profile'
+                                ? navigatorKey
+                                    .currentContext!.localizations.profile
+                                // 'Profile'
                                 : "",
                 weight: FontWeight.bold,
                 color: bottomNavIndex != 4 ? null : Colors.white,
@@ -166,7 +172,9 @@ class _MainScreenState extends ConsumerState<MainScreen>
                     : AppSizes.bodySmall,
               ),
               bottomNavIndex == 0
-                  ? const AppText(text: 'Save for your goals!')
+                  ? AppText(text: context.localizations.save_for_your_goals
+                      // 'Save for your goals!'
+                      )
                   : const SizedBox.shrink()
             ],
           ),
@@ -252,19 +260,20 @@ class _MainScreenState extends ConsumerState<MainScreen>
                 color: AppColors.neutral500,
               ),
               items: [
-                const BottomNavigationBarItem(
-                  activeIcon: Icon(
-                    Icons.home_rounded,
-                    size: 27,
-                    // color: AppColors.primary,
-                  ),
-                  icon: Icon(
-                    Icons.home_outlined,
-                    size: 27,
-                    // color: Colors.transparent,
-                  ),
-                  label: 'Home',
-                ),
+                BottomNavigationBarItem(
+                    activeIcon: const Icon(
+                      Icons.home_rounded,
+                      size: 27,
+                      // color: AppColors.primary,
+                    ),
+                    icon: const Icon(
+                      Icons.home_outlined,
+                      size: 27,
+                      // color: Colors.transparent,
+                    ),
+                    label: context.localizations.home
+                    // 'Home',
+                    ),
                 BottomNavigationBarItem(
                   activeIcon: Iconify(
                     MaterialSymbols.insert_chart_rounded,
@@ -281,7 +290,8 @@ class _MainScreenState extends ConsumerState<MainScreen>
                     color: AppColors.neutral500,
                     size: 27,
                   ),
-                  label: 'Statistics',
+                  label: context.localizations.statistics,
+                  //  'Statistics',
                 ),
                 const BottomNavigationBarItem(
                   icon: Iconify(
@@ -290,18 +300,19 @@ class _MainScreenState extends ConsumerState<MainScreen>
                   ),
                   label: '',
                 ),
-                const BottomNavigationBarItem(
-                  activeIcon: Icon(
+                BottomNavigationBarItem(
+                  activeIcon: const Icon(
                     Icons.account_balance_wallet,
                     // color: AppColors.primary,
                   ),
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.account_balance_wallet_outlined,
                     // color: AppColors.neutral500,
                   ),
-                  label: 'Budgets',
+                  label: context.localizations.budgets,
+                  // 'Budgets',
                 ),
-                const BottomNavigationBarItem(
+                BottomNavigationBarItem(
                   activeIcon:
                       // (_userBox.values
                       //             .firstWhere(
@@ -343,7 +354,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
                       //         ],
                       //       )
                       //     :
-                      Icon(
+                      const Icon(
                     Icons.person,
                     // color: AppColors.primary,
                     size: 27,
@@ -390,8 +401,9 @@ class _MainScreenState extends ConsumerState<MainScreen>
                       //     ],
                       //   )
                       // :
-                      Icon(Iconsax.user),
-                  label: 'User',
+                      const Icon(Iconsax.user),
+                  label: navigatorKey.currentContext!.localizations.user,
+                  //  'User',
                 ),
               ],
             ),
@@ -406,7 +418,8 @@ class _MainScreenState extends ConsumerState<MainScreen>
             children: [
               const AppNameWidget(),
               AppText(
-                text: 'Simplify your expenses',
+                text: context.localizations.simplify_your_expenses,
+                // 'Simplify your expenses',
                 color: (ref.watch(themeProvider) == 'System' &&
                             MediaQuery.platformBrightnessOf(context) ==
                                 Brightness.dark) ||
@@ -416,7 +429,8 @@ class _MainScreenState extends ConsumerState<MainScreen>
               ),
               Gap(Adaptive.h(50)),
               AppTextButton(
-                  text: 'Unlock',
+                  text: context.localizations.unlock,
+                  // 'Unlock',
                   callback: () async {
                     await ref
                         .read(appBackgroundCheckProvider.notifier)
@@ -440,7 +454,7 @@ class PlaceholderWidget extends ConsumerWidget {
     Future.delayed(const Duration(milliseconds: 500), () {
       ref.read(bottomNavIndexProvider.notifier).updateIndex(1);
     });
-    return const SafeArea(
+    return SafeArea(
         child: Column(
       children: [
         Expanded(
@@ -449,7 +463,13 @@ class PlaceholderWidget extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: [AppLoader(), Gap(10), AppText(text: 'Loading...')],
+              children: [
+                const AppLoader(),
+                const Gap(10),
+                AppText(text: context.localizations.loading
+                    //  'Loading...'
+                    )
+              ],
             ),
           ),
         ),

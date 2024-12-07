@@ -18,6 +18,7 @@ import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_functions/app_functions.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart' as widgets;
+import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/features/transactions/presentation/transactions_screen.dart';
 import 'package:savery/main.dart';
 
@@ -122,11 +123,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Gap(20),
-        const Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: AppSizes.horizontalPaddingSmall),
+        Padding(
+          padding: const EdgeInsets.symmetric(
+              horizontal: AppSizes.horizontalPaddingSmall),
           child: AppText(
-            text: 'Accounts',
+            text: context.localizations.accounts,
+            // 'Accounts',
             size: AppSizes.bodySmall,
             weight: FontWeight.bold,
           ),
@@ -172,8 +174,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     // size: 5,
                                   ),
                                   const Gap(10),
-                                  const AppText(
-                                      text: 'Tap here to create an account.')
+                                  AppText(
+                                    text: context.localizations
+                                        .tap_here_to_create_an_account,
+                                    // 'Tap here to create an account.'
+                                  )
                                 ],
                               ),
                             ),
@@ -265,8 +270,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const AppText(
-                    text: 'Transactions',
+                  AppText(
+                    text: context.localizations.transactions,
+                    // 'Transactions',
                     weight: FontWeight.bold,
                     size: AppSizes.bodySmall,
                   ),
@@ -279,7 +285,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           child: child!);
                     },
                     child: widgets.AppTextButton(
-                        text: 'View All',
+                        text: context.localizations.view_all,
+                        //  'View All',
                         callback: () async {
                           await navigatorKey.currentState!
                               .push(MaterialPageRoute(
@@ -305,7 +312,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ? AppFunctions.formatDate(_dateHolder.toString(),
                               format: r'g:i A')
                           : (dateTimeNow.weekday - _dateHolder!.weekday == 1)
-                              ? 'Yesterday'
+                              ? context.localizations.yesterday
+                              // 'Yesterday'
                               : (dateTimeNow.difference(_dateHolder!).inDays >
                                       7)
                                   ? AppFunctions.formatDate(
@@ -388,7 +396,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                             title: AppText(
                                 text: transaction.type == 'Income'
-                                    ? "Income"
+                                    ? context.localizations.income
+                                    // "Income"
                                     : transaction.category!.name),
                             subtitle: AppText(
                               text: transaction.description,
@@ -474,9 +483,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       children: [
                         Lottie.asset(AppAssets.emptyList, height: 200),
                         (value != null)
-                            ? const AppText(
-                                text:
-                                    'Tap on the + button to add a  transaction.')
+                            ? AppText(
+                                text: context
+                                    .localizations.tap_add_transaction_button,
+                                // 'Tap on the + button to add a transaction.',
+                              )
                             : const AppText(text: 'No transactions yet.'),
                         Gap(Adaptive.h(20)),
                       ],
@@ -504,11 +515,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const RequiredText('Name of Account'),
+                  RequiredText(
+                    context.localizations.name_of_account_title,
+                    // 'Name of Account'
+                  ),
                   const Gap(12),
                   AppTextFormField(
                     controller: _nameController,
-                    hintText: 'eg. Primary',
+                    hintText: 'eg. ${context.localizations.primary}',
                     validator: FormBuilderValidators.compose([
                       FormBuilderValidators.required(),
                     ]),
@@ -558,11 +572,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const RequiredText('Name of Account'),
+                  RequiredText(
+                    context.localizations.name_of_account_title,
+                    // 'Name of Account'
+                  ),
                   const Gap(12),
                   AppTextFormField(
                     controller: _nameController,
-                    hintText: 'eg. Primary',
+                    hintText: 'eg. ${context.localizations.primary}',
                     validator: FormBuilderValidators.compose([
                       FormBuilderValidators.required(),
                     ]),
@@ -589,7 +606,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   }
                 },
                 child: AppText(
-                  text: 'OK',
+                  text: context.localizations.ok,
                   color: (ref.watch(themeProvider) == 'System' &&
                               MediaQuery.platformBrightnessOf(context) ==
                                   Brightness.dark) ||

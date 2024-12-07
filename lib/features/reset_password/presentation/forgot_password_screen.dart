@@ -6,6 +6,7 @@ import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/features/reset_password/presentation/resend_reset_link_screen.dart';
 import 'package:savery/features/sign_in/providers/providers.dart';
 import 'package:savery/main.dart';
@@ -41,7 +42,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AppText(
-                      text: 'Forgot Password?',
+                      text: navigatorKey
+                          .currentContext!.localizations.forgot_password,
+                      //  'Forgot Password?',
                       color: (ref.watch(themeProvider) == 'System' &&
                                   MediaQuery.platformBrightnessOf(context) ==
                                       Brightness.dark) ||
@@ -52,14 +55,18 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       size: AppSizes.heading6,
                     ),
                     const Gap(5),
-                    const AppText(
-                      text:
-                          'We will send you a reset link. Make sure the email you provide is the same as the one used to create your account.',
+                    AppText(
+                      text: navigatorKey.currentContext!.localizations
+                          .reset_link_sending_notice,
+                      // 'We will send you a reset link. Make sure the email you provide is the same as the one used to create your account.',
                       // textAlign: TextAlign.left,
                       // color: Colors.grey,
                     ),
                     const Gap(30),
-                    const RequiredText('Email'),
+                    RequiredText(
+                      navigatorKey.currentContext!.localizations.email,
+                      // 'Email'
+                    ),
                     const Gap(12),
                     Form(
                       key: _formKey,
@@ -78,7 +85,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 Column(
                   children: [
                     AppGradientButton(
-                      text: 'Send',
+                      text: navigatorKey.currentContext!.localizations.send,
+                      //  'Send',
                       isLoading: _isLoading,
                       callback: () async {
                         if (_formKey.currentState!.validate()) {
@@ -88,9 +96,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
                           await ref
                               .read(authStateProvider.notifier)
-                              .sendResetLink(_emailController.text.trim(), ref)
-                              .timeout(const Duration(seconds: 20),
-                                  onTimeout: () => 'timeout');
+                              .sendResetLink(_emailController.text.trim(), ref);
+                          // .timeout(const Duration(seconds: 20),
+                          //     onTimeout: () => 'timeout');
                           setState(() {
                             _isLoading = false;
                           });

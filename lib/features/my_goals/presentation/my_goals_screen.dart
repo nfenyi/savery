@@ -19,6 +19,7 @@ import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_functions/app_functions.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/main.dart';
 
 import '../../../app_widgets/app_text.dart';
@@ -50,7 +51,7 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
   late List<ValueNotifier<bool>> _showDaysMoreList;
   late List<ValueNotifier<double>> _goalAmountList;
   final _milestoneController = TextEditingController();
-  final _appStateUid = Hive.box(AppBoxes.users).get('currentUser');
+  final _appStateUid = Hive.box(AppBoxes.appState).get('currentUser');
 
   DateTime? _selectedDate;
 
@@ -68,8 +69,11 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
         .toList();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.account != null && _selectedAccount.balance < 0) {
-        showInfoToast('Reduce some milestones to reduce account deficit',
-            context: navigatorKey.currentState!.context);
+        showInfoToast(
+            navigatorKey
+                .currentContext!.localizations.reduce_milestones_toast_info,
+            // 'Reduce some milestones to reduce account deficit',
+            context: navigatorKey.currentContext);
       }
     });
   }
@@ -104,8 +108,9 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
     //     List.filled(_selectedAccount.goals?.length ?? 0, ValueNotifier(true));
     return Scaffold(
         appBar: AppBar(
-          title: const AppText(
-            text: 'My Goals',
+          title: AppText(
+            text: context.localizations.my_goals,
+            //  'My Goals',
             weight: FontWeight.bold,
             size: AppSizes.bodySmall,
           ),
@@ -126,8 +131,9 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                           : Colors.black,
                     ),
                     isExpanded: true,
-                    hint: const AppText(
-                      text: 'Select an account',
+                    hint: AppText(
+                      text: context.localizations.select_account,
+                      // 'Select an account',
                       overflow: TextOverflow.ellipsis,
                       color: Colors.grey,
                     ),
@@ -217,7 +223,10 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                   children: [
                     Row(
                       children: [
-                        const AppText(text: 'Savings Bucket:'),
+                        AppText(
+                          text: '${context.localizations.savings_bucket}:',
+                          // 'Savings Bucket:'
+                        ),
                         const Gap(10),
                         AppText(
                             text:
@@ -289,11 +298,11 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                             color: Colors.green,
                             borderType: d_border.BorderType.RRect,
                             radius: const Radius.circular(10),
-                            child: const Row(
+                            child: Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.add_circle,
                                   // color:
                                   //     ((ref.watch(themeProvider) == 'System' ||
@@ -307,9 +316,10 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                                   color: Colors.green,
                                   // size: 5,
                                 ),
-                                Gap(5),
+                                const Gap(5),
                                 AppText(
-                                  text: 'Create New Goal',
+                                  text: context.localizations.create_new_goal,
+                                  // 'Create New Goal',
                                   weight: FontWeight.bold,
                                   size: AppSizes.heading6,
                                 ),
@@ -486,7 +496,8 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                                                                         TextDecoration
                                                                             .underline,
                                                                     text: value
-                                                                        ? '$daysMore days more'
+                                                                        ? '$daysMore ${context.localizations.days_more}'
+                                                                        // '$daysMore days more'
                                                                         : AppFunctions.formatDate(
                                                                             goal.estimatedDate
                                                                                 .toString(),
@@ -629,7 +640,9 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const RequiredText('Goal'),
+                    RequiredText(context.localizations.goal
+                        // 'Goal'
+                        ),
                     const Gap(12),
                     AppTextFormField(
                       controller: _goalNameController,
@@ -639,7 +652,9 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                       ]),
                     ),
                     const Gap(12),
-                    const RequiredText('Amount'),
+                    RequiredText(context.localizations.amount
+                        // 'Amount'
+                        ),
                     const Gap(12),
                     AppTextFormField(
                       controller: _goalFundController,
@@ -655,7 +670,9 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                       ]),
                     ),
                     const Gap(12),
-                    const RequiredText('Estimated Date'),
+                    RequiredText(context.localizations.estimated_date
+                        // 'Estimated Date'
+                        ),
                     const Gap(12),
                     Container(
                       decoration: BoxDecoration(
@@ -667,7 +684,8 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                       child: ListTile(
                         title: Text(
                           _selectedDate == null
-                              ? 'Date'
+                              ? context.localizations.date
+                              //  'Date'
                               : AppFunctions.formatDate(
                                   _selectedDate.toString(),
                                   format: 'j M Y, g:i A'),
@@ -721,12 +739,13 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                               // boardTitle: "Select 'TODAY' or '",
                               // boardTitleTextStyle: TextStyle(fontWeight: FontWeight.w400),
                               inputable: false,
-                              pickerSubTitles: const BoardDateTimeItemTitles(
-                                year: 'Year',
-                                // day: 'd',
-                                // hour: 'h',
-                                // minute: 'm',
-                              ),
+                              pickerSubTitles: BoardDateTimeItemTitles(
+                                  year: context.localizations.year
+                                  // 'Year',
+                                  // day: 'd',
+                                  // hour: 'h',
+                                  // minute: 'm',
+                                  ),
                             ),
                             context: context,
                             pickerType: DateTimePickerType.datetime,
@@ -766,7 +785,8 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                   }
                 },
                 child: AppText(
-                  text: 'OK',
+                  text: context.localizations.ok,
+                  //  'OK',
                   color: (ref.watch(themeProvider) == 'System' &&
                               MediaQuery.platformBrightnessOf(context) ==
                                   Brightness.dark) ||
@@ -790,17 +810,22 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const RequiredText('Goal'),
+                    RequiredText(context.localizations.goal
+                        // 'Goal'
+                        ),
                     const Gap(12),
                     AppTextFormField(
                       controller: _goalNameController,
-                      hintText: 'New Car, Pay Debt, etc',
+                      hintText: context.localizations.goal_hint,
+                      // 'New Car, Pay Debt, etc',
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.required(),
                       ]),
                     ),
                     const Gap(12),
-                    const RequiredText('Fund'),
+                    RequiredText(context.localizations.fund
+                        // 'Fund'
+                        ),
                     const Gap(12),
                     AppTextFormField(
                       controller: _goalFundController,
@@ -816,7 +841,9 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                       ]),
                     ),
                     const Gap(12),
-                    const RequiredText('Estimated Date'),
+                    RequiredText(context.localizations.estimated_date
+                        // 'Estimated Date'
+                        ),
                     const Gap(12),
                     Container(
                       decoration: BoxDecoration(
@@ -828,7 +855,8 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                       child: ListTile(
                         title: Text(
                           _selectedDate == null
-                              ? 'Date'
+                              ? context.localizations.date
+                              // 'Date'
                               : AppFunctions.formatDate(
                                   _selectedDate.toString(),
                                   format: 'j M Y, g:i A'),
@@ -882,12 +910,13 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                               // boardTitle: "Select 'TODAY' or '",
                               // boardTitleTextStyle: TextStyle(fontWeight: FontWeight.w400),
                               inputable: false,
-                              pickerSubTitles: const BoardDateTimeItemTitles(
-                                year: 'Year',
-                                // day: 'd',
-                                // hour: 'h',
-                                // minute: 'm',
-                              ),
+                              pickerSubTitles: BoardDateTimeItemTitles(
+                                  year: context.localizations.year
+                                  //  'Year',
+                                  // day: 'd',
+                                  // hour: 'h',
+                                  // minute: 'm',
+                                  ),
                             ),
                             context: context,
                             pickerType: DateTimePickerType.datetime,
@@ -918,7 +947,8 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                   }
                 },
                 child: AppText(
-                  text: 'OK',
+                  text: context.localizations.ok,
+                  //  'OK',
                   color: (ref.watch(themeProvider) == 'System' &&
                               MediaQuery.platformBrightnessOf(context) ==
                                   Brightness.dark) ||
@@ -954,7 +984,10 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const RequiredText('Goal'),
+                    RequiredText(
+                      context.localizations.goal,
+                      // 'Goal'
+                    ),
                     const Gap(12),
                     AppTextFormField(
                       controller: _goalNameController,
@@ -964,7 +997,9 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                       ]),
                     ),
                     const Gap(12),
-                    const RequiredText('Amount'),
+                    RequiredText(context.localizations.amount
+                        // 'Amount'
+                        ),
                     const Gap(12),
                     AppTextFormField(
                       controller: _milestoneController,
@@ -980,7 +1015,9 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                       ]),
                     ),
                     const Gap(12),
-                    const RequiredText('Estimated Date'),
+                    RequiredText(context.localizations.estimated_date
+                        // 'Estimated Date'
+                        ),
                     const Gap(12),
                     Container(
                       decoration: BoxDecoration(
@@ -992,7 +1029,8 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                       child: ListTile(
                         title: Text(
                           _selectedDate == null
-                              ? 'Date'
+                              ? context.localizations.date
+                              // 'Date'
                               : AppFunctions.formatDate(
                                   _selectedDate.toString(),
                                   format: 'j M Y, g:i A'),
@@ -1040,8 +1078,9 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                               // boardTitle: "Select 'TODAY' or '",
                               // boardTitleTextStyle: TextStyle(fontWeight: FontWeight.w400),
                               inputable: false,
-                              pickerSubTitles: const BoardDateTimeItemTitles(
-                                year: 'Year',
+                              pickerSubTitles: BoardDateTimeItemTitles(
+                                year: context.localizations.year,
+                                // 'Year',
                                 // day: 'd',
                                 // hour: 'h',
                                 // minute: 'm',
@@ -1078,7 +1117,9 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                   }
                 },
                 child: AppText(
-                  text: 'Update',
+                  text: context.localizations.update
+                  // 'Update'
+                  ,
                   color: (ref.watch(themeProvider) == 'System' &&
                               MediaQuery.platformBrightnessOf(context) ==
                                   Brightness.dark) ||
@@ -1105,7 +1146,9 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const RequiredText('Milestone'),
+                        RequiredText(context.localizations.milestone
+                            // 'Milestone'
+                            ),
                         InkWell(
                           onTap: () async => await _showDeleteDialog(goal),
                           child: Ink(
@@ -1153,11 +1196,15 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                         (parsedInput - goal.raisedAmount).abs();
                     if (parsedInput > goal.raisedAmount) {
                       if (consumerSavingsBucket == 0) {
-                        showInfoToast('Your savings bucket is currently empty',
+                        showInfoToast(
+                            context.localizations.empty_bucket_toast_info,
+                            // 'Your savings bucket is currently empty',
                             context: context);
                       } else if (consumerSavingsBucket < difference) {
                         showInfoToast(
-                            'Your increment is more than what the savings bucket can provide',
+                            context.localizations
+                                .increment_is_more_than_backet_info,
+                            // 'Your increment is more than what the savings bucket can provide',
                             context: context);
                       } else if (consumerSavingsBucket >= difference) {
                         await ref.read(userProvider.notifier).increaseMilestone(
@@ -1178,7 +1225,8 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                   }
                 },
                 child: AppText(
-                  text: 'Update',
+                  text: context.localizations.update,
+                  //  'Update',
                   color: (ref.watch(themeProvider) == 'System' &&
                               MediaQuery.platformBrightnessOf(context) ==
                                   Brightness.dark) ||

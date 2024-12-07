@@ -10,6 +10,7 @@ import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/features/reset_password/presentation/forgot_password_screen.dart';
 import 'package:savery/features/sign_in/models/auth_state.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
@@ -58,7 +59,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               children: [
                 const AppNameWidget(),
                 AppText(
-                  text: 'Simplify your expenses',
+                  text: context.localizations.simplify_your_expenses,
+                  //  'Simplify your expenses',
                   color: (ref.watch(themeProvider) == 'System' &&
                               MediaQuery.platformBrightnessOf(context) ==
                                   Brightness.dark) ||
@@ -68,7 +70,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 ),
                 const Gap(20),
                 AppText(
-                  text: 'SIGN IN',
+                  text: context.localizations.sign_in_caps,
+                  //  'SIGN IN',
                   color: (ref.watch(themeProvider) == 'System' &&
                               MediaQuery.platformBrightnessOf(context) ==
                                   Brightness.dark) ||
@@ -87,7 +90,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const RequiredText('Email'),
+                RequiredText(navigatorKey.currentContext!.localizations.email
+                    // 'Email'
+                    ),
                 const Gap(12),
                 AppTextFormField(
                     controller: _emailController,
@@ -100,7 +105,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 const Gap(
                   20,
                 ),
-                const RequiredText('Password'),
+                RequiredText(navigatorKey.currentContext!.localizations.password
+                    // 'Password'
+                    ),
                 const Gap(12),
                 AppTextFormField(
                   controller: _passwordController,
@@ -131,7 +138,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             alignment: Alignment.centerRight,
             child: TextButton(
               child: AppText(
-                text: 'Forgot Password?',
+                text: navigatorKey.currentContext!.localizations.forgot_password
+                //  'Forgot Password?'
+                ,
                 decoration: TextDecoration.underline,
                 color: (ref.watch(themeProvider) == 'System' &&
                             MediaQuery.platformBrightnessOf(context) ==
@@ -150,7 +159,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
           const Gap(30),
           AppGradientButton(
               isLoading: _isLoading,
-              text: 'Sign In',
+              text: navigatorKey
+                  .currentContext!.localizations.sign_in_beginning_caps,
+              // 'Sign In',
               callback: () async {
                 if (_formKey.currentState!.validate()) {
                   setState(() {
@@ -189,7 +200,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               const Expanded(child: Divider()),
               const Gap(10),
               AppText(
-                text: 'Or Log In with',
+                text: navigatorKey.currentContext!.localizations.or_log_in_with,
+                //  'Or Log In with',
                 color: (ref.watch(themeProvider) == 'System' &&
                             MediaQuery.platformBrightnessOf(context) ==
                                 Brightness.dark) ||
@@ -269,7 +281,12 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               //TODO:Implement apple account log in later
               CircularIconButton(
                 callback: () {
-                  showInfoToast('Coming soon.', context: context);
+                  showInfoToast(
+                      navigatorKey
+                          .currentContext!.localizations.coming_soon_toast_info
+                      // 'Coming soon.'
+                      ,
+                      context: context);
                 },
                 icon: FontAwesomeIcons.apple,
                 color: (ref.watch(themeProvider) == 'System' &&
@@ -285,7 +302,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const AppText(text: "Don't have an account?"),
+              AppText(
+                  text: navigatorKey
+                      .currentContext!.localizations.dont_have_an_account
+                  //  "Don't have an account?"
+                  ),
               SizedBox(
                 height: 20,
                 width: 47,
@@ -297,7 +318,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     ));
                   },
                   child: AppText(
-                    text: "Sign Up",
+                    text: navigatorKey
+                        .currentContext!.localizations.sign_in_beginning_caps,
+                    //  "Sign Up",
                     decoration: TextDecoration.underline,
                     color: (ref.watch(themeProvider) == 'System' &&
                                 MediaQuery.platformBrightnessOf(context) ==
