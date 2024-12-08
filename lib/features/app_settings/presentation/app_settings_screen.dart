@@ -216,6 +216,7 @@ class LanguageDropdownButton extends ConsumerWidget {
         onChanged: (value) async {
           if (value != null && value != ref.watch(languageProvider)) {
             await ref.read(languageProvider.notifier).changeLanguage(value);
+
             await Restart.restartApp(
               // Customizing the notification message only on iOS
               notificationTitle: 'Restarting App',

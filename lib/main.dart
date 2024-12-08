@@ -80,7 +80,7 @@ class Savery extends StatelessWidget {
       return Consumer(
         builder: (context, ref, child) {
           var theme = ref.watch(themeProvider);
-          logger.d(ref.read(languageProvider));
+
           return GetMaterialApp(
             debugShowCheckedModeBanner: false,
             builder: FToastBuilder(),

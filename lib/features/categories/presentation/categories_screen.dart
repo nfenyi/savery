@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:gap/gap.dart';
 import 'package:iconify_flutter/icons/heroicons.dart';
+import 'package:iconify_flutter/icons/la.dart';
 import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
 import 'package:iconify_flutter_plus/icons/ic.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -158,7 +159,7 @@ class CategoriesScreen extends ConsumerWidget {
                             child: GridView.builder(
                               padding: const EdgeInsets.symmetric(
                                   vertical: 15, horizontal: 10),
-                              itemCount: Heroicons.iconsList.length,
+                              itemCount: La.iconsList.length,
                               gridDelegate:
                                   const SliverGridDelegateWithMaxCrossAxisExtent(
                                       maxCrossAxisExtent: 30,
@@ -205,7 +206,7 @@ class CategoriesScreen extends ConsumerWidget {
                                                           Brightness.dark))
                                                   ? AppColors.primaryDark
                                                   : AppColors.primary
-                                              : null,
+                                              : AppColors.neutral600,
                                           size: 7,
                                         ),
                                       ),

@@ -60,7 +60,7 @@
   "@theme": {
     "description": "Color theme"
   },
-  "enable_biometrics": "Enable biometrics",
+  "enable_biometrics": "Enable biometrics (experimental)",
   "@enable_biometrics": {
     "description": "Enable biometrics listtile title"
   },
@@ -153,9 +153,25 @@
   "@create_an_expense_budget_first_toast_info": {
     "description": "Create an expense budget first toast info"
   },
+  "expense": "Expense",
+  "@expense": {
+    "description": "Expense"
+  },
   "my_savings": "My Savings",
   "@my_savings": {
     "description": "My savings"
+  },
+  "now": "Now",
+  "@now": {
+    "description": "Now"
+  },
+  "tomorrow": "Tomorrow",
+  "@tomorrow": {
+    "description": "Tomorrow"
+  },
+  "today": "Today",
+  "@today": {
+    "description": "Today"
   },
   "budgets": "Budgets",
   "@budgets": {
@@ -176,6 +192,14 @@
   "year": "Year",
   "@year": {
     "description": "Year"
+  },
+  "hour": "Hour",
+  "@hour": {
+    "description": "Hour"
+  },
+  "minute": "Minute",
+  "@minute": {
+    "description": "Minute"
   },
   "my_expense_budgets": "My Expense Budgets",
   "@my_expense_budgets": {

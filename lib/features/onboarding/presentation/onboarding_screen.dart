@@ -87,7 +87,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             callback: () async {
               await _appStateBox.putAll({
                 'onboarded': true,
-                'ratesAccessKey': 'HnNsFpw2Om2KmajL2lcpMUdlPv6TM2EF'
+                'ratesAccessKey': 'M2KtcVAx901sgSFPG0Kq0SKDO7Wp37ZQ'
               });
               await _transactionCategoriesBox.addAll([
                 TransactionCategory(
@@ -405,7 +405,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     } else {
                       await _appStateBox.putAll({
                         'onboarded': true,
-                        'ratesAccessKey': 'HnNsFpw2Om2KmajL2lcpMUdlPv6TM2EF'
+                        'ratesAccessKey': 'M2KtcVAx901sgSFPG0Kq0SKDO7Wp37ZQ'
                       });
                       await _transactionCategoriesBox.addAll([
                         TransactionCategory(

@@ -24,6 +24,7 @@ import 'package:savery/main.dart';
 
 import '../../../app_widgets/app_text.dart';
 import '../../../themes/themes.dart';
+import '../../main_screen/state/localization.dart';
 import '../../sign_in/user_info/models/user_model.dart';
 import '../../sign_in/user_info/providers/providers.dart';
 
@@ -361,9 +362,9 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(10),
                                         border: Border.all(
-                                          width: 1.0,
-                                          color: AppColors.neutral300,
-                                        ),
+                                            width: 1.0,
+                                            // color: AppColors.neutral300,
+                                            color: Colors.green.shade100),
                                       ),
                                       child: Row(
                                         children: [
@@ -719,6 +720,15 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                             },
                             showDragHandle: true,
                             options: BoardDateTimeOptions(
+                              languages: BoardPickerLanguages(
+                                  now: context.localizations.now,
+                                  today: context.localizations.today,
+                                  yesterday: context.localizations.yesterday,
+                                  tomorrow: context.localizations.tomorrow,
+                                  locale:
+                                      ref.watch(languageProvider) == 'Français'
+                                          ? 'fr'
+                                          : 'en'),
                               activeColor: ((ref.watch(themeProvider) ==
                                               'System' ||
                                           ref.watch(themeProvider) == 'Dark') &&
@@ -740,12 +750,11 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                               // boardTitleTextStyle: TextStyle(fontWeight: FontWeight.w400),
                               inputable: false,
                               pickerSubTitles: BoardDateTimeItemTitles(
-                                  year: context.localizations.year
-                                  // 'Year',
-                                  // day: 'd',
-                                  // hour: 'h',
-                                  // minute: 'm',
-                                  ),
+                                year: context.localizations.year,
+                                day: context.localizations.day,
+                                hour: context.localizations.hour,
+                                minute: context.localizations.minute,
+                              ),
                             ),
                             context: context,
                             pickerType: DateTimePickerType.datetime,
@@ -890,6 +899,15 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                             },
                             showDragHandle: true,
                             options: BoardDateTimeOptions(
+                              languages: BoardPickerLanguages(
+                                  now: context.localizations.now,
+                                  today: context.localizations.today,
+                                  yesterday: context.localizations.yesterday,
+                                  tomorrow: context.localizations.tomorrow,
+                                  locale:
+                                      ref.watch(languageProvider) == 'Français'
+                                          ? 'fr'
+                                          : 'en'),
                               activeColor: ((ref.watch(themeProvider) ==
                                               'System' ||
                                           ref.watch(themeProvider) == 'Dark') &&
@@ -911,12 +929,11 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                               // boardTitleTextStyle: TextStyle(fontWeight: FontWeight.w400),
                               inputable: false,
                               pickerSubTitles: BoardDateTimeItemTitles(
-                                  year: context.localizations.year
-                                  //  'Year',
-                                  // day: 'd',
-                                  // hour: 'h',
-                                  // minute: 'm',
-                                  ),
+                                year: context.localizations.year,
+                                day: context.localizations.day,
+                                hour: context.localizations.hour,
+                                minute: context.localizations.minute,
+                              ),
                             ),
                             context: context,
                             pickerType: DateTimePickerType.datetime,
@@ -1058,6 +1075,15 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                             },
                             showDragHandle: true,
                             options: BoardDateTimeOptions(
+                              languages: BoardPickerLanguages(
+                                  now: context.localizations.now,
+                                  today: context.localizations.today,
+                                  yesterday: context.localizations.yesterday,
+                                  tomorrow: context.localizations.tomorrow,
+                                  locale:
+                                      ref.watch(languageProvider) == 'Français'
+                                          ? 'fr'
+                                          : 'en'),
                               activeColor: ((ref.watch(themeProvider) ==
                                               'System' ||
                                           ref.watch(themeProvider) == 'Dark') &&
@@ -1080,10 +1106,9 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                               inputable: false,
                               pickerSubTitles: BoardDateTimeItemTitles(
                                 year: context.localizations.year,
-                                // 'Year',
-                                // day: 'd',
-                                // hour: 'h',
-                                // minute: 'm',
+                                day: context.localizations.day,
+                                hour: context.localizations.hour,
+                                minute: context.localizations.minute,
                               ),
                             ),
                             context: context,

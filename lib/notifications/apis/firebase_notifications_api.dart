@@ -112,10 +112,17 @@ Future<void> handleMessage(RemoteMessage? message) async {
         sentTime: message.sentTime,
         data: message.data));
   } else {
-    userNotifications = HiveList(notificationsBox, objects: [
-      //in case some general messages came in while  the user was signed out, meaning these messages are for everyone
-      ...notificationsBox.values, newNotification
-    ]);
+    // userNotifications = HiveList(notificationsBox, objects: [
+    //   //in case some general messages came in while  the user was signed out, meaning these messages are for everyone
+    //   ...notificationsBox.values, newNotification
+    // ]);
+    await notificationsBox.add(newNotification);
+    userNotifications = HiveList(notificationsBox);
+    userNotifications.add(newNotification);
+    final boxNotifications = notificationsBox.values.toList();
+    boxNotifications.removeLast();
+    await notificationsBox.clear();
+    await notificationsBox.addAll(boxNotifications);
   }
   await user.save();
   if (Hive.box(AppBoxes.appState).get('authenticated')) {

@@ -26,6 +26,7 @@ import 'package:savery/main.dart';
 
 import '../../../app_constants/app_sizes.dart';
 import '../../../themes/themes.dart';
+import '../../main_screen/state/localization.dart';
 
 class NewTransactionScreen extends ConsumerStatefulWidget {
   const NewTransactionScreen({
@@ -165,7 +166,7 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                     },
                     borderRadius: 15,
                     padding: const EdgeInsets.all(12),
-                    text: 'Expense',
+                    text: context.localizations.expense,
                     isSecondary: _selectedTransactionType == 'Income',
                     width: 130,
                     textSize: 17,
@@ -540,6 +541,17 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                     },
                                     showDragHandle: true,
                                     options: BoardDateTimeOptions(
+                                      languages: BoardPickerLanguages(
+                                          now: context.localizations.now,
+                                          today: context.localizations.today,
+                                          yesterday:
+                                              context.localizations.yesterday,
+                                          tomorrow:
+                                              context.localizations.tomorrow,
+                                          locale: ref.watch(languageProvider) ==
+                                                  'Français'
+                                              ? 'fr'
+                                              : 'en'),
                                       activeColor: (ref.watch(themeProvider) ==
                                                       'System' &&
                                                   MediaQuery
@@ -564,12 +576,11 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                       // boardTitle: "Select 'TODAY' or '",
                                       // boardTitleTextStyle: TextStyle(fontWeight: FontWeight.w400),
                                       inputable: false,
-                                      pickerSubTitles:
-                                          const BoardDateTimeItemTitles(
-                                        year: 'Year',
-                                        // day: 'd',
-                                        // hour: 'h',
-                                        // minute: 'm',
+                                      pickerSubTitles: BoardDateTimeItemTitles(
+                                        year: context.localizations.year,
+                                        day: context.localizations.day,
+                                        hour: context.localizations.hour,
+                                        minute: context.localizations.minute,
                                       ),
                                     ),
                                     context: context,

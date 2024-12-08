@@ -309,8 +309,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     _dateHolder = value.transactions?.reversed.first.date;
                     return AppText(
                       text: (dateTimeNow.day == _dateHolder?.day)
-                          ? AppFunctions.formatDate(_dateHolder.toString(),
-                              format: r'g:i A')
+                          ? context.localizations.today
                           : (dateTimeNow.weekday - _dateHolder!.weekday == 1)
                               ? context.localizations.yesterday
                               // 'Yesterday'
@@ -318,10 +317,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       7)
                                   ? AppFunctions.formatDate(
                                       _dateHolder!.toString(),
-                                      format: r'l')
+                                      format: r'j M')
                                   : AppFunctions.formatDate(
                                       _dateHolder!.toString(),
-                                      format: r'j M'),
+                                      format: r'l'),
                     );
                   }),
               const Gap(5)
@@ -458,11 +457,46 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               children: [
                                 const Gap(5),
                                 AppText(
-                                    text: AppFunctions.formatDate(
-                                        reversedTransactions[index + 1]
-                                            .date
-                                            .toString(),
-                                        format: 'l')),
+                                  text: reversedTransactions[index + 1]
+                                              .date
+                                              .weekday ==
+                                          1
+                                      ? context.localizations.monday
+                                      : reversedTransactions[index + 1]
+                                                  .date
+                                                  .weekday ==
+                                              2
+                                          ? context.localizations.tuesday
+                                          : reversedTransactions[index + 1]
+                                                      .date
+                                                      .weekday ==
+                                                  3
+                                              ? context.localizations.wednesday
+                                              : reversedTransactions[index + 1]
+                                                          .date
+                                                          .weekday ==
+                                                      4
+                                                  ? context
+                                                      .localizations.thursday
+                                                  : reversedTransactions[
+                                                                  index + 1]
+                                                              .date
+                                                              .weekday ==
+                                                          5
+                                                      ? context
+                                                          .localizations.friday
+                                                      : reversedTransactions[
+                                                                      index + 1]
+                                                                  .date
+                                                                  .weekday ==
+                                                              6
+                                                          ? context
+                                                              .localizations
+                                                              .saturday
+                                                          : context
+                                                              .localizations
+                                                              .sunday,
+                                ),
                                 const Gap(5),
                               ],
                             );

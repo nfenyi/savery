@@ -63,7 +63,7 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
 
   late final List<String> _accountNames;
 
-  final Map<String, double> _mappedTransactions = {};
+  Map<String, double> _mappedTransactions = {};
   late String _currency;
   final _appStateUid = Hive.box(AppBoxes.appState).get('currentUser');
 
@@ -147,12 +147,12 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: AppText(
-            text: context.localizations.expenses,
+            text: context.localizations.my_expense_budgets,
             // 'My Expense Budgets',
             weight: FontWeight.bold,
             size: AppSizes.bodySmall,
           ),
-          centerTitle: true,
+          // centerTitle: true,
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(
@@ -240,6 +240,7 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                 onChanged: (value) {
                   if (_selectedAccountName != value) {
                     setState(() {
+                      _mappedTransactions = {};
                       _selectedAccountName = value;
                       _selectedAccount = accounts!.firstWhere(
                           (element) => element.name == _selectedAccountName);
@@ -614,6 +615,8 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                                                       0.5),
                                                           color: value >= 1
                                                               ? Colors.red
+                                                                  .withOpacity(
+                                                                      0.6)
                                                               : AppColors
                                                                   .primary
                                                                   .withOpacity(

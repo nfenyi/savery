@@ -57,6 +57,8 @@ class _MainScreenState extends ConsumerState<MainScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+
+    // ref.read(appBackgroundCheckProvider.notifier).unlock();
   }
 
   @override

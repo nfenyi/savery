@@ -102,12 +102,13 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
     // },child:
     return Scaffold(
       appBar: AppBar(
-        title: const AppText(
-          text: 'My Savings',
+        title: AppText(
+          text: context.localizations.my_savings,
+          // 'My Savings',
           weight: FontWeight.bold,
           size: AppSizes.bodySmall,
         ),
-        centerTitle: true,
+        // centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
