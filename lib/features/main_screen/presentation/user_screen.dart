@@ -15,6 +15,7 @@ import 'package:savery/features/accounts_&_currencies/services/api_services.dart
 import 'package:savery/features/app_settings/presentation/app_settings_screen.dart';
 import 'package:savery/features/categories/presentation/categories_screen.dart';
 import 'package:savery/features/main_screen/models/settings.dart';
+import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
 import 'package:savery/features/sign_in/providers/providers.dart';
 // import 'package:savery/features/sign_in/presentation/sign_in_screen.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
@@ -229,6 +230,8 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                         ref: ref);
                     await ref.read(authStateProvider.notifier).logOut();
                     navigatorKey.currentState!.pop();
+                    //TODO; try to make valuelistenable in main.dart listen to the 'authenticated' value in appstate box
+                    //then, omit navigating to the sign in screen manually
                     // if (ref.read(authStateProvider).userId == null) {
                     //   await navigatorKey.currentState!.pushAndRemoveUntil(
                     //       MaterialPageRoute(
@@ -236,6 +239,17 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                     //     return false;
                     //   });
                     // }
+                    if (Hive.box(AppBoxes.appState).get('authenticated') ==
+                        false) {
+                      await navigatorKey.currentState!.pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => const SignInScreen()), (r) {
+                        return false;
+                      });
+                    } else {
+                      showInfoToast('Error when logging out.',
+                          context: context);
+                    }
                   },
                   contentPadding: const EdgeInsets.all(0),
                   dense: true,
