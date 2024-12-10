@@ -1200,9 +1200,16 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                         text: _currency,
                         color: Colors.grey,
                       ),
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.positiveNumber(),
-                      ]),
+                      validator: (value) {
+                        if (value == null) {
+                          return 'Provided figure is null';
+                        } else if (value.isEmpty) {
+                          return null;
+                        } else if (double.parse(value) < 0) {
+                          return 'Do not enter a negative number';
+                        }
+                        return null;
+                      },
                     ),
                   ],
                 ),

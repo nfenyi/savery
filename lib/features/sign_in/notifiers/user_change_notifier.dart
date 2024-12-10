@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/features/new_transaction/models/transaction_category_model.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 // import 'package:get/get_utils/get_utils.dart';
@@ -197,16 +198,31 @@ class UserNotifier extends ChangeNotifier {
       required double difference,
       required Goal goal,
       required double parsedInput}) async {
-    if (selectedAccount.balance < 0) {
-      selectedAccount.balance += difference;
-      showInfoToast('Your account balance has been updated.',
-          context: navigatorKey.currentContext);
+    if (selectedAccount.balance <= 0) {
+      final sum = selectedAccount.balance + difference;
+      if (sum <= 0) {
+        selectedAccount.balance += difference;
+        showInfoToast(
+            navigatorKey.currentContext!.localizations
+                .your_account_balance_has_been_updated,
+            // 'Your account balance has been updated.',
+            context: navigatorKey.currentContext);
+      } else {
+        selectedAccount.balance = 0;
+        selectedAccount.savingsBucket += sum;
+      }
+      if (selectedAccount.balance == 0) {
+        showInfoToast(
+            navigatorKey
+                .currentContext!.localizations.your_account_is_fully_budgeted,
+            // 'Your account is fully budgeted👍',
+            color: Colors.green.shade800,
+            context: navigatorKey.currentContext);
+      }
     } else {
       selectedAccount.savingsBucket += difference;
     }
-    // if (difference == null) {
-    //   selectedAccount.balance = 0;
-    // }
+
     goal.raisedAmount = parsedInput;
     await selectedAccount.save();
     await goal.save();
@@ -274,20 +290,54 @@ class UserNotifier extends ChangeNotifier {
       _budgetBox.values.last,
     ]);
 
+//Old logic which i do not know why i created it:
+
+    // if (selectedAccount.savingsBucket >= parsedExpenseAmount) {
+    //   selectedAccount.savingsBucket -= parsedExpenseAmount;
+    // } else {
+    //   final difference = parsedExpenseAmount - selectedAccount.savingsBucket;
+    //   selectedAccount.savingsBucket = 0;
+    //   selectedAccount.balance -= difference;
+    //   if (selectedAccount.balance == 0) {
+    //     showInfoToast('Your account is fully budgeted👍',
+    //         color: Colors.green.shade800, context: navigatorKey.currentContext);
+    //   }
+    //   if (selectedAccount.balance < 0) {
+    //     showInfoToast('You now have an account balance deficit',
+    //         color: Colors.red.shade800, context: navigatorKey.currentContext);
+    //   }
+    // }
     final parsedExpenseAmount = double.parse(expenseAmount);
-    if (selectedAccount.savingsBucket >= parsedExpenseAmount) {
-      selectedAccount.savingsBucket -= parsedExpenseAmount;
-    } else {
-      final difference = parsedExpenseAmount - selectedAccount.savingsBucket;
-      selectedAccount.savingsBucket = 0;
-      selectedAccount.balance -= difference;
+    if (selectedAccount.balance >= parsedExpenseAmount) {
+      selectedAccount.balance -= parsedExpenseAmount;
       if (selectedAccount.balance == 0) {
-        showInfoToast('Your account is fully budgeted👍',
-            color: Colors.green.shade800, context: navigatorKey.currentContext);
+        showInfoToast(
+            navigatorKey
+                .currentContext!.localizations.your_account_is_fully_budgeted,
+            // 'Your account is fully budgeted👍',
+            color: Colors.green.shade800,
+            context: navigatorKey.currentContext);
       }
-      if (selectedAccount.balance < 0) {
-        showInfoToast('You now have an account balance deficit',
-            color: Colors.red.shade800, context: navigatorKey.currentContext);
+    } else {
+      final difference = parsedExpenseAmount - selectedAccount.balance;
+      selectedAccount.balance = 0;
+      showInfoToast(
+          navigatorKey
+              .currentContext!.localizations.deducting_from_your_savings_bucket,
+          // 'Deducting from your savings bucket',
+          context: navigatorKey.currentContext);
+      if (selectedAccount.savingsBucket >= difference) {
+        selectedAccount.savingsBucket -= difference;
+      } else {
+        final difference2 = difference - selectedAccount.savingsBucket;
+        selectedAccount.savingsBucket = 0;
+        selectedAccount.balance -= difference2;
+        showInfoToast(
+            navigatorKey.currentContext!.localizations
+                .you_now_have_an_account_balance_deficit,
+            // 'You now have an account balance deficit',
+            color: Colors.red.shade800,
+            context: navigatorKey.currentContext);
       }
     }
 
@@ -359,60 +409,94 @@ class UserNotifier extends ChangeNotifier {
       required int newDuration,
       required double parsedAmount}) async {
     final double difference = parsedAmount - budget.amount;
-    late final double anotherDifference;
 
     if (selectedAccount.balance > 0) {
       if (selectedAccount.balance >= difference) {
         selectedAccount.balance -= difference;
       } else {
-        anotherDifference = selectedAccount.balance - difference;
+        final double difference2 = difference - selectedAccount.balance;
         selectedAccount.balance = 0;
-        if (selectedAccount.savingsBucket >= anotherDifference) {
-          selectedAccount.savingsBucket -= anotherDifference;
+        if (selectedAccount.savingsBucket >= difference2) {
+          if (selectedAccount.savingsBucket > 0) {
+            showInfoToast(
+                navigatorKey.currentContext!.localizations
+                    .deducting_from_your_savings_bucket,
+                // 'Deducting from your savings bucket',
+                context: navigatorKey.currentContext);
+          }
+          selectedAccount.savingsBucket -= difference2;
         } else {
-          selectedAccount.balance -=
-              (selectedAccount.savingsBucket - anotherDifference);
-
-          if (selectedAccount.balance == 0) {
-            showInfoToast('Your account is fully budgeted👍',
-                color: Colors.green.shade800,
+          final difference3 = difference2 - selectedAccount.savingsBucket;
+          if (selectedAccount.savingsBucket > 0) {
+            showInfoToast(
+                navigatorKey.currentContext!.localizations
+                    .deducting_from_your_savings_bucket,
+                // 'Deducting from your savings bucket',
                 context: navigatorKey.currentContext);
           }
-          if (selectedAccount.balance < 0) {
-            showInfoToast('You now have an account balance deficit',
-                color: Colors.red.shade800,
-                context: navigatorKey.currentContext);
-          }
-          selectedAccount.savingsBucket -= selectedAccount.savingsBucket;
+          selectedAccount.savingsBucket = 0;
+          selectedAccount.balance -= difference3;
         }
       }
     } else {
-      if (selectedAccount.savingsBucket > difference) {
-        showInfoToast('Deducting from your savings bucket',
-            context: navigatorKey.currentContext);
-        selectedAccount.savingsBucket -= difference;
+      if (difference > 0) {
+        if (selectedAccount.savingsBucket >= difference) {
+          showInfoToast(
+              navigatorKey.currentContext!.localizations
+                  .deducting_from_your_savings_bucket,
+              // 'Deducting from your savings bucket',
+              context: navigatorKey.currentContext);
+          selectedAccount.savingsBucket -= difference;
+        } else {
+          final double difference2 = difference - selectedAccount.savingsBucket;
+          selectedAccount.savingsBucket = 0;
+          selectedAccount.balance -= difference2;
+        }
       } else {
-        anotherDifference = difference - selectedAccount.savingsBucket;
-        selectedAccount.savingsBucket -= selectedAccount.savingsBucket;
-        selectedAccount.balance -= anotherDifference;
+        //add difference to balance
+        selectedAccount.balance -= difference;
+        showInfoToast(
+            navigatorKey.currentContext!.localizations
+                .the_difference_has_been_added_to_the_accounts_balance,
+            // "The difference has been added to the account's balance",
+            context: navigatorKey.currentContext);
+      }
+      final correspondingSaving = selectedAccount.budgets!.firstWhere(
+        (element) => (element.category!.name == budget.category!.name &&
+            element.type == BudgetType.savings),
+      );
+
+      if (parsedAmount <= correspondingSaving.amount) {
+        correspondingSaving.amount = 0;
+        showInfoToast(
+            navigatorKey
+                .currentContext!.localizations.adjust_your_saving_accordingly,
+            // 'Adjust your saving accordingly',
+            context: navigatorKey.currentContext);
       }
     }
-    final correspondingSaving = selectedAccount.budgets!.firstWhere(
-      (element) => (element.category!.name == budget.category!.name &&
-          element.type == BudgetType.savings),
-    );
 
-    if (parsedAmount <= correspondingSaving.amount) {
-      correspondingSaving.amount = 0;
-      showInfoToast('Adjust your saving accordingly',
-          context: navigatorKey.currentContext);
-    }
     budget
       ..amount = parsedAmount
       ..duration = newDuration;
 
     await selectedAccount.save();
     await budget.save();
+    if (selectedAccount.balance == 0) {
+      showInfoToast(
+          navigatorKey
+              .currentContext!.localizations.your_account_is_fully_budgeted,
+          // 'Your account is fully budgeted👍',
+          color: Colors.green.shade800,
+          context: navigatorKey.currentContext);
+    } else if (selectedAccount.balance < 0) {
+      showInfoToast(
+          navigatorKey.currentContext!.localizations
+              .you_now_have_an_account_balance_deficit,
+          // 'You now have an account balance deficit',
+          color: Colors.red.shade800,
+          context: navigatorKey.currentContext);
+    }
 
     notifyListeners();
   }

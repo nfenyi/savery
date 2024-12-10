@@ -819,5 +819,37 @@
   "delete_goal_info": "Are you sure you want to delete this goal?",
   "@delete_goal_info": {
     "description": "Are you sure you want to delete this goal?"
+  },
+  "no_such_transactions": "No such transactions.",
+  "@no_such_transactions": {
+    "description": "No such transactions"
+  },
+  "error_when_logging_out_info": "Error when logging out.",
+  "@error_when_logging_out_info": {
+    "description": "Error when logging out."
+  },
+  "your_account_balance_has_been_updated": "Your account balance has been updated.",
+  "@your_account_balance_has_been_updated": {
+    "description": "Your account balance has been updated."
+  },
+  "your_account_is_fully_budgeted": "Your account is fully budgeted👍",
+  "@your_account_is_fully_budgeted": {
+    "description": "Your account is fully budgeted👍"
+  },
+  "deducting_from_your_savings_bucket": "Deducting from your savings bucket",
+  "@deducting_from_your_savings_bucket": {
+    "description": "Deducting from your savings bucket"
+  },
+  "you_now_have_an_account_balance_deficit": "You now have an account balance deficit",
+  "@you_now_have_an_account_balance_deficit": {
+    "description": "You now have an account balance deficit"
+  },
+  "the_difference_has_been_added_to_the_accounts_balance": "The difference has been added to the account's balance",
+  "@the_difference_has_been_added_to_the_accounts_balance": {
+    "description": "The difference has been added to the account's balance"
+  },
+  "adjust_your_saving_accordingly": "Adjust your saving accordingly",
+  "@adjust_your_saving_accordingly": {
+    "description": "Adjust your saving accordingly"
   }
 }

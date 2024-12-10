@@ -192,9 +192,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 //   }
                 // }
               }),
-          const Gap(
-            40,
-          ),
+          const Gap(40),
           Row(
             children: [
               const Expanded(child: Divider()),

@@ -248,7 +248,7 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                       });
                     } else {
                       showInfoToast('Error when logging out.',
-                          context: context);
+                          context: navigatorKey.currentContext!);
                     }
                   },
                   contentPadding: const EdgeInsets.all(0),

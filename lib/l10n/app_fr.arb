@@ -119,6 +119,7 @@
   "category_already_exists": "Cette catégorie existe déjà dans votre liste de budgets.",
   "amount": "Montant",
   "no": "Non",
+  "no_such_transactions": "Aucune transaction de ce type.",
   "next_caps": "SUIVANT",
   "get_started_caps": "COMMENCER",
   "expense_coverage_duration": "Durée de Couverture des Dépenses",
@@ -197,5 +198,12 @@
   "cancel": "Annuler",
   "yes": "Oui",
   "no_notifications": "Aucune notification",
-  "tap_add_transaction_button": "Appuyez sur le bouton + pour ajouter une transaction."
+  "tap_add_transaction_button": "Appuyez sur le bouton + pour ajouter une transaction.",
+  "error_when_logging_out_info": "Erreur lors de la déconnexion.",
+  "your_account_balance_has_been_updated": "Le solde de votre compte a été mis à jour.",
+  "your_account_is_fully_budgeted": "Votre compte est entièrement budgétisé 👍",
+  "deducting_from_your_savings_bucket": "Déduction de votre cagnotte d'épargne",
+  "you_now_have_an_account_balance_deficit": "Vous avez maintenant un déficit de solde de compte",
+  "the_difference_has_been_added_to_the_accounts_balance": "La différence a été ajoutée au solde du compte",
+  "adjust_your_saving_accordingly": "Ajustez votre épargne en conséquence"
 }
