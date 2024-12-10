@@ -55,20 +55,21 @@ class AccountCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(),
+              // const SizedBox(),
               AppText(
                 text: consumerAccount.name,
                 isWhite: true,
                 weight: FontWeight.bold,
                 size: AppSizes.heading6,
               ),
-              const Icon(
-                Icons.share_outlined,
-                color: Colors.white,
-                size: 20,
-              ),
+              // const Icon(
+              //   Icons.share_outlined,
+              //   color: Colors.white,
+              //   size: 20,
+              // ),
             ],
           ),
           const Gap(5),
