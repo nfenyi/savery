@@ -1,14 +1,9 @@
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:gap/gap.dart';
+import 'package:flutter_portal/flutter_portal.dart';
 import 'package:savery/features/main_screen/state/localization.dart';
 import 'package:savery/notifications/models/notification_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // import 'package:secure_application/secure_application.dart';
-
-import 'app_widgets/app_text.dart';
-import 'app_widgets/widgets.dart';
-import 'features/main_screen/app_background_check_provider/app_background_check_provider.dart';
-import 'features/sign_in/local_auth_api/local_auth_api.dart';
 import 'notifications/apis/firebase_notifications_api.dart';
 import 'themes/themes.dart';
 import 'l10n/l10n.dart';
@@ -81,33 +76,35 @@ class Savery extends StatelessWidget {
         builder: (context, ref, child) {
           var theme = ref.watch(themeProvider);
 
-          return GetMaterialApp(
-            debugShowCheckedModeBanner: false,
-            builder: FToastBuilder(),
-            supportedLocales: L10n.all,
-            locale: ref.watch(languageProvider) == 'Français'
-                ? const Locale('fr')
-                : const Locale('en'),
+          return Portal(
+            child: GetMaterialApp(
+              debugShowCheckedModeBanner: false,
+              builder: FToastBuilder(),
+              supportedLocales: L10n.all,
+              locale: ref.watch(languageProvider) == 'Français'
+                  ? const Locale('fr')
+                  : const Locale('en'),
 
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate
-            ],
-            title: 'Flutter Demo',
-            themeMode: theme == 'System'
-                ? ThemeMode.system
-                : theme == 'Light'
-                    ? ThemeMode.light
-                    : ThemeMode.dark,
-            // themeMode: ThemeMode.light,
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate
+              ],
+              title: 'Flutter Demo',
+              themeMode: theme == 'System'
+                  ? ThemeMode.system
+                  : theme == 'Light'
+                      ? ThemeMode.light
+                      : ThemeMode.dark,
+              // themeMode: ThemeMode.light,
 
-            theme: AppThemes.lightTheme,
-            darkTheme: AppThemes.darkTheme,
-            navigatorKey: navigatorKey,
+              theme: AppThemes.lightTheme,
+              darkTheme: AppThemes.darkTheme,
+              navigatorKey: navigatorKey,
 
-            home: const Wrapper(),
+              home: const Wrapper(),
+            ),
           );
         },
       );

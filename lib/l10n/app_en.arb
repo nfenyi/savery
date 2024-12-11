@@ -60,7 +60,11 @@
   "@theme": {
     "description": "Color theme"
   },
-  "enable_biometrics": "Enable biometrics (experimental)",
+  "experimental": "experimental",
+  "@experimental": {
+    "description": "experimental"
+  },
+  "enable_biometrics": "Enable biometrics",
   "@enable_biometrics": {
     "description": "Enable biometrics listtile title"
   },

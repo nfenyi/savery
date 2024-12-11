@@ -6,16 +6,16 @@ import '../../../app_constants/app_constants.dart';
 
 class AppBackgroundCheckNotifier extends StateNotifier<bool> {
   AppBackgroundCheckNotifier()
-      : super(!Hive.box(AppBoxes.appState)
+      : super(Hive.box(AppBoxes.appState)
             .get('enableBiometrics', defaultValue: false));
 
   void lock() {
-    state = false;
+    state = true;
   }
 
   Future<void> unlock() async {
     final shouldUnlock = await LocalAuthApi.authenticate();
-    state = shouldUnlock;
+    state = !shouldUnlock;
   }
 }
 

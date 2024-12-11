@@ -13,6 +13,7 @@ import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
 import 'package:savery/extensions/context_extenstions.dart';
+// import 'package:savery/features/main_screen/app_background_check_provider/app_background_check_provider.dart';
 import 'package:savery/features/new_transaction/models/transaction_category_model.dart';
 import 'package:savery/main.dart';
 
@@ -73,6 +74,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
   @override
   Widget build(BuildContext context) {
     _dateHolder = _selectedAccount.transactions?.reversed.first.date;
+
     //  _selectedAccount = _userBox.values.first.accounts?.first;
     // _selectedAccountName = _selectedAccount.name;
     return Scaffold(

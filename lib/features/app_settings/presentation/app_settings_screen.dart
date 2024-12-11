@@ -8,7 +8,6 @@ import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_constants/app_sizes.dart';
 import 'package:savery/app_widgets/app_text.dart';
-import 'package:savery/app_widgets/widgets.dart';
 import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/features/main_screen/state/localization.dart';
 

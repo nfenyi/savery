@@ -22,6 +22,14 @@ packages:
     description: dart
     source: sdk
     version: "0.3.2"
+  after_layout:
+    dependency: transitive
+    description:
+      name: after_layout
+      sha256: "95a1cb2ca1464f44f14769329fbf15987d20ab6c88f8fc5d359bd362be625f29"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.0"
   analyzer:
     dependency: transitive
     description:
@@ -552,6 +560,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.23"
+  flutter_portal:
+    dependency: "direct main"
+    description:
+      name: flutter_portal
+      sha256: "4601b3dc24f385b3761721bd852a3f6c09cddd4e943dd184ed58ee1f43006257"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.4"
   flutter_riverpod:
     dependency: "direct main"
     description:
@@ -1018,6 +1034,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  nested:
+    dependency: transitive
+    description:
+      name: nested
+      sha256: "03bac4c528c64c95c722ec99280375a6f2fc708eec17c7b3f07253b626cd2a20"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   nm:
     dependency: transitive
     description:
@@ -1146,6 +1170,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.1"
+  provider:
+    dependency: transitive
+    description:
+      name: provider
+      sha256: c8a055ee5ce3fd98d6fc872478b03823ffdb448699c6ebdbbc71d59b596fd48c
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.1.2"
   pub_semver:
     dependency: transitive
     description:
@@ -1186,6 +1218,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.6.1"
+  screen_capture_event:
+    dependency: transitive
+    description:
+      name: screen_capture_event
+      sha256: "49981745c19e86c3ea7df2b1982651f5f7fb439d293c72cc578c15d032731af7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
+  screen_protector:
+    dependency: transitive
+    description:
+      name: screen_protector
+      sha256: "305fd157f6f0b210afe216e790022bfe469c3b1d1f2e0d3dcc5906cc9c49c3e9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.2+1"
+  secure_content:
+    dependency: "direct main"
+    description:
+      name: secure_content
+      sha256: "9daca623a96a555dadc3242acfc00edb39090165e2ad84d21ad5c57d08d4ea38"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   shelf:
     dependency: transitive
     description:
