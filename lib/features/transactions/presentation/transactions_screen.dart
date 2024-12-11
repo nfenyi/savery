@@ -120,7 +120,13 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                             textAlign: TextAlign.center,
                             size: AppSizes.bodySmaller,
                             weight: FontWeight.w500,
-                            color: AppColors.neutral900,
+                            color: (ref.watch(themeProvider) == 'System' &&
+                                        MediaQuery.platformBrightnessOf(
+                                                context) ==
+                                            Brightness.dark) ||
+                                    ref.watch(themeProvider) == 'Dark'
+                                ? Colors.white
+                                : Colors.black,
                           ),
                         ))
                     .toList(),
@@ -151,11 +157,16 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                   height: AppSizes.dropDownBoxHeight,
                   padding: const EdgeInsets.only(right: 10.0),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    // border: Border.all(
-                    //   width: 1.0,
-                    //   color: AppColors.neutral300,
-                    // ),
+                    color: (ref.watch(themeProvider) == 'System' &&
+                                MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark) ||
+                            ref.watch(themeProvider) == 'Dark'
+                        ? const Color.fromARGB(255, 32, 25, 33)
+                        : Colors.white,
+                    border: Border.all(
+                      // width: 1.0,
+                      color: AppColors.neutral300,
+                    ),
                     borderRadius: BorderRadius.circular(20.0),
                   ),
                 ),
@@ -163,8 +174,13 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                   maxHeight: 350,
                   elevation: 1,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5.0),
-                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20.0),
+                    color: (ref.watch(themeProvider) == 'System' &&
+                                MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark) ||
+                            ref.watch(themeProvider) == 'Dark'
+                        ? const Color.fromARGB(255, 32, 25, 33)
+                        : Colors.white,
                   ),
                 ),
                 menuItemStyleData: const MenuItemStyleData(
