@@ -108,7 +108,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                 iconStyleData: const IconStyleData(
                   icon: FaIcon(
                     FontAwesomeIcons.chevronDown,
-                    color: AppColors.neutral900,
+                    // color: AppColors.neutral900,
                   ),
                   iconSize: 12.0,
                 ),
