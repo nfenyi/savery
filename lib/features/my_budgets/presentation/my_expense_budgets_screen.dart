@@ -100,20 +100,13 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                 return element.category!.name == transaction.category!.name;
               },
             )) {
-          if (transaction.date.difference(_currentDate).inDays <
+          if (_currentDate.difference(transaction.date).inDays <
               assignedBudget.duration) {
             _mappedTransactions[transaction.category!.name] =
                 (_mappedTransactions[transaction.category!.name] ?? 0) +
                     transaction.amount;
           } else {
             break;
-          }
-          if (assignedBudget.createdAt.difference(_currentDate).inDays !=
-              assignedBudget.duration) {
-            assignedBudget.createdAt = _currentDate;
-            //"these reset after the set duration is past"
-            //this is an async function though:
-            assignedBudget.save();
           }
         }
       }
@@ -276,8 +269,8 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                       transaction.category!.name;
                                 },
                               )) {
-                            if (transaction.date
-                                    .difference(_currentDate)
+                            if (_currentDate
+                                    .difference(transaction.date)
                                     .inDays <
                                 assignedBudget.duration) {
                               _mappedTransactions[transaction.category!.name] =
@@ -414,6 +407,19 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                             itemBuilder: (context, index) {
                               final expenseBudget =
                                   consumerExpenseBudgets[index];
+                              //"these reset after the set duration is past"
+                              //this is an async function though:
+                              // logger.d(_currentDate
+                              //     .difference(expenseBudget.createdAt)
+                              //     .inDays);
+                              if (_currentDate
+                                      .difference(expenseBudget.createdAt)
+                                      .inDays >
+                                  expenseBudget.duration) {
+                                expenseBudget.createdAt = _currentDate;
+
+                                expenseBudget.save();
+                              }
 
                               final double value = _mappedTransactions[
                                           expenseBudget.category!.name] !=
@@ -551,7 +557,7 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                                       ),
                                                       AppText(
                                                         text:
-                                                            '${expenseBudget.createdAt.difference(_currentDate).inDays + 1}/${expenseBudget.duration} day',
+                                                            '${_currentDate.difference(expenseBudget.createdAt).inDays + 1}/${expenseBudget.duration} day',
                                                         color: ((ref.watch(
                                                                         themeProvider) ==
                                                                     'System') &&
