@@ -202,7 +202,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         mainAxisSize: MainAxisSize.max,
                         children: [
                           SizedBox(
-                            width: 320,
+                            width: 317,
                             child: AccountCard(
                               account: account,
                               appStateUid: _appStateUid,

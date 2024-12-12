@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -24,6 +25,7 @@ import 'package:savery/themes/themes.dart';
 
 import '../../../app_constants/app_assets.dart';
 import '../../../app_constants/app_colors.dart';
+import '../../../notifications/models/notification_model.dart';
 import '../../../notifications/presentation/notifications_screen.dart';
 import '../../sign_in/local_auth_api/local_auth_api.dart';
 
@@ -58,8 +60,14 @@ class _UserScreenState extends ConsumerState<UserScreen> {
           icon: Iconsax.notification,
           name: context.localizations.notifications,
           //  "Notifications",
-          callback: () => navigatorKey.currentState!.push(MaterialPageRoute(
-              builder: (context) => const NotificationsScreen()))),
+          callback: () async {
+            await FirebaseMessaging.instance
+                .getInitialMessage()
+                .then(handleMessageAndNavigate);
+            //navigation is being handled in handleMessageAndNavigate function
+            // return navigatorKey.currentState!.push(MaterialPageRoute(
+            //     builder: (context) => const NotificationsScreen()));
+          }),
       Setting(
           icon: Icons.settings_outlined,
           name: context.localizations.app_settings,
@@ -270,5 +278,39 @@ class _UserScreenState extends ConsumerState<UserScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> handleMessageAndNavigate(RemoteMessage? message) async {
+    if (message == null) {
+      navigatorKey.currentState!.push(MaterialPageRoute(
+        builder: (context) => const NotificationsScreen(),
+      ));
+      return;
+    }
+    final appStateUid = Hive.box(AppBoxes.appState).get('currentUser');
+    final notificationsBox = Hive.box<AppNotification>(AppBoxes.notifications);
+    final newNotification = AppNotification(
+        title: message.notification?.title,
+        body: message.notification?.body,
+        sentTime: message.sentTime,
+        data: message.data);
+
+    AppUser user = Hive.box<AppUser>(AppBoxes.users).values.toList().firstWhere(
+          (element) => element.uid == appStateUid,
+        );
+    await notificationsBox.add(newNotification);
+
+    HiveList<AppNotification>? userNotifications = user.notifications;
+    userNotifications ??= HiveList(notificationsBox);
+    userNotifications.add(newNotification);
+    final boxNotifications = notificationsBox.values.toList();
+    boxNotifications.removeLast();
+    await notificationsBox.clear();
+    await notificationsBox.addAll(boxNotifications);
+    await user.save();
+
+    navigatorKey.currentState!.push(MaterialPageRoute(
+      builder: (context) => const NotificationsScreen(),
+    ));
   }
 }

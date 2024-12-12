@@ -40,13 +40,19 @@ class FirebaseNotificationsApi {
       sound: true,
     );
     final String? fcmToken = await _firebaseMessaging.getToken();
-    // logger.d(fcmToken);
+    logger.d(fcmToken);
     await Hive.box(AppBoxes.appState).put('fcmToken', fcmToken);
     await _firebaseMessaging.getInitialMessage().then(handleMessage);
     FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
+
     FirebaseMessaging.onMessage.listen((message) {
       final notification = message.notification;
       if (notification == null) return;
+      final notificationsBox =
+          Hive.box<AppNotification>(AppBoxes.notifications);
+      //  if (notificationsBox.isOpen == null){
+
+      //  }
       _localNotifications.show(
           notification.hashCode,
           notification.title,
@@ -55,7 +61,7 @@ class FirebaseNotificationsApi {
               android: AndroidNotificationDetails(
                   _androidChannel.id, _androidChannel.name,
                   channelDescription: _androidChannel.description,
-                  icon: 'ic_stat_app_logo')),
+                  icon: 'ic_launcher_monochrome')),
           payload: jsonEncode(message.toMap()));
     });
     //doesn''t work because the box is paused when the app is suspended
@@ -65,7 +71,7 @@ class FirebaseNotificationsApi {
 
   Future initLocalNotifications() async {
     const iOS = DarwinInitializationSettings();
-    const android = AndroidInitializationSettings('ic_stat_app_logo');
+    const android = AndroidInitializationSettings('ic_launcher_monochrome');
     const settings = InitializationSettings(android: android, iOS: iOS);
 
     // await _localNotifications.initialize(settings,
@@ -99,31 +105,20 @@ Future<void> handleMessage(RemoteMessage? message) async {
       Hive.box<AppUser>(AppBoxes.users).values.toList().firstWhereOrNull(
             (element) => element.uid == appStateUid,
           );
+  await notificationsBox.add(newNotification);
   if (user == null) {
-    await notificationsBox.add(newNotification);
     return;
   }
 
   HiveList<AppNotification>? userNotifications = user.notifications;
-  if (userNotifications != null) {
-    userNotifications.add(AppNotification(
-        title: message.notification?.title,
-        body: message.notification?.body,
-        sentTime: message.sentTime,
-        data: message.data));
-  } else {
-    // userNotifications = HiveList(notificationsBox, objects: [
-    //   //in case some general messages came in while  the user was signed out, meaning these messages are for everyone
-    //   ...notificationsBox.values, newNotification
-    // ]);
-    await notificationsBox.add(newNotification);
-    userNotifications = HiveList(notificationsBox);
-    userNotifications.add(newNotification);
-    final boxNotifications = notificationsBox.values.toList();
-    boxNotifications.removeLast();
-    await notificationsBox.clear();
-    await notificationsBox.addAll(boxNotifications);
-  }
+  userNotifications ??= HiveList(notificationsBox);
+  userNotifications.add(newNotification);
+  final boxNotifications = notificationsBox.values.toList();
+  boxNotifications.removeLast();
+  //Seems to remove notifications stored in a user
+  // await notificationsBox.clear();
+  // await notificationsBox.addAll(boxNotifications);
+
   await user.save();
   if (Hive.box(AppBoxes.appState).get('authenticated')) {
     navigatorKey.currentState!.push(MaterialPageRoute(
