@@ -123,7 +123,8 @@ class _UserScreenState extends ConsumerState<UserScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: Adaptive.h(18),
+            // height: Adaptive.h(18),
+            height: 180,
             width: double.infinity,
             decoration: BoxDecoration(
                 color: (ref.watch(themeProvider) == 'System' &&
