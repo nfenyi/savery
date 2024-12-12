@@ -127,8 +127,13 @@ class Authenticator {
       await Hive.box(AppBoxes.appState).put('authenticated', true);
       return AuthResult.success;
     } on FirebaseAuthException catch (e) {
-      await showAppInfoDialog(navigatorKey.currentContext!, ref,
-          title: e.message ?? e.code);
+      if (e.code == 'invalid-password' || e.code == 'user-not-found') {
+        await showAppInfoDialog(navigatorKey.currentContext!, ref,
+            title: 'Invalid credentials.');
+      } else {
+        await showAppInfoDialog(navigatorKey.currentContext!, ref,
+            title: e.message ?? e.code);
+      }
       return AuthResult.failure;
     } catch (e) {
       await showAppInfoDialog(navigatorKey.currentContext!, ref,
@@ -146,10 +151,11 @@ class Authenticator {
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
       if (credential.user != null) {
+        //TODO: cross check this function:
         await credential.user!.updateDisplayName(name);
         await Hive.box<AppUser>(AppBoxes.users).add(AppUser(
             uid: credential.user!.uid,
-            displayName: credential.user?.displayName,
+            displayName: name.trim(),
             email: credential.user?.email,
             photoUrl: credential.user?.photoURL,
             phoneNumber: credential.user?.phoneNumber));
@@ -163,8 +169,14 @@ class Authenticator {
         return AuthResult.failure;
       }
     } on FirebaseAuthException catch (e) {
-      await showAppInfoDialog(navigatorKey.currentContext!, ref,
-          title: e.message ?? e.code);
+      if (e.code == 'email-already-exists') {
+        await showAppInfoDialog(navigatorKey.currentContext!, ref,
+            title:
+                'An account with this email already exists. Please use the Forgot Password button to get your account back.');
+      } else {
+        await showAppInfoDialog(navigatorKey.currentContext!, ref,
+            title: e.message ?? e.code);
+      }
       return AuthResult.failure;
     } catch (e) {
       await showAppInfoDialog(navigatorKey.currentContext!, ref,
@@ -190,8 +202,13 @@ class Authenticator {
 
       return AuthResult.success;
     } on FirebaseAuthException catch (e) {
-      await showAppInfoDialog(navigatorKey.currentContext!, ref,
-          title: e.message ?? e.code);
+      if (e.code == 'invalid-password' || e.code == 'user-not-found') {
+        await showAppInfoDialog(navigatorKey.currentContext!, ref,
+            title: 'Invalid credentials.');
+      } else {
+        await showAppInfoDialog(navigatorKey.currentContext!, ref,
+            title: e.message ?? e.code);
+      }
       return AuthResult.failure;
     } catch (e) {
       await showAppInfoDialog(navigatorKey.currentContext!, ref,

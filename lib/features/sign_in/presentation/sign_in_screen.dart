@@ -95,13 +95,14 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     ),
                 const Gap(12),
                 AppTextFormField(
-                    controller: _emailController,
-                    hintText: 'johndoe@gmail.com',
-                    autovalidateMode: AutovalidateMode.disabled,
-                    validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(),
-                      FormBuilderValidators.email(),
-                    ])),
+                  controller: _emailController,
+                  hintText: 'johndoe@gmail.com',
+                  autovalidateMode: AutovalidateMode.disabled,
+                  // validator: FormBuilderValidators.compose([
+                  //   FormBuilderValidators.required(),
+                  //   FormBuilderValidators.email(),
+                  // ])
+                ),
                 const Gap(
                   20,
                 ),
@@ -114,9 +115,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   hintText: '* * * * * * * *',
                   obscureText: !_showPassword,
                   autovalidateMode: AutovalidateMode.disabled,
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.password(),
-                  ]),
+                  // validator: FormBuilderValidators.compose([
+                  //   FormBuilderValidators.password(),
+                  // ]),
                   suffixIcon: SizedBox(
                     child: InkWell(
                       onTap: () => setState(() {
@@ -316,8 +317,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     ));
                   },
                   child: AppText(
-                    text: navigatorKey
-                        .currentContext!.localizations.sign_in_beginning_caps,
+                    text: navigatorKey.currentContext!.localizations.sign_up,
                     //  "Sign Up",
                     decoration: TextDecoration.underline,
                     color: (ref.watch(themeProvider) == 'System' &&

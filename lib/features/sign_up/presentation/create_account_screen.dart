@@ -313,8 +313,8 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                         return false;
                       }),
                       child: AppText(
-                        text: navigatorKey.currentContext!.localizations
-                            .sign_in_beginning_caps,
+                        text:
+                            navigatorKey.currentContext!.localizations.sign_up,
                         //  "Sign In",
                         decoration: TextDecoration.underline,
                         color: (ref.watch(themeProvider) == 'System' &&
