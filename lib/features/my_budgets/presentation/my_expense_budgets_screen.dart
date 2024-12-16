@@ -417,7 +417,12 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                       .inDays >
                                   expenseBudget.duration) {
                                 expenseBudget.createdAt = _currentDate;
-
+                                //Add/subtract savings to or from balance:
+                                _selectedAccount.balance += expenseBudget
+                                        .amount -
+                                    (expenseBudget.amount -
+                                        consumerSavingsBudget![index].amount);
+                                _selectedAccount.save();
                                 expenseBudget.save();
                               }
 

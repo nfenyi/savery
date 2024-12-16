@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "154149331628-rfouoodcdj4o7u5q232gg3a4bf6nttls.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.savery2",
+            "certificate_hash": "36bfe0f8bd95cc467ad92473ecb2e347a8b02a60"
+          }
+        },
+        {
           "client_id": "154149331628-7o93as7gu2eoeci97b8qu2uh228igicl.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -34,8 +42,7 @@
               "client_id": "154149331628-k295arbeb6g3nfnb37fte7m5k6i92lj4.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                
-                "bundle_id": "com.example.savery2"
+                "bundle_id": "com.example.savery"
               }
             }
           ]

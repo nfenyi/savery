@@ -34,12 +34,17 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   void initState() {
     super.initState();
 
-    final consumerUser = ref.read(userProvider).user(appStateUid);
-    final notificationsBox = Hive.box<AppNotification>(AppBoxes.notifications);
-    if (consumerUser.notifications == null) {
-      consumerUser.notifications =
-          HiveList(notificationsBox, objects: [...notificationsBox.values]);
-      consumerUser.save();
+    try {
+      final consumerUser = ref.read(userProvider).user(appStateUid);
+      final notificationsBox =
+          Hive.box<AppNotification>(AppBoxes.notifications);
+      if (consumerUser.notifications == null) {
+        consumerUser.notifications =
+            HiveList(notificationsBox, objects: [...notificationsBox.values]);
+        consumerUser.save();
+      }
+    } on Exception catch (e) {
+      throw Exception(e);
     }
   }
 

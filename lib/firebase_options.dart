@@ -64,9 +64,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '154149331628',
     projectId: 'savery-5f977',
     storageBucket: 'savery-5f977.firebasestorage.app',
-    iosClientId:
-        '154149331628-k295arbeb6g3nfnb37fte7m5k6i92lj4.apps.googleusercontent.com',
-    iosBundleId: 'com.example.savery2',
+    androidClientId: '154149331628-rfouoodcdj4o7u5q232gg3a4bf6nttls.apps.googleusercontent.com',
+    iosClientId: '154149331628-k295arbeb6g3nfnb37fte7m5k6i92lj4.apps.googleusercontent.com',
+    iosBundleId: 'com.example.savery',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -75,9 +75,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '154149331628',
     projectId: 'savery-5f977',
     storageBucket: 'savery-5f977.firebasestorage.app',
-    iosClientId:
-        '154149331628-k295arbeb6g3nfnb37fte7m5k6i92lj4.apps.googleusercontent.com',
-    iosBundleId: 'com.example.savery2',
+    androidClientId: '154149331628-rfouoodcdj4o7u5q232gg3a4bf6nttls.apps.googleusercontent.com',
+    iosClientId: '154149331628-k295arbeb6g3nfnb37fte7m5k6i92lj4.apps.googleusercontent.com',
+    iosBundleId: 'com.example.savery',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
@@ -89,4 +89,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'savery-5f977.firebasestorage.app',
     measurementId: 'G-X3W7298PCL',
   );
+
 }

@@ -1,3 +1,5 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:savery/features/main_screen/state/localization.dart';
@@ -27,19 +29,29 @@ final Logger logger = Logger();
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
-  await registerHiveAdpapters();
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Hive.initFlutter();
+    await registerHiveAdpapters();
 
-  await openBoxes();
+    await openBoxes();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    // Pass all uncaught "fatal" errors from the framework to Crashlytics
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+    await FirebaseNotificationsApi().initNotifications();
+    // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
 
-  await FirebaseNotificationsApi().initNotifications();
-
-  runApp(const ProviderScope(child: Savery()));
+    runApp(const ProviderScope(child: Savery()));
+  } on Exception catch (e) {
+    throw Exception(e);
+  }
 }
 
 Future<void> registerHiveAdpapters() async {

@@ -199,15 +199,15 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
               ),
               const Gap(30),
               AppGradientButton(
+                isLoading: _isLoading,
                 text: navigatorKey.currentContext!.localizations.sign_up,
                 // 'Sign Up',
                 callback: () async {
-                  setState(() {
-                    _isLoading = true;
-                  });
-
                   if (_formKey.currentState!.validate()) {
                     if (_isChecked == true) {
+                      setState(() {
+                        _isLoading = true;
+                      });
                       await ref
                           .read(authStateProvider.notifier)
                           .createAccountWithEmailAndPassword(
