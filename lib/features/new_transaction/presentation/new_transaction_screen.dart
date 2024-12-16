@@ -283,9 +283,9 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                                   ),
                                                 ),
                                                 child: SingleChildScrollView(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 30),
+                                                  // padding: const EdgeInsets
+                                                  //     .symmetric(
+                                                  //     horizontal: 30),
                                                   child: Column(
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment
@@ -295,100 +295,115 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                                         5,
                                                       ),
                                                       const Gap(10),
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          const SizedBox
-                                                              .shrink(),
-                                                          AppText(
-                                                            text: context
-                                                                .localizations
-                                                                .select_the_category,
-                                                            // "Select the category",
-                                                            size: AppSizes
-                                                                .bodySmaller,
-                                                            // weight: FontWeight.bold,
-                                                          ),
-                                                          // const Gap(10),
-                                                          GestureDetector(
-                                                            child: FaIcon(
-                                                              FontAwesomeIcons
-                                                                  .xmark,
-                                                              size: 18,
-                                                              color: ((ref.watch(themeProvider) ==
-                                                                              'System' ||
-                                                                          ref.watch(themeProvider) ==
-                                                                              'Dark') &&
-                                                                      (MediaQuery.platformBrightnessOf(
-                                                                              context) ==
-                                                                          Brightness
-                                                                              .dark))
-                                                                  ? AppColors
-                                                                      .primaryDark
-                                                                  : AppColors
-                                                                      .primary,
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal: 30),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            const SizedBox
+                                                                .shrink(),
+                                                            AppText(
+                                                              text: context
+                                                                  .localizations
+                                                                  .select_the_category,
+                                                              // "Select the category",
+                                                              size: AppSizes
+                                                                  .bodySmaller,
+                                                              // weight: FontWeight.bold,
                                                             ),
-                                                            onTap: () =>
-                                                                navigatorKey
-                                                                    .currentState!
-                                                                    .pop(),
-                                                          ),
-                                                          // const Gap(10),
-                                                          // AppTextButton(
-                                                          //   text: 'Done',
-                                                          //   color: AppColors.primary,
-                                                          //   callback: () {
-                                                          //     navigatorKey.currentState!.pop();
-                                                          //   },
-                                                          // )
-                                                        ],
+                                                            // const Gap(10),
+                                                            GestureDetector(
+                                                              child: FaIcon(
+                                                                FontAwesomeIcons
+                                                                    .xmark,
+                                                                size: 18,
+                                                                color: ((ref.watch(themeProvider) ==
+                                                                                'System' ||
+                                                                            ref.watch(themeProvider) ==
+                                                                                'Dark') &&
+                                                                        (MediaQuery.platformBrightnessOf(
+                                                                                context) ==
+                                                                            Brightness
+                                                                                .dark))
+                                                                    ? AppColors
+                                                                        .primaryDark
+                                                                    : AppColors
+                                                                        .primary,
+                                                              ),
+                                                              onTap: () =>
+                                                                  navigatorKey
+                                                                      .currentState!
+                                                                      .pop(),
+                                                            ),
+                                                            // const Gap(10),
+                                                            // AppTextButton(
+                                                            //   text: 'Done',
+                                                            //   color: AppColors.primary,
+                                                            //   callback: () {
+                                                            //     navigatorKey.currentState!.pop();
+                                                            //   },
+                                                            // )
+                                                          ],
+                                                        ),
                                                       ),
                                                       const Gap(30),
                                                       SizedBox(
                                                         height: Adaptive.h(30),
-                                                        child: GridView.builder(
-                                                          itemCount: _categories
-                                                              .length,
-                                                          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                                                              maxCrossAxisExtent:
-                                                                  70,
-                                                              mainAxisExtent:
-                                                                  65,
-                                                              crossAxisSpacing:
-                                                                  10,
-                                                              mainAxisSpacing:
-                                                                  10),
-                                                          itemBuilder:
-                                                              (context, index) {
-                                                            final category =
-                                                                _categories[
-                                                                    index];
-                                                            return InkWell(
-                                                              onTap: () {
-                                                                setState(() {
-                                                                  _selectedCategory =
-                                                                      category;
-                                                                });
-                                                                navigatorKey
-                                                                    .currentState!
-                                                                    .pop();
-                                                              },
-                                                              child: Ink(
-                                                                child:
-                                                                    ClipRRect(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              20),
-                                                                  child: TileIcon(
-                                                                      category:
-                                                                          category),
+                                                        child: Scrollbar(
+                                                          child:
+                                                              GridView.builder(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal:
+                                                                        30),
+                                                            itemCount:
+                                                                _categories
+                                                                    .length,
+                                                            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                                                                maxCrossAxisExtent:
+                                                                    70,
+                                                                mainAxisExtent:
+                                                                    65,
+                                                                crossAxisSpacing:
+                                                                    10,
+                                                                mainAxisSpacing:
+                                                                    10),
+                                                            itemBuilder:
+                                                                (context,
+                                                                    index) {
+                                                              final category =
+                                                                  _categories[
+                                                                      index];
+                                                              return InkWell(
+                                                                onTap: () {
+                                                                  setState(() {
+                                                                    _selectedCategory =
+                                                                        category;
+                                                                  });
+                                                                  navigatorKey
+                                                                      .currentState!
+                                                                      .pop();
+                                                                },
+                                                                child: Ink(
+                                                                  child:
+                                                                      ClipRRect(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            20),
+                                                                    child: TileIcon(
+                                                                        category:
+                                                                            category),
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                            );
-                                                          },
+                                                              );
+                                                            },
+                                                          ),
                                                         ),
                                                       )
                                                     ],
