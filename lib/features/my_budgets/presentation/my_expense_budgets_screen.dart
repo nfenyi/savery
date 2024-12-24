@@ -422,6 +422,9 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                         .amount -
                                     (expenseBudget.amount -
                                         consumerSavingsBudget![index].amount);
+                                //subtract expense amount from balance to account for setting the budget again
+                                _selectedAccount.balance -=
+                                    expenseBudget.amount;
                                 _selectedAccount.save();
                                 expenseBudget.save();
                               }
