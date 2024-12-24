@@ -206,5 +206,6 @@
   "deducting_from_your_savings_bucket": "Déduction de votre cagnotte d'épargne",
   "you_now_have_an_account_balance_deficit": "Vous avez maintenant un déficit de solde de compte",
   "the_difference_has_been_added_to_the_accounts_balance": "La différence a été ajoutée au solde du compte",
-  "adjust_your_saving_accordingly": "Ajustez votre épargne en conséquence"
+  "adjust_your_saving_accordingly": "Ajustez votre épargne en conséquence",
+  "all": "Tous"
 }

@@ -855,5 +855,9 @@
   "adjust_your_saving_accordingly": "Adjust your saving accordingly",
   "@adjust_your_saving_accordingly": {
     "description": "Adjust your saving accordingly"
+  },
+  "all": "All",
+  "@all": {
+    "description": "All"
   }
 }

@@ -336,7 +336,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                     MediaQuery.platformBrightnessOf(context) ==
                                         Brightness.dark) ||
                                 ref.watch(themeProvider) == 'Dark'
-                            ? const Color.fromARGB(255, 32, 25, 33)
+                            ? Colors.grey.shade800
                             : Colors.grey.shade100,
                         thumbColor: (ref.watch(themeProvider) == 'System' &&
                                     MediaQuery.platformBrightnessOf(context) ==
@@ -349,15 +349,24 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 AppText(
-                                  text: 'All',
+                                  text:
+                                      // "All",
+                                      context.localizations.all,
                                   isWhite: _periodFilter == 0 ? true : false,
                                 ),
                                 const Gap(4),
                                 FaIcon(
                                   Icons.cloud_outlined,
-                                  color: _periodFilter == 0
+                                  color: (ref.watch(themeProvider) ==
+                                                  'System' &&
+                                              MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark) ||
+                                          ref.watch(themeProvider) == 'Dark'
                                       ? Colors.white
-                                      : Colors.black,
+                                      : _periodFilter == 0
+                                          ? Colors.white
+                                          : Colors.black,
                                   size: 12,
                                 )
                               ]),
@@ -384,14 +393,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                   // 'Year',
                                   isWhite: _periodFilter == 4 ? true : false,
                                 ),
-                                const Gap(4),
-                                FaIcon(
-                                  Icons.cloud_outlined,
-                                  color: _periodFilter == 4
-                                      ? Colors.white
-                                      : Colors.black,
-                                  size: 12,
-                                )
+                                // const Gap(4),
+                                // FaIcon(
+                                //   Icons.cloud_outlined,
+                                //   color: _periodFilter == 4
+                                //       ? Colors.white
+                                //       : Colors.black,
+                                //   size: 12,
+                                // )
                               ])
                         },
                         groupValue: _periodFilter,
