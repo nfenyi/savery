@@ -4,7 +4,7 @@
   "accounts_n_currencies": "Comptes et Devises",
   "accounts": "Comptes",
   "exchange_rates": "Taux de Change",
-  "delete_account_warning_message": "Êtes-vous sûr de vouloir supprimer {accountName} ?",
+  "delete_account_warning_message": "Êtes-vous sûr de vouloir supprimer {accountName}?",
   "no_accounts": "Aucun compte",
   "dollar": "Dollar",
   "pound": "Livre",
@@ -18,7 +18,7 @@
   "enable_biometrics": "Activer la biométrie",
   "english": "Anglais",
   "french": "Français",
-  "delete_category_warning_message": "Êtes-vous sûr de vouloir supprimer {categoryName} ?",
+  "delete_category_warning_message": "Êtes-vous sûr de vouloir supprimer {categoryName}?",
   "add_a_category": "Ajouter une catégorie",
   "goal": "Objectif",
   "add": "Ajouter",
@@ -129,7 +129,7 @@
   "pick_a_date_info": "Veuillez choisir une date.",
   "delete_goal_info": "Êtes-vous sûr de vouloir supprimer cet objectif ?",
   "savings_bucket": "Cagnotte d'épargne",
-  "delete_budget_notice": "Êtes-vous sûr de vouloir supprimer le budget {categoryName} ?",
+  "delete_budget_notice": "Êtes-vous sûr de vouloir supprimer le budget {categoryName}?",
   "expense_amount": "Montant des Dépenses",
   "set_savings_notice": "Vous pouvez définir combien vous souhaitez épargner à partir de votre budget ici.",
   "create_budgets_first_notice": "Veuillez d''abord créer des budgets sous ce compte.",
@@ -207,5 +207,8 @@
   "you_now_have_an_account_balance_deficit": "Vous avez maintenant un déficit de solde de compte",
   "the_difference_has_been_added_to_the_accounts_balance": "La différence a été ajoutée au solde du compte",
   "adjust_your_saving_accordingly": "Ajustez votre épargne en conséquence",
-  "all": "Tous"
+  "all": "Tous",
+  "subtracting_budget_from_account_balance": "Soustraction de {categoryName} du solde du compte",
+  "error": "Erreur",
+  "seems_signed_in_with_google": "Il semble que vous vous soyez connecté avec votre compte Google. Connexion avec Google à la place."
 }

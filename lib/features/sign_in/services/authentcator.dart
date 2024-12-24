@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:savery/app_constants/app_constants.dart';
 import 'package:savery/app_widgets/widgets.dart';
+import 'package:savery/extensions/context_extenstions.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'package:savery/main.dart';
 import '../constants/constants.dart';
@@ -82,13 +83,17 @@ class Authenticator {
               .put('currentUser', result.user!.uid);
           return AuthResult.success;
         } else {
-          showInfoToast('Error', context: navigatorKey.currentContext);
+          showInfoToast(navigatorKey.currentContext!.localizations.error,
+              // 'Error',
+              context: navigatorKey.currentContext);
           return AuthResult.failure;
         }
       } else if (e.code == Constants.accountExistsWithDifferentCredential) {
         showInfoToast(
+            navigatorKey
+                .currentContext!.localizations.seems_signed_in_with_google,
+            // 'It seems you signed in using your google account. Signing in with Google instead',
             context: navigatorKey.currentContext!,
-            'It seems you signed in using your google account. Signing in with Google instead',
             seconds: 6);
         return await loginWithGoogle(ref);
       } else {

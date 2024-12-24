@@ -425,6 +425,12 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                                 //subtract expense amount from balance to account for setting the budget again
                                 _selectedAccount.balance -=
                                     expenseBudget.amount;
+                                showInfoToast(
+                                    context.localizations
+                                        .subtracting_budget_from_account_balance(
+                                            expenseBudget.category!.name),
+                                    // 'Subtracting ${expenseBudget.category!.name} from account balance',
+                                    context: navigatorKey.currentContext);
                                 _selectedAccount.save();
                                 expenseBudget.save();
                               }

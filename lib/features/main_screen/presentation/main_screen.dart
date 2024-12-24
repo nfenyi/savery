@@ -201,7 +201,9 @@ class _MainScreenState extends ConsumerState<MainScreen>
                   await Get.to(() => const NewTransactionScreen(),
                       transition: Transition.downToUp);
                 } else {
-                  showInfoToast('Please create an account first',
+                  showInfoToast(
+                      context.localizations.create_an_account_first_toast_info,
+                      // 'Please create an account first',
                       context: context);
                 }
               },

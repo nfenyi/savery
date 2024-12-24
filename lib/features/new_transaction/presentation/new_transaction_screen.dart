@@ -625,7 +625,10 @@ class _NewTransactionScreenState extends ConsumerState<NewTransactionScreen> {
                                 setState(() {
                                   _categoryColor = Colors.red;
                                 });
-                                showInfoToast('Please select a category',
+                                showInfoToast(
+                                    context
+                                        .localizations.please_select_a_category,
+                                    // 'Please select a category',
                                     context: context);
                               } else if (_selectedTransactionType ==
                                       'Expense' &&

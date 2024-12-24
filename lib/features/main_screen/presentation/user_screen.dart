@@ -253,7 +253,10 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                         return false;
                       });
                     } else {
-                      showInfoToast('Error when logging out.',
+                      showInfoToast(
+                          navigatorKey.currentContext!.localizations
+                              .error_when_logging_out_info,
+                          // 'Error when logging out.',
                           context: navigatorKey.currentContext!);
                     }
                   },

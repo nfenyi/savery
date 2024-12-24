@@ -859,5 +859,22 @@
   "all": "All",
   "@all": {
     "description": "All"
+  },
+  "subtracting_budget_from_account_balance": "Subtracting {categoryName} from account balance",
+  "@subtracting_budget_from_account_balance": {
+    "description": "Subtracting {categoryName} from account balance",
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      }
+    }
+  },
+  "error": "Error",
+  "@error": {
+    "description": "Error"
+  },
+  "seems_signed_in_with_google": "It seems you signed in using your google account. Signing in with Google instead",
+  "@seems_signed_in_with_google": {
+    "description": "It seems you signed in using your google account. Signing in with Google instead"
   }
 }
