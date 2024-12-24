@@ -608,14 +608,20 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                               },
                             ),
                           )
-                        : Center(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Lottie.asset(AppAssets.emptyGoalList,
-                                    fit: BoxFit.fitHeight, height: 250),
-                                const AppText(text: 'No goals created yet'),
-                              ],
+                        : Expanded(
+                            child: Center(
+                              child: Column(
+                                // crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Lottie.asset(AppAssets.emptyGoalList,
+                                      fit: BoxFit.fitHeight, height: 200),
+                                  AppText(
+                                      text: context
+                                          .localizations.no_goals_created_yet),
+                                  Gap(Adaptive.h(20))
+                                ],
+                              ),
                             ),
                           ),
                   ],

@@ -680,18 +680,21 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
                       ],
                     ),
                   )
-                : Center(
-                    child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Lottie.asset(AppAssets.emptyList, height: 200),
-                      AppText(
-                        text: context.localizations.no_exp_budget_yet,
-                        //  'No expense budgets added yet.'
-                      )
-                    ],
-                  )),
+                : Expanded(
+                    child: Center(
+                        child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Lottie.asset(AppAssets.emptyList, height: 200),
+                        AppText(
+                          text: context.localizations.no_exp_budget_yet,
+                          //  'No expense budgets added yet.'
+                        ),
+                        Gap(Adaptive.h(20))
+                      ],
+                    )),
+                  ),
           ]),
         ),
       ),

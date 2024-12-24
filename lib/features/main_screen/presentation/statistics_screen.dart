@@ -1027,14 +1027,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                   _animationController
                                     ..duration = _animationController.duration
                                     ..forward();
-                                }, height: 180, fit: BoxFit.fill),
+                                }, height: 120, fit: BoxFit.fill),
                                 AppText(
                                     text: _periodFilter == 0
                                         ? context.localizations.no_incomes
                                         : context.localizations
                                             .no_incomes_during_this_period),
                                 SizedBox(
-                                  height: Adaptive.h(20),
+                                  height: Adaptive.h(5),
                                 )
                               ],
                             ),
@@ -1518,7 +1518,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                   _animationController
                                     ..duration = _animationController.duration
                                     ..forward();
-                                }, height: 180, fit: BoxFit.fill),
+                                }, height: 120, fit: BoxFit.fill),
                                 AppText(
                                     text: _periodFilter == 0
                                         ? context.localizations.no_expenses
@@ -1528,7 +1528,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                     // 'No Expenses during this period'
                                     ),
                                 SizedBox(
-                                  height: Adaptive.h(20),
+                                  height: Adaptive.h(5),
                                 )
                               ],
                             ),
@@ -1556,12 +1556,12 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                         _animationController
                           ..duration = _animationController.duration
                           ..forward();
-                      }, height: 180, fit: BoxFit.fill),
+                      }, height: 120, fit: BoxFit.fill),
                       AppText(text: context.localizations.no_transactions_yet
                           //  'No transactions made yet'
                           ),
                       SizedBox(
-                        height: Adaptive.h(10),
+                        height: Adaptive.h(5),
                       )
                     ],
                   ),

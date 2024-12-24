@@ -522,8 +522,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     .localizations.tap_add_transaction_button,
                                 // 'Tap on the + button to add a transaction.',
                               )
-                            : const AppText(text: 'No transactions yet.'),
-                        Gap(Adaptive.h(20)),
+                            : AppText(
+                                text:
+                                    context.localizations.no_transactions_yet),
+                        Gap(Adaptive.h(15)),
                       ],
                     ),
                   ),

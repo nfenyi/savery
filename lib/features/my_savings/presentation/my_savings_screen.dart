@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
 import 'package:lottie/lottie.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 import 'package:savery/app_constants/app_assets.dart';
 import 'package:savery/app_constants/app_colors.dart';
@@ -376,18 +377,22 @@ class _MySavingsScreenState extends ConsumerState<MySavingsScreen> {
                       },
                     ),
                   )
-                : Center(
-                    child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Lottie.asset(AppAssets.emptyList, height: 200),
-                      AppText(
-                        text: context.localizations.create_budgets_first_notice,
-                        // 'Please create some budgets under this account first'
-                      )
-                    ],
-                  ))
+                : Expanded(
+                    child: Center(
+                        child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Lottie.asset(AppAssets.emptyList, height: 200),
+                        AppText(
+                          text:
+                              context.localizations.create_budgets_first_notice,
+                          // 'Please create some budgets under this account first'
+                        ),
+                        Gap(Adaptive.h(20))
+                      ],
+                    )),
+                  )
           ],
         ),
       ),
