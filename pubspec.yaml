@@ -63,6 +63,7 @@ dependencies:
   google_fonts: ^6.2.1
   google_sign_in: ^6.2.1
   hive_flutter: ^1.1.0
+  html: ^0.15.5
   iconify_flutter: ^0.0.7
   iconify_flutter_plus: ^1.0.3
   iconsax: ^0.0.8

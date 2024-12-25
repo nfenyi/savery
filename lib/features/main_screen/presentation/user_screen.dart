@@ -24,6 +24,7 @@ import 'package:savery/themes/themes.dart';
 import '../../../app_constants/app_assets.dart';
 import '../../../app_constants/app_colors.dart';
 import '../../../notifications/presentation/notifications_screen.dart';
+// import '../../accounts_&_currencies/presentation/accounts_n_currencies_view_model.dart';
 import '../../sign_in/local_auth_api/local_auth_api.dart';
 
 class UserScreen extends ConsumerStatefulWidget {
@@ -100,10 +101,12 @@ class _UserScreenState extends ConsumerState<UserScreen> {
                 description: context.localizations.fetching_exchange_rates,
                 // 'Fetching exchange rates...',
                 ref: ref);
+            // final response =
+            // final result =  await ref.read(accountsnCurrenciesViewModel).getCurrencies();
             final response = await ApiServices().fetchExchangeRates();
             navigatorKey.currentState!.pop();
             navigatorKey.currentState!.push(MaterialPageRoute(
-              builder: (context) => CurrencyScreen(
+              builder: (context) => AccountsnCurrenciesScreen(
                 currencyResponse: response,
               ),
             ));

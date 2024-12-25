@@ -876,5 +876,17 @@
   "seems_signed_in_with_google": "It seems you signed in using your google account. Signing in with Google instead",
   "@seems_signed_in_with_google": {
     "description": "It seems you signed in using your google account. Signing in with Google instead"
+  },
+  "connection_timeout": "Connection timed out. Reason: Weak Connection or No Data. Check connection and try again.",
+  "@connection_timeout": {
+    "description": "Connection timed out. Reason: Weak Connection or No Data. Check connection and try again."
+  },
+  "service_temp_unavailable": "Service temporarily unavailable. Please try again in a few minutes.",
+  "@service_temp_unavailable": {
+    "description": "Service temporarily unavailable. Please try again in a few minutes."
+  },
+  "no_internet_connection": "No internet connection detected. Turn on your data/wifi.",
+  "@no_internet_connection": {
+    "description": "No internet connection detected. Turn on your data/wifi.."
   }
 }

@@ -18,36 +18,44 @@ import 'package:savery/features/accounts_&_currencies/services/api_constants.dar
 import 'package:savery/features/accounts_&_currencies/services/api_services.dart';
 import 'package:savery/features/sign_in/user_info/models/user_model.dart';
 import 'package:savery/main.dart';
+import 'package:html/dom.dart' as dom;
+// import 'package:savery/utils/view_model_result.dart';
 
 import '../../../themes/themes.dart';
 
-class CurrencyScreen extends ConsumerStatefulWidget {
+class AccountsnCurrenciesScreen extends ConsumerStatefulWidget {
   final RequestResponse currencyResponse;
-  const CurrencyScreen({super.key, required this.currencyResponse});
+  const AccountsnCurrenciesScreen({super.key, required this.currencyResponse});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _CurrencyScreenState();
 }
 
-class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
+class _CurrencyScreenState extends ConsumerState<AccountsnCurrenciesScreen> {
   final _accountsBox = Hive.box<Account>(AppBoxes.accounts);
   late List<Account> _accounts;
 
   final List<String> _currencies = ['GHS', '\$', '£', '€'];
 
-  double _dollarRate = 0;
-  double _poundRate = 0;
-  double _euroRate = 0;
+  late final String _dollarRate;
+  late final String _poundRate;
+  late final String _euroRate;
 
   @override
   void initState() {
     super.initState();
     _accounts = _accountsBox.values.toList();
     if (widget.currencyResponse.status == RequestStatus.success) {
-      final rates = widget.currencyResponse.payload['rates'];
-      _dollarRate = rates['USD'];
-      _euroRate = rates['EUR'];
-      _poundRate = rates['GBP'];
+      dom.Document html = dom.Document.html(widget.currencyResponse.payload);
+
+      final rates = html
+          .querySelectorAll('#p')
+          .map((element) => element.innerHtml.trim())
+          .toList();
+      // final rates = widget.currencyResponse.payload;
+      _dollarRate = rates[0];
+      _euroRate = rates[1];
+      _poundRate = rates[2];
     }
   }
 
@@ -291,7 +299,7 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   AppText(
-                                    text: (1 / _dollarRate).toStringAsFixed(3),
+                                    text: _dollarRate,
                                     size: AppSizes.bodySmall,
                                   ),
                                   const Gap(5),
@@ -324,7 +332,7 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   AppText(
-                                    text: (1 / _poundRate).toStringAsFixed(3),
+                                    text: _poundRate,
                                     size: AppSizes.bodySmall,
                                   ),
                                   const Gap(5),
@@ -357,7 +365,7 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   AppText(
-                                    text: (1 / _euroRate).toStringAsFixed(3),
+                                    text: _euroRate,
                                     size: AppSizes.bodySmall,
                                   ),
                                   const Gap(5),
@@ -394,8 +402,9 @@ class _CurrencyScreenState extends ConsumerState<CurrencyScreen> {
                             ),
                             const Gap(10),
                             AppText(
-                              text: context.localizations
-                                  .exchange_rates_fetch_failure_message,
+                              text: widget.currencyResponse.payload,
+                              //  context.localizations
+                              //     .exchange_rates_fetch_failure_message,
                               // 'Could not retrieve rates. Please check your internet connection',
                               textAlign: TextAlign.center,
                             )
