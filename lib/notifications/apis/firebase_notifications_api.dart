@@ -38,7 +38,7 @@ class FirebaseNotificationsApi {
       sound: true,
     );
     final String? fcmToken = await _firebaseMessaging.getToken();
-    logger.d(fcmToken);
+    // logger.d(fcmToken);
     await Hive.box(AppBoxes.appState).put('fcmToken', fcmToken);
     await _firebaseMessaging.getInitialMessage().then(handleMessage);
     FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);

@@ -1240,12 +1240,6 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                                     data.value[_amountString],
                                                 pointColorMapper:
                                                     (MapEntry data, _) {
-                                                  // logger.d((data.value[
-                                                  //         _amountString] /
-                                                  //     _overallWeekExpense *
-                                                  //     100));
-                                                  logger.d(
-                                                      '${((data.value[_amountString] / (_periodFilter == 0 ? _overallExpense : _periodFilter == 1 ? _overallDayExpense : _periodFilter == 2 ? _overallWeekExpense : _periodFilter == 3 ? _overallMonthExpense : _overallYearExpense)) * 100).toStringAsFixed(2)}%');
                                                   return getCategoryColor(
                                                     data.key,
                                                   );
@@ -1260,7 +1254,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen>
                                                                 seriesIndex) =>
                                                             AppText(
                                                               text:
-                                                                  '${((data.value[_amountString] / (_periodFilter == 0 ? _overallExpense : _periodFilter == 1 ? _overallDayExpense : _periodFilter == 2 ? _overallWeekExpense : _periodFilter == 3 ? _overallMonthExpense : _overallYearExpense)) * 100).toStringAsFixed(2)}%',
+                                                                  '${((data.value[_amountString] / (_periodFilter == 0 ? _overallExpense : _periodFilter == 1 ? _overallDayExpense : _periodFilter == 2 ? _overallWeekExpense : _periodFilter == 3 ? _overallMonthExpense : _overallYearExpense)) * 100).toStringAsFixed(1)}%',
                                                               size: AppSizes
                                                                   .bodySmall,
                                                               color:
