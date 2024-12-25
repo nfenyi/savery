@@ -159,7 +159,7 @@
   "gifts": "Cadeaux",
   "health": "Santé",
   "car": "Voiture",
-  "game": "Jeu",
+  "gaming": "Jeu",
   "cafe": "Café",
   "travel": "Voyage",
   "utility": "Utilitaire",
@@ -213,5 +213,9 @@
   "seems_signed_in_with_google": "Il semble que vous vous soyez connecté avec votre compte Google. Connexion avec Google à la place.",
   "service_temp_unavailable": "Service temporairement indisponible. Veuillez réessayer dans quelques minutes.",
   "no_internet_connection": "Aucune connexion Internet détectée. Activez vos données ou votre Wi-Fi.",
-  "connection_timeout": "Délai de connexion dépassé. Raison : connexion faible ou absence de données. Vérifiez la connexion et réessayez."
+  "connection_timeout": "Délai de connexion dépassé. Raison : connexion faible ou absence de données. Vérifiez la connexion et réessayez.",
+  "figure_is_null": "La valeur fournie est nulle",
+  "do_not_enter_negative_number": "Ne saisissez pas un nombre négatif",
+  "invalid_credentials": "Identifiants invalides.",
+  "email_already_exists": "Un compte avec cet email existe déjà. Veuillez utiliser le bouton Mot de passe oublié pour récupérer votre compte."
 }

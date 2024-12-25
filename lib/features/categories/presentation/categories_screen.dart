@@ -5,8 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:gap/gap.dart';
+import 'package:iconify_flutter/icons/arcticons.dart';
+import 'package:iconify_flutter/icons/ph.dart';
 import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
 import 'package:iconify_flutter_plus/icons/ic.dart';
+import 'package:iconify_flutter_plus/icons/la.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
@@ -30,18 +33,22 @@ class CategoriesScreen extends ConsumerWidget {
     final consumerCategories = ref.watch(categoriesProvider).categories;
     String? selectedIcon;
     Color? pickAColorColor;
-    final addButton =
-        TransactionCategory(icon: Ic.round_plus, name: 'Add a category');
+    final addButton = TransactionCategory(
+        icon: Ic.round_plus, name: context.localizations.add_a_category);
     final categoriesHolder = [addButton, ...consumerCategories];
     Future<void> showDeleteDialog(
         {required TransactionCategory category, required int index}) async {
       await showAppInfoDialog(
         navigatorKey.currentContext!,
         ref,
-        title: 'Are you sure you want to delete ${category.name}?',
-        confirmText: 'Yes',
+        title: context.localizations
+            .delete_category_warning_message(category.name),
+        //  'Are you sure you want to delete ${category.name}?',
+        confirmText: context.localizations.yes,
+        //  'Yes',
         isWarning: true,
-        cancelText: 'No',
+        cancelText: context.localizations.no,
+        // 'No',
         confirmCallbackFunction: () async {
           await ref
               .read(categoriesProvider.notifier)
@@ -130,7 +137,7 @@ class CategoriesScreen extends ConsumerWidget {
                       const Gap(12),
                       AppTextFormField(
                         controller: categoryNameController,
-                        hintText: 'wife',
+                        hintText: context.localizations.wife,
                         validator: FormBuilderValidators.compose([
                           FormBuilderValidators.required(),
                         ]),

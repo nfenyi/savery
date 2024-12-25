@@ -215,21 +215,27 @@ class _CurrencyScreenState extends ConsumerState<AccountsnCurrenciesScreen> {
                                     const Gap(45),
                                     InkWell(
                                       onTap: () async {
-                                        await showAppInfoDialog(context, ref,
-                                            isWarning: true,
-                                            title: context.localizations
-                                                .delete_account_warning_message(
-                                                    account.name),
-                                            // 'Are you sure you want to delete ${account.name}?',
-                                            cancelText: 'No',
-                                            confirmCallbackFunction: () async {
-                                          await _accountsBox.deleteAt(index);
-                                          setState(() {
-                                            _accounts =
-                                                _accountsBox.values.toList();
-                                          });
-                                          navigatorKey.currentState!.pop();
-                                        }, confirmText: 'Yes');
+                                        await showAppInfoDialog(
+                                          context, ref,
+                                          isWarning: true,
+                                          title: context.localizations
+                                              .delete_account_warning_message(
+                                                  account.name),
+                                          // 'Are you sure you want to delete ${account.name}?',
+                                          cancelText: context.localizations.no,
+                                          // 'No',
+                                          confirmCallbackFunction: () async {
+                                            await _accountsBox.deleteAt(index);
+                                            setState(() {
+                                              _accounts =
+                                                  _accountsBox.values.toList();
+                                            });
+                                            navigatorKey.currentState!.pop();
+                                          },
+                                          confirmText:
+                                              context.localizations.yes,
+                                          // 'Yes',
+                                        );
                                       },
                                       child: Ink(
                                         child: const Icon(

@@ -133,8 +133,12 @@ class Authenticator {
       return AuthResult.success;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-password' || e.code == 'user-not-found') {
-        await showAppInfoDialog(navigatorKey.currentContext!, ref,
-            title: 'Invalid credentials.');
+        await showAppInfoDialog(
+          navigatorKey.currentContext!,
+          ref,
+          title: navigatorKey.currentContext!.localizations.invalid_credentials,
+          // 'Invalid credentials.',
+        );
       } else {
         await showAppInfoDialog(navigatorKey.currentContext!, ref,
             title: e.message ?? e.code);
@@ -175,9 +179,12 @@ class Authenticator {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-exists') {
-        await showAppInfoDialog(navigatorKey.currentContext!, ref,
-            title:
-                'An account with this email already exists. Please use the Forgot Password button to get your account back.');
+        await showAppInfoDialog(
+          navigatorKey.currentContext!, ref,
+          title:
+              navigatorKey.currentContext!.localizations.email_already_exists,
+          // 'An account with this email already exists. Please use the Forgot Password button to get your account back.'
+        );
       } else {
         await showAppInfoDialog(navigatorKey.currentContext!, ref,
             title: e.message ?? e.code);
@@ -209,7 +216,10 @@ class Authenticator {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-password' || e.code == 'user-not-found') {
         await showAppInfoDialog(navigatorKey.currentContext!, ref,
-            title: 'Invalid credentials.');
+            title:
+                navigatorKey.currentContext!.localizations.invalid_credentials
+            // 'Invalid credentials.'
+            );
       } else {
         await showAppInfoDialog(navigatorKey.currentContext!, ref,
             title: e.message ?? e.code);

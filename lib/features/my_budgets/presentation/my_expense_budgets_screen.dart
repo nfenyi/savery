@@ -1324,9 +1324,8 @@ class _MyExpenseBudgetScreenState extends ConsumerState<MyExpenseBudgetScreen> {
       confirmText: navigatorKey.currentContext!.localizations.yes,
       //  'Yes',
       isWarning: true,
-      cancelText:
-          //  navigatorKey.currentContext!.localizations.no,
-          'No',
+      cancelText: navigatorKey.currentContext!.localizations.no,
+      // 'No',
       confirmCallbackFunction: () async {
         await ref.read(userProvider.notifier).deleteExpenseBudget(
             budget: budget, selectedAccount: _selectedAccount);

@@ -585,7 +585,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   // }
                 },
                 child: AppText(
-                  text: 'OK',
+                  text: context.localizations.ok,
                   color: (ref.watch(themeProvider) == 'System' &&
                               MediaQuery.platformBrightnessOf(context) ==
                                   Brightness.dark) ||

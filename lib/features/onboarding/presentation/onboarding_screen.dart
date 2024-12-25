@@ -2,17 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:iconify_flutter/icons/akar_icons.dart';
-import 'package:iconify_flutter/icons/arcticons.dart';
 import 'package:iconify_flutter/icons/bxs.dart';
-import 'package:iconify_flutter/icons/heroicons.dart';
 import 'package:iconify_flutter/icons/mdi_light.dart';
 import 'package:iconify_flutter/icons/ph.dart';
-import 'package:iconify_flutter/icons/tabler.dart';
 import 'package:iconify_flutter_plus/icons/ic.dart';
 import 'package:iconify_flutter_plus/icons/la.dart';
 import 'package:iconify_flutter_plus/icons/material_symbols.dart';
-import 'package:iconify_flutter_plus/icons/teenyicons.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_assets.dart';
 import 'package:savery/app_constants/app_constants.dart';
@@ -91,7 +86,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               });
               await _transactionCategoriesBox.addAll([
                 TransactionCategory(
-                    icon: Teenyicons.gift_outline,
+                    icon: Ph.gift,
                     name: navigatorKey.currentContext!.localizations.gifts
                     //  'Gifts'
                     ),
@@ -106,17 +101,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     //  'Car'
                     ),
                 TransactionCategory(
-                    icon: Arcticons.chess,
-                    name: navigatorKey.currentContext!.localizations.game
-                    //  'Game'
+                    icon: La.chess_knight,
+                    name: navigatorKey.currentContext!.localizations.gaming
+                    // 'Game',
                     ),
                 TransactionCategory(
-                  icon: AkarIcons.utensils,
+                  icon: Ph.coffee_light,
                   name: navigatorKey.currentContext!.localizations.cafe,
                   // 'Cafe'
                 ),
                 TransactionCategory(
-                    icon: Tabler.plane_tilt,
+                    icon: La.plane,
                     name: navigatorKey.currentContext!.localizations.travel
                     // 'Travel'
                     ),
@@ -131,12 +126,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     // 'Care'
                     ),
                 TransactionCategory(
-                    icon: Heroicons.tv,
+                    icon: Ic.outline_tv,
                     name: navigatorKey.currentContext!.localizations.devices
                     //  'Devices'
                     ),
                 TransactionCategory(
-                    icon: Bxs.bowl_rice,
+                    icon: Ph.fork_knife_fill,
                     name: navigatorKey.currentContext!.localizations.food
                     // 'Food'
                     ),
@@ -409,7 +404,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       });
                       await _transactionCategoriesBox.addAll([
                         TransactionCategory(
-                            icon: Teenyicons.gift_outline,
+                            icon: Ph.gift,
                             name:
                                 navigatorKey.currentContext!.localizations.gifts
                             //  'Gifts'
@@ -427,18 +422,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             //  'Car'
                             ),
                         TransactionCategory(
-                            icon: Arcticons.chess,
-                            name:
-                                navigatorKey.currentContext!.localizations.game
-                            //  'Game'
-                            ),
+                          icon: La.chess_knight,
+                          name:
+                              navigatorKey.currentContext!.localizations.gaming,
+                          // 'Game',
+                        ),
                         TransactionCategory(
-                          icon: AkarIcons.utensils,
+                          icon: Ph.coffee_light,
                           name: navigatorKey.currentContext!.localizations.cafe,
                           // 'Cafe'
                         ),
                         TransactionCategory(
-                            icon: Tabler.plane_tilt,
+                            icon: La.plane,
                             name: navigatorKey
                                 .currentContext!.localizations.travel
                             // 'Travel'
@@ -456,13 +451,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             // 'Care'
                             ),
                         TransactionCategory(
-                            icon: Heroicons.tv,
+                            icon: Ic.outline_tv,
                             name: navigatorKey
                                 .currentContext!.localizations.devices
                             //  'Devices'
                             ),
                         TransactionCategory(
-                            icon: Bxs.bowl_rice,
+                            icon: Ph.fork_knife_fill,
                             name:
                                 navigatorKey.currentContext!.localizations.food
                             // 'Food'

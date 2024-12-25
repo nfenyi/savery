@@ -648,9 +648,9 @@
   "@car": {
     "description": "Car"
   },
-  "game": "Game",
-  "@game": {
-    "description": "Game"
+  "gaming": "Gaming",
+  "@gaming": {
+    "description": "Gaming"
   },
   "cafe": "Cafe",
   "@cafe": {
@@ -888,5 +888,21 @@
   "no_internet_connection": "No internet connection detected. Turn on your data/wifi.",
   "@no_internet_connection": {
     "description": "No internet connection detected. Turn on your data/wifi.."
+  },
+  "figure_is_null": "Provided figure is null",
+  "@figure_is_null": {
+    "description": "Provided figure is null"
+  },
+  "do_not_enter_negative_number": "Do not enter a negative number",
+  "@do_not_enter_negative_number": {
+    "description": "Do not enter a negative number"
+  },
+  "invalid_credentials": "Invalid credentials.",
+  "@invalid_credentials": {
+    "description": "Invalid credentials."
+  },
+  "email_already_exists": "An account with this email already exists. Please use the Forgot Password button to get your account back.",
+  "@email_already_exists": {
+    "description": "An account with this email already exists. Please use the Forgot Password button to get your account back."
   }
 }

@@ -1208,10 +1208,12 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                       ),
                       validator: (value) {
                         if (value == null) {
+                          // return context.localizations.figure_is_null;
                           return 'Provided figure is null';
                         } else if (value.isEmpty) {
                           return null;
                         } else if (double.parse(value) < 0) {
+                          // return context.localizations.do_not_enter_negative_number;
                           return 'Do not enter a negative number';
                         }
                         return null;
@@ -1285,9 +1287,12 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
     await showAppInfoDialog(
       context,
       ref,
-      title: 'Are you sure you want to delete this goal?',
-      confirmText: 'Yes',
-      cancelText: 'No',
+      title: context.localizations.delete_goal_info,
+      // 'Are you sure you want to delete this goal?',
+      confirmText: context.localizations.yes,
+      // 'Yes',
+      cancelText: context.localizations.no,
+      // 'No',
       isWarning: true,
       confirmCallbackFunction: () async {
         await ref
