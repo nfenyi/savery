@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:iconify_flutter/icons/bxs.dart';
 import 'package:iconify_flutter/icons/mdi_light.dart';
 import 'package:iconify_flutter/icons/ph.dart';
 import 'package:iconify_flutter_plus/icons/ic.dart';

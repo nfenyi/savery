@@ -146,6 +146,7 @@
   "date": "Date",
   "no_goals_created_yet": "Aucun objectif créé pour le moment",
   "days_more": "jours de plus",
+  "day_more": "day more",
   "create_new_goal": "Créer un nouvel objectif",
   "save": "Enregistrer",
   "reduce_milestones_toast_info": "Réduisez certaines étapes pour réduire le déficit du compte",

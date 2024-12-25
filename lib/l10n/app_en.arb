@@ -469,6 +469,10 @@
   "@days_more": {
     "description": "days more"
   },
+  "day_more": "day more",
+  "@day_more": {
+    "description": "day more"
+  },
   "goal_milestones": "Goal milestones",
   "@goal_milestones": {
     "description": "Goal Milestones"

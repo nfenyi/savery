@@ -353,8 +353,9 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                                 // final savingsRegionWidth =
                                 //     ((savingsFraction * 100) * 70) / 100;
                                 final daysMore = goal.estimatedDate
-                                    .difference(_currentDate)
-                                    .inDays;
+                                        .difference(_currentDate)
+                                        .inDays +
+                                    1;
 //TODO: add delete and update functionality to container
                                 return Stack(
                                   children: [
@@ -526,7 +527,7 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                                                                         TextDecoration
                                                                             .underline,
                                                                     text: value
-                                                                        ? '$daysMore ${context.localizations.days_more}'
+                                                                        ? '$daysMore ${daysMore == 1 || daysMore == -1 ? context.localizations.day_more : context.localizations.days_more}'
                                                                         // '$daysMore days more'
                                                                         : AppFunctions.formatDate(
                                                                             goal.estimatedDate
