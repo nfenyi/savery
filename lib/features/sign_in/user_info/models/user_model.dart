@@ -247,19 +247,22 @@ class Goal extends HiveObject {
   String name;
   @HiveField(4)
   double raisedAmount;
+  @HiveField(5)
+  String? icon;
 
-  Goal({
-    required this.fund,
-    required this.name,
-    required this.estimatedDate,
-    required this.createdAt,
-    this.raisedAmount = 0,
-  });
+  Goal(
+      {required this.fund,
+      required this.name,
+      required this.estimatedDate,
+      required this.createdAt,
+      this.raisedAmount = 0,
+      this.icon});
 
   factory Goal.fromJson(Map<String, dynamic> json) {
     return Goal(
         name: json['name'],
         fund: json['fund'],
+        icon: json['icon'],
         estimatedDate: DateTime.parse(json['duration']),
         createdAt: DateTime.parse(json['createdAt']),
         raisedAmount: json['raisedAmount']);
@@ -272,6 +275,7 @@ class Goal extends HiveObject {
       'duration': estimatedDate,
       'createdAt': createdAt.toIso8601String(),
       'raisedAmount': raisedAmount,
+      'icon': icon,
     };
   }
 }

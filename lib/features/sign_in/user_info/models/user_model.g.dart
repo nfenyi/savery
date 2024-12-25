@@ -224,13 +224,14 @@ class GoalAdapter extends TypeAdapter<Goal> {
       estimatedDate: fields[1] as DateTime,
       createdAt: fields[2] as DateTime,
       raisedAmount: fields[4] as double,
+      icon: fields[5] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Goal obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.fund)
       ..writeByte(1)
@@ -240,7 +241,9 @@ class GoalAdapter extends TypeAdapter<Goal> {
       ..writeByte(3)
       ..write(obj.name)
       ..writeByte(4)
-      ..write(obj.raisedAmount);
+      ..write(obj.raisedAmount)
+      ..writeByte(5)
+      ..write(obj.icon);
   }
 
   @override

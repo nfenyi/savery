@@ -247,11 +247,13 @@ class UserNotifier extends ChangeNotifier {
     required String goalFund,
     required DateTime currentDate,
     required DateTime selectedDate,
+    required String selectedIcon,
   }) async {
     await _goalsBox.add(Goal(
         name: goalName,
         fund: double.parse(goalFund),
         createdAt: currentDate,
+        icon: selectedIcon,
         estimatedDate: selectedDate));
     selectedAccount.goals ??= HiveList(_goalsBox);
 

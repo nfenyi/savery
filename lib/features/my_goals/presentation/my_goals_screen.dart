@@ -10,6 +10,8 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
+import 'package:iconify_flutter_plus/icons/ic.dart';
 import 'package:lottie/lottie.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_assets.dart';
@@ -388,22 +390,49 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                                                           .withOpacity(0.1)
                                                       : Colors.amber
                                                           .withOpacity(0.1),
-                                              child: Icon(
-                                                FontAwesomeIcons.circleCheck,
-                                                color: consumerGoals![index]
-                                                            .raisedAmount >=
-                                                        consumerGoals![index]
-                                                            .fund
-                                                    ? Colors.green
-                                                    : consumerGoals![index]
-                                                                .raisedAmount <
-                                                            consumerGoals![
-                                                                        index]
-                                                                    .fund /
-                                                                2
-                                                        ? Colors.red
-                                                        : Colors.amber,
-                                              ),
+                                              child:
+                                                  consumerGoals![index].icon ==
+                                                          null
+                                                      ? Icon(
+                                                          FontAwesomeIcons
+                                                              .circleCheck,
+                                                          color: consumerGoals![
+                                                                          index]
+                                                                      .raisedAmount >=
+                                                                  consumerGoals![
+                                                                          index]
+                                                                      .fund
+                                                              ? Colors.green
+                                                              : consumerGoals![
+                                                                              index]
+                                                                          .raisedAmount <
+                                                                      consumerGoals![index]
+                                                                              .fund /
+                                                                          2
+                                                                  ? Colors.red
+                                                                  : Colors
+                                                                      .amber,
+                                                        )
+                                                      : Iconify(
+                                                          consumerGoals![index]
+                                                              .icon!,
+                                                          color: consumerGoals![
+                                                                          index]
+                                                                      .raisedAmount >=
+                                                                  consumerGoals![
+                                                                          index]
+                                                                      .fund
+                                                              ? Colors.green
+                                                              : consumerGoals![
+                                                                              index]
+                                                                          .raisedAmount <
+                                                                      consumerGoals![index]
+                                                                              .fund /
+                                                                          2
+                                                                  ? Colors.red
+                                                                  : Colors
+                                                                      .amber,
+                                                        ),
                                             ),
                                           ),
                                           const Gap(10),
@@ -814,76 +843,296 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
             ],
           );
         } else {
-          return AlertDialog(
-            actionsPadding: const EdgeInsets.only(bottom: 5),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.0)),
-            content: StatefulBuilder(
-              builder: (context, setState) => Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    RequiredText(context.localizations.goal
-                        // 'Goal'
+          String? selectedIcon;
+          Color dateColor = Colors.grey.shade400;
+          Color pickAnIconValidatorColor = AppColors.neutral300;
+          return StatefulBuilder(
+              builder: (context, setState) => AlertDialog(
+                    actionsPadding: const EdgeInsets.only(bottom: 5),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0)),
+                    content: Form(
+                      key: _formKey,
+                      //TODO: Place scrollbar here
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            RequiredText(context.localizations.goal
+                                // 'Goal'
+                                ),
+                            const Gap(12),
+                            AppTextFormField(
+                              controller: _goalNameController,
+                              hintText: context.localizations.goal_hint,
+                              // 'New Car, Pay Debt, etc',
+                              validator: FormBuilderValidators.compose([
+                                FormBuilderValidators.required(),
+                              ]),
+                            ),
+                            const Gap(12),
+                            RequiredText(context.localizations.fund
+                                // 'Fund'
+                                ),
+                            const Gap(12),
+                            AppTextFormField(
+                              controller: _goalFundController,
+                              hintText: '10000',
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                      decimal: true),
+                              suffixIcon: AppText(
+                                text: _currency,
+                                color: Colors.grey,
+                              ),
+                              validator: FormBuilderValidators.compose([
+                                FormBuilderValidators.positiveNumber(),
+                              ]),
+                            ),
+                            const Gap(12),
+                            RequiredText(context.localizations.estimated_date
+                                // 'Estimated Date'
+                                ),
+                            const Gap(12),
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10)),
+                                  border: Border.all(
+                                    color: dateColor,
+                                  )),
+                              child: ListTile(
+                                title: Text(
+                                  _selectedDate == null
+                                      ? context.localizations.date
+                                      // 'Date'
+                                      : AppFunctions.formatDate(
+                                          _selectedDate.toString(),
+                                          format: 'j M Y, g:i A'),
+                                  style: GoogleFonts.manrope(
+                                    fontSize: AppSizes.bodySmaller,
+                                    // fontWeight:
+                                    //     _selectedDate == null ? null : FontWeight.bold,
+                                    color: _selectedDate == null
+                                        ? Colors.grey
+                                        : null,
+                                  ),
+                                ),
+                                trailing: Icon(
+                                  FontAwesomeIcons.calendar,
+                                  color: (ref.watch(themeProvider) ==
+                                                  'System' &&
+                                              MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark) ||
+                                          ref.watch(themeProvider) == 'Dark'
+                                      ? AppColors.primaryDark
+                                      : AppColors.primary,
+                                  size: 15,
+                                ),
+                                dense: true,
+                                contentPadding:
+                                    const EdgeInsets.symmetric(horizontal: 12),
+                                onTap: () async {
+                                  await showBoardDateTimePicker(
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _selectedDate = value;
+                                      });
+                                    },
+                                    showDragHandle: true,
+                                    options: BoardDateTimeOptions(
+                                      languages: BoardPickerLanguages(
+                                          now: context.localizations.now,
+                                          today: context.localizations.today,
+                                          yesterday:
+                                              context.localizations.yesterday,
+                                          tomorrow:
+                                              context.localizations.tomorrow,
+                                          locale: ref.watch(languageProvider) ==
+                                                  'Français'
+                                              ? 'fr'
+                                              : 'en'),
+                                      activeColor: ((ref.watch(themeProvider) ==
+                                                      'System' ||
+                                                  ref.watch(themeProvider) ==
+                                                      'Dark') &&
+                                              (MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark))
+                                          ? AppColors.primaryDark
+                                          : AppColors.primary,
+                                      // backgroundColor: Colors.white,
+                                      foregroundColor: ((ref.watch(
+                                                          themeProvider) ==
+                                                      'System' ||
+                                                  ref.watch(themeProvider) ==
+                                                      'Dark') &&
+                                              (MediaQuery.platformBrightnessOf(
+                                                      context) ==
+                                                  Brightness.dark))
+                                          ? const Color.fromARGB(
+                                              255, 78, 79, 91)
+                                          : AppColors.neutral100,
+                                      // boardTitle: "Select 'TODAY' or '",
+                                      // boardTitleTextStyle: TextStyle(fontWeight: FontWeight.w400),
+                                      inputable: false,
+                                      pickerSubTitles: BoardDateTimeItemTitles(
+                                        year: context.localizations.year,
+                                        day: context.localizations.day,
+                                        hour: context.localizations.hour,
+                                        minute: context.localizations.minute,
+                                      ),
+                                    ),
+                                    context: context,
+                                    pickerType: DateTimePickerType.datetime,
+                                  );
+                                },
+                              ),
+                            ),
+                            const Gap(12),
+                            AppText(
+                              text: context.localizations.pick_an_icon,
+                              //  'Pick an icon',
+                            ),
+                            const Gap(5),
+                            Center(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    width: 1.0,
+                                    color: pickAnIconValidatorColor,
+                                  ),
+                                ),
+                                height: Adaptive.h(20),
+                                width: Adaptive.w(60),
+                                child: Scrollbar(
+                                  child: GridView.builder(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 15, horizontal: 10),
+                                    itemCount: Ic.iconsList.length,
+                                    gridDelegate:
+                                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                                            maxCrossAxisExtent: 30,
+                                            mainAxisExtent: 30,
+                                            crossAxisSpacing: 8,
+                                            mainAxisSpacing: 10),
+                                    itemBuilder: (context, index) {
+                                      final icon = Ic.iconsList[index];
+                                      return InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            selectedIcon = icon;
+                                          });
+                                        },
+                                        child: Ink(
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            child: Container(
+                                              padding: const EdgeInsets.all(5),
+                                              decoration: BoxDecoration(
+                                                  color: (selectedIcon == icon
+                                                          ? ((ref.watch(themeProvider) ==
+                                                                      'System') &&
+                                                                  (MediaQuery.platformBrightnessOf(
+                                                                          context) ==
+                                                                      Brightness
+                                                                          .dark))
+                                                              ? AppColors
+                                                                  .primaryDark
+                                                              : AppColors
+                                                                  .primary
+                                                          : Colors.grey)
+                                                      .withOpacity(0.1),
+                                                  borderRadius:
+                                                      const BorderRadius.all(
+                                                          Radius.circular(5))),
+                                              // width: Adaptive.w(5),
+                                              child: Iconify(
+                                                icon,
+                                                color: selectedIcon == icon
+                                                    ? ((ref.watch(themeProvider) ==
+                                                                'System') &&
+                                                            (MediaQuery.platformBrightnessOf(
+                                                                    context) ==
+                                                                Brightness
+                                                                    .dark))
+                                                        ? AppColors.primaryDark
+                                                        : AppColors.primary
+                                                    : AppColors.neutral600,
+                                                size: 7,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
                         ),
-                    const Gap(12),
-                    AppTextFormField(
-                      controller: _goalNameController,
-                      hintText: context.localizations.goal_hint,
-                      // 'New Car, Pay Debt, etc',
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(),
-                      ]),
-                    ),
-                    const Gap(12),
-                    RequiredText(context.localizations.fund
-                        // 'Fund'
-                        ),
-                    const Gap(12),
-                    AppTextFormField(
-                      controller: _goalFundController,
-                      hintText: '10000',
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      suffixIcon: AppText(
-                        text: _currency,
-                        color: Colors.grey,
                       ),
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.positiveNumber(),
-                      ]),
                     ),
-                    const Gap(12),
-                    RequiredText(context.localizations.estimated_date
-                        // 'Estimated Date'
-                        ),
-                    const Gap(12),
-                    Container(
-                      decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
-                          border: Border.all(
-                            color: Colors.grey.shade400,
-                          )),
-                      child: ListTile(
-                        title: Text(
-                          _selectedDate == null
-                              ? context.localizations.date
-                              // 'Date'
-                              : AppFunctions.formatDate(
-                                  _selectedDate.toString(),
-                                  format: 'j M Y, g:i A'),
-                          style: GoogleFonts.manrope(
-                            fontSize: AppSizes.bodySmaller,
-                            // fontWeight:
-                            //     _selectedDate == null ? null : FontWeight.bold,
-                            color: _selectedDate == null ? Colors.grey : null,
-                          ),
-                        ),
-                        trailing: Icon(
-                          FontAwesomeIcons.calendar,
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate() &&
+                              _selectedDate != null &&
+                              selectedIcon != null) {
+                            await ref.read(userProvider.notifier).addGoal(
+                                selectedAccount: _selectedAccount,
+                                goalName: _goalNameController.text,
+                                goalFund: _goalFundController.text,
+                                currentDate: _currentDate,
+                                selectedIcon: selectedIcon!,
+                                selectedDate: _selectedDate!);
+                            _goalNameController.clear();
+
+                            _selectedDate = null;
+                            navigatorKey.currentState!.pop(true);
+
+                            //
+                          } else {
+                            if (_selectedDate == null) {
+                              showInfoToast(
+                                  context.localizations.pick_a_date_info,
+
+                                  // 'Please pick an icon.',
+                                  context: context);
+
+                              setState(() {
+                                dateColor = Colors.red;
+                              });
+                            } else {
+                              setState(() {
+                                dateColor = Colors.grey.shade400;
+                              });
+                            }
+                            if (selectedIcon == null) {
+                              showInfoToast(
+                                  context.localizations.pick_an_icon_toast_info,
+
+                                  // 'Please pick an icon.',
+                                  context: context);
+
+                              setState(() {
+                                pickAnIconValidatorColor = Colors.red;
+                              });
+                            } else {
+                              setState(() {
+                                pickAnIconValidatorColor = AppColors.neutral300;
+                              });
+                            }
+                          }
+                        },
+                        child: AppText(
+                          text: context.localizations.ok,
+                          //  'OK',
                           color: (ref.watch(themeProvider) == 'System' &&
                                       MediaQuery.platformBrightnessOf(
                                               context) ==
@@ -891,98 +1140,11 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
                                   ref.watch(themeProvider) == 'Dark'
                               ? AppColors.primaryDark
                               : AppColors.primary,
-                          size: 15,
+                          weight: FontWeight.w600,
                         ),
-                        dense: true,
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 12),
-                        onTap: () async {
-                          await showBoardDateTimePicker(
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedDate = value;
-                              });
-                            },
-                            showDragHandle: true,
-                            options: BoardDateTimeOptions(
-                              languages: BoardPickerLanguages(
-                                  now: context.localizations.now,
-                                  today: context.localizations.today,
-                                  yesterday: context.localizations.yesterday,
-                                  tomorrow: context.localizations.tomorrow,
-                                  locale:
-                                      ref.watch(languageProvider) == 'Français'
-                                          ? 'fr'
-                                          : 'en'),
-                              activeColor: ((ref.watch(themeProvider) ==
-                                              'System' ||
-                                          ref.watch(themeProvider) == 'Dark') &&
-                                      (MediaQuery.platformBrightnessOf(
-                                              context) ==
-                                          Brightness.dark))
-                                  ? AppColors.primaryDark
-                                  : AppColors.primary,
-                              // backgroundColor: Colors.white,
-                              foregroundColor: ((ref.watch(themeProvider) ==
-                                              'System' ||
-                                          ref.watch(themeProvider) == 'Dark') &&
-                                      (MediaQuery.platformBrightnessOf(
-                                              context) ==
-                                          Brightness.dark))
-                                  ? const Color.fromARGB(255, 78, 79, 91)
-                                  : AppColors.neutral100,
-                              // boardTitle: "Select 'TODAY' or '",
-                              // boardTitleTextStyle: TextStyle(fontWeight: FontWeight.w400),
-                              inputable: false,
-                              pickerSubTitles: BoardDateTimeItemTitles(
-                                year: context.localizations.year,
-                                day: context.localizations.day,
-                                hour: context.localizations.hour,
-                                minute: context.localizations.minute,
-                              ),
-                            ),
-                            context: context,
-                            pickerType: DateTimePickerType.datetime,
-                          );
-                        },
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    await ref.read(userProvider.notifier).addGoal(
-                        selectedAccount: _selectedAccount,
-                        goalName: _goalNameController.text,
-                        goalFund: _goalFundController.text,
-                        currentDate: _currentDate,
-                        selectedDate: _selectedDate!);
-                    _goalNameController.clear();
-
-                    _selectedDate = null;
-                    navigatorKey.currentState!.pop(true);
-
-                    //
-                  }
-                },
-                child: AppText(
-                  text: context.localizations.ok,
-                  //  'OK',
-                  color: (ref.watch(themeProvider) == 'System' &&
-                              MediaQuery.platformBrightnessOf(context) ==
-                                  Brightness.dark) ||
-                          ref.watch(themeProvider) == 'Dark'
-                      ? AppColors.primaryDark
-                      : AppColors.primary,
-                  weight: FontWeight.w600,
-                ),
-              ),
-            ],
-          );
+                    ],
+                  ));
         }
       },
     );
@@ -1163,121 +1325,125 @@ class _MyGoalsScreenState extends ConsumerState<MyGoalsScreen> {
             ],
           );
         } else {
-          return AlertDialog(
-            actionsPadding: const EdgeInsets.only(bottom: 5),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.0)),
-            content: StatefulBuilder(
-              builder: (context, setState) => Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        RequiredText(context.localizations.milestone
-                            // 'Milestone'
-                            ),
-                        InkWell(
-                          onTap: () async => await _showDeleteDialog(goal),
-                          child: Ink(
-                            //wrapping with a bigger sizedbox to make the delete button easier to tap
-                            child: const SizedBox(
-                              width: 18,
-                              child: Icon(
-                                FontAwesomeIcons.trashCan,
-                                color: Colors.red,
-                                size: 15,
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              actionsPadding: const EdgeInsets.only(bottom: 5),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0)),
+              content: StatefulBuilder(
+                builder: (context, setState) => Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          RequiredText(context.localizations.milestone
+                              // 'Milestone'
+                              ),
+                          InkWell(
+                            onTap: () async => await _showDeleteDialog(goal),
+                            child: Ink(
+                              //wrapping with a bigger sizedbox to make the delete button easier to tap
+                              child: const SizedBox(
+                                width: 18,
+                                child: Icon(
+                                  FontAwesomeIcons.trashCan,
+                                  color: Colors.red,
+                                  size: 15,
+                                ),
                               ),
                             ),
-                          ),
-                        )
-                      ],
-                    ),
-                    const Gap(25),
-                    AppTextFormField(
-                      controller: _milestoneController,
-                      hintText: '0.0',
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      suffixIcon: AppText(
-                        text: _currency,
-                        color: Colors.grey,
+                          )
+                        ],
                       ),
-                      validator: (value) {
-                        if (value == null) {
-                          // return context.localizations.figure_is_null;
-                          return 'Provided figure is null';
-                        } else if (value.isEmpty) {
+                      const Gap(25),
+                      AppTextFormField(
+                        controller: _milestoneController,
+                        hintText: '0.0',
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        suffixIcon: AppText(
+                          text: _currency,
+                          color: Colors.grey,
+                        ),
+                        validator: (value) {
+                          if (value == null) {
+                            // return context.localizations.figure_is_null;
+                            return 'Provided figure is null';
+                          } else if (value.isEmpty) {
+                            return null;
+                          } else if (double.parse(value) < 0) {
+                            // return context.localizations.do_not_enter_negative_number;
+                            return 'Do not enter a negative number';
+                          }
                           return null;
-                        } else if (double.parse(value) < 0) {
-                          // return context.localizations.do_not_enter_negative_number;
-                          return 'Do not enter a negative number';
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      // final user = _userBox.values.first;
+                      final parsedInput = double.parse(
+                          _milestoneController.text != ''
+                              ? _milestoneController.text
+                              : '0');
+                      final double difference =
+                          (parsedInput - goal.raisedAmount).abs();
+                      if (parsedInput > goal.raisedAmount) {
+                        if (consumerSavingsBucket == 0) {
+                          showInfoToast(
+                              context.localizations.empty_bucket_toast_info,
+                              // 'Your savings bucket is currently empty',
+                              context: context);
+                        } else if (consumerSavingsBucket < difference) {
+                          showInfoToast(
+                              context.localizations
+                                  .increment_is_more_than_backet_info,
+                              // 'Your increment is more than what the savings bucket can provide',
+                              context: context);
+                        } else if (consumerSavingsBucket >= difference) {
+                          await ref
+                              .read(userProvider.notifier)
+                              .increaseMilestone(
+                                goal: goal,
+                                parsedInput: parsedInput,
+                                difference: difference,
+                                selectedAccount: _selectedAccount,
+                              );
                         }
-                        return null;
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    // final user = _userBox.values.first;
-                    final parsedInput = double.parse(
-                        _milestoneController.text != ''
-                            ? _milestoneController.text
-                            : '0');
-                    final double difference =
-                        (parsedInput - goal.raisedAmount).abs();
-                    if (parsedInput > goal.raisedAmount) {
-                      if (consumerSavingsBucket == 0) {
-                        showInfoToast(
-                            context.localizations.empty_bucket_toast_info,
-                            // 'Your savings bucket is currently empty',
-                            context: context);
-                      } else if (consumerSavingsBucket < difference) {
-                        showInfoToast(
-                            context.localizations
-                                .increment_is_more_than_backet_info,
-                            // 'Your increment is more than what the savings bucket can provide',
-                            context: context);
-                      } else if (consumerSavingsBucket >= difference) {
-                        await ref.read(userProvider.notifier).increaseMilestone(
-                              goal: goal,
-                              parsedInput: parsedInput,
-                              difference: difference,
-                              selectedAccount: _selectedAccount,
-                            );
+                      } else {
+                        await ref.read(userProvider.notifier).decreaseMilestone(
+                            goal: goal,
+                            parsedInput: parsedInput,
+                            difference: difference,
+                            selectedAccount: _selectedAccount);
                       }
-                    } else {
-                      await ref.read(userProvider.notifier).decreaseMilestone(
-                          goal: goal,
-                          parsedInput: parsedInput,
-                          difference: difference,
-                          selectedAccount: _selectedAccount);
+                      navigatorKey.currentState!.pop();
                     }
-                    navigatorKey.currentState!.pop();
-                  }
-                },
-                child: AppText(
-                  text: context.localizations.update,
-                  //  'Update',
-                  color: (ref.watch(themeProvider) == 'System' &&
-                              MediaQuery.platformBrightnessOf(context) ==
-                                  Brightness.dark) ||
-                          ref.watch(themeProvider) == 'Dark'
-                      ? AppColors.primaryDark
-                      : AppColors.primary,
-                  weight: FontWeight.w600,
+                  },
+                  child: AppText(
+                    text: context.localizations.update,
+                    //  'Update',
+                    color: (ref.watch(themeProvider) == 'System' &&
+                                MediaQuery.platformBrightnessOf(context) ==
+                                    Brightness.dark) ||
+                            ref.watch(themeProvider) == 'Dark'
+                        ? AppColors.primaryDark
+                        : AppColors.primary,
+                    weight: FontWeight.w600,
+                  ),
                 ),
-              ),
-            ],
-          );
+              ],
+            );
+          });
         }
       },
     );

@@ -5,11 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:gap/gap.dart';
-import 'package:iconify_flutter/icons/arcticons.dart';
-import 'package:iconify_flutter/icons/ph.dart';
 import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
 import 'package:iconify_flutter_plus/icons/ic.dart';
-import 'package:iconify_flutter_plus/icons/la.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savery/app_constants/app_colors.dart';
 import 'package:savery/app_constants/app_sizes.dart';
@@ -32,7 +29,7 @@ class CategoriesScreen extends ConsumerWidget {
     final formKey = GlobalKey<FormState>();
     final consumerCategories = ref.watch(categoriesProvider).categories;
     String? selectedIcon;
-    Color? pickAColorColor;
+    Color? pickAnIconValidatorColor;
     final addButton = TransactionCategory(
         icon: Ic.round_plus, name: context.localizations.add_a_category);
     final categoriesHolder = [addButton, ...consumerCategories];
@@ -146,7 +143,7 @@ class CategoriesScreen extends ConsumerWidget {
                       AppText(
                         text: context.localizations.pick_an_icon,
                         //  'Pick an icon',
-                        color: pickAColorColor,
+                        color: pickAnIconValidatorColor,
                       ),
                       const Gap(5),
                       Center(
@@ -246,7 +243,7 @@ class CategoriesScreen extends ConsumerWidget {
                               context: context);
 
                           setState(() {
-                            pickAColorColor = Colors.red;
+                            pickAnIconValidatorColor = Colors.red;
                           });
                         }
                       }
