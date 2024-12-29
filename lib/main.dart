@@ -41,7 +41,7 @@ void main() async {
     );
     // Pass all uncaught "fatal" errors from the framework to Crashlytics
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-    await FirebaseNotificationsApi().initNotifications();
+
     // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
     PlatformDispatcher.instance.onError = (error, stack) {
       FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
@@ -49,8 +49,18 @@ void main() async {
     };
 
     runApp(const ProviderScope(child: Savery()));
-  } on Exception catch (e) {
-    throw Exception(e);
+    await FirebaseNotificationsApi().initNotifications();
+  } on FirebaseException catch (e) {
+    // error is thrown when launching app for the first time and internet is off
+    //message: [ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception: Exception: [firebase_messaging/unknown] java.io.IOException: java.util.concurrent.ExecutionException: java.io.IOException: SERVICE_NOT_AVAILABLE
+    if ( //commenting out to make it more generic
+        // e.plugin == "firebase_messaging" &&
+        e.message != null && e.message!.contains('SERVICE_NOT_AVAILABLE')) {
+      await Hive.box(AppBoxes.appState).put(
+        'firebaseServiceNotAvailable',
+        true,
+      );
+    }
   }
 }
 
@@ -78,8 +88,6 @@ Future<void> openBoxes() async {
 class Savery extends StatelessWidget {
   const Savery({super.key});
 
-  //TODO: there maybe an error when the device is not connected to the internet and is open for the
-  //first time (onboarding)
   @override
   Widget build(BuildContext context) {
     return ResponsiveSizer(builder:

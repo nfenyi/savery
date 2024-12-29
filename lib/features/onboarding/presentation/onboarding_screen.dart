@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
@@ -79,77 +81,92 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             text: 'Skip',
             size: AppSizes.bodySmall,
             callback: () async {
-              await _appStateBox.putAll({
-                'onboarded': true,
-                'ratesAccessKey': 'M2KtcVAx901sgSFPG0Kq0SKDO7Wp37ZQ'
-              });
-              await _transactionCategoriesBox.addAll([
-                TransactionCategory(
-                    icon: Ph.gift,
-                    name: navigatorKey.currentContext!.localizations.gifts
-                    //  'Gifts'
-                    ),
-                TransactionCategory(
-                    icon: La.stethoscope,
-                    name: navigatorKey.currentContext!.localizations.health
-                    // 'Health'
-                    ),
-                TransactionCategory(
-                    icon: MaterialSymbols.directions_car_outline_rounded,
-                    name: navigatorKey.currentContext!.localizations.car
-                    //  'Car'
-                    ),
-                TransactionCategory(
-                    icon: La.chess_knight,
-                    name: navigatorKey.currentContext!.localizations.gaming
-                    // 'Game',
-                    ),
-                TransactionCategory(
-                  icon: Ph.coffee_light,
-                  name: navigatorKey.currentContext!.localizations.cafe,
-                  // 'Cafe'
-                ),
-                TransactionCategory(
-                    icon: La.plane,
-                    name: navigatorKey.currentContext!.localizations.travel
-                    // 'Travel'
-                    ),
-                TransactionCategory(
-                  icon: Ph.lightbulb_filament_light,
-                  name: navigatorKey.currentContext!.localizations.utility,
-                  // 'Utility'
-                ),
-                TransactionCategory(
-                    icon: Ic.round_face_2,
-                    name: navigatorKey.currentContext!.localizations.care
-                    // 'Care'
-                    ),
-                TransactionCategory(
-                    icon: Ic.outline_tv,
-                    name: navigatorKey.currentContext!.localizations.devices
-                    //  'Devices'
-                    ),
-                TransactionCategory(
-                    icon: Ph.fork_knife_fill,
-                    name: navigatorKey.currentContext!.localizations.food
-                    // 'Food'
-                    ),
-                TransactionCategory(
-                  icon: Ph.shopping_cart_thin,
-                  name: navigatorKey.currentContext!.localizations.shopping,
-                  // 'Shopping'
-                ),
-                TransactionCategory(
-                    icon: MdiLight.truck,
-                    name: navigatorKey.currentContext!.localizations.transport
-                    //  'Transport'
-                    ),
-              ]);
-              await navigatorKey.currentState!.pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => const SignInScreen(),
-                ),
-              );
+              if (_appStateBox.get('firebaseServiceNotAvailable') ?? false) {
+                await showAppInfoDialog(
+                  navigatorKey.currentContext!,
+                  dismissible: false,
+                  ref,
+                  title:
+                      'Please ensure you are connected to the internet on your first launch of Savery to complete setup',
+                  confirmCallbackFunction: () async {
+                    await _appStateBox.delete('firebaseServiceNotAvailable');
+                    // await SystemNavigator.pop(animated: true);
+                    exit(0);
+                  },
+                );
+              } else {
+                await _appStateBox.putAll({
+                  'onboarded': true,
+                  'ratesAccessKey': 'M2KtcVAx901sgSFPG0Kq0SKDO7Wp37ZQ'
+                });
+                await _transactionCategoriesBox.addAll([
+                  TransactionCategory(
+                      icon: Ph.gift,
+                      name: navigatorKey.currentContext!.localizations.gifts
+                      //  'Gifts'
+                      ),
+                  TransactionCategory(
+                      icon: La.stethoscope,
+                      name: navigatorKey.currentContext!.localizations.health
+                      // 'Health'
+                      ),
+                  TransactionCategory(
+                      icon: MaterialSymbols.directions_car_outline_rounded,
+                      name: navigatorKey.currentContext!.localizations.car
+                      //  'Car'
+                      ),
+                  TransactionCategory(
+                      icon: La.chess_knight,
+                      name: navigatorKey.currentContext!.localizations.gaming
+                      // 'Game',
+                      ),
+                  TransactionCategory(
+                    icon: Ph.coffee_light,
+                    name: navigatorKey.currentContext!.localizations.cafe,
+                    // 'Cafe'
+                  ),
+                  TransactionCategory(
+                      icon: La.plane,
+                      name: navigatorKey.currentContext!.localizations.travel
+                      // 'Travel'
+                      ),
+                  TransactionCategory(
+                    icon: Ph.lightbulb_filament_light,
+                    name: navigatorKey.currentContext!.localizations.utility,
+                    // 'Utility'
+                  ),
+                  TransactionCategory(
+                      icon: Ic.round_face_2,
+                      name: navigatorKey.currentContext!.localizations.care
+                      // 'Care'
+                      ),
+                  TransactionCategory(
+                      icon: Ic.outline_tv,
+                      name: navigatorKey.currentContext!.localizations.devices
+                      //  'Devices'
+                      ),
+                  TransactionCategory(
+                      icon: Ph.fork_knife_fill,
+                      name: navigatorKey.currentContext!.localizations.food
+                      // 'Food'
+                      ),
+                  TransactionCategory(
+                    icon: Ph.shopping_cart_thin,
+                    name: navigatorKey.currentContext!.localizations.shopping,
+                    // 'Shopping'
+                  ),
+                  TransactionCategory(
+                      icon: MdiLight.truck,
+                      name: navigatorKey.currentContext!.localizations.transport
+                      //  'Transport'
+                      ),
+                ]);
+                await navigatorKey.currentState!.pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => const SignInScreen(),
+                  ),
+                );
+              }
             },
           ),
         ],
@@ -392,92 +409,111 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                           .currentContext!.localizations.get_started_caps,
                   // 'GET STARTED',
                   callback: () async {
-                    if (currentPage != 2) {
-                      await _pageController.nextPage(
-                          duration: const Duration(seconds: 1),
-                          curve: Curves.easeIn);
+                    if (_appStateBox.get('firebaseServiceNotAvailable') ??
+                        false) {
+                      await showAppInfoDialog(
+                        navigatorKey.currentContext!,
+                        ref,
+                        dismissible: false,
+                        title:
+                            'Please ensure you are connected to the internet on your first launch of Savery to complete setup',
+                        confirmCallbackFunction: () async {
+                          await _appStateBox
+                              .delete('firebaseServiceNotAvailable');
+                          // await SystemNavigator.pop(animated: true);
+                          exit(0);
+                        },
+                      );
                     } else {
-                      await _appStateBox.putAll({
-                        'onboarded': true,
-                        'ratesAccessKey': 'M2KtcVAx901sgSFPG0Kq0SKDO7Wp37ZQ'
-                      });
-                      await _transactionCategoriesBox.addAll([
-                        TransactionCategory(
-                            icon: Ph.gift,
+                      if (currentPage != 2) {
+                        await _pageController.nextPage(
+                            duration: const Duration(seconds: 1),
+                            curve: Curves.easeIn);
+                      } else {
+                        await _appStateBox.putAll({
+                          'onboarded': true,
+                          'ratesAccessKey': 'M2KtcVAx901sgSFPG0Kq0SKDO7Wp37ZQ'
+                        });
+                        await _transactionCategoriesBox.addAll([
+                          TransactionCategory(
+                              icon: Ph.gift,
+                              name: navigatorKey
+                                  .currentContext!.localizations.gifts
+                              //  'Gifts'
+                              ),
+                          TransactionCategory(
+                              icon: La.stethoscope,
+                              name: navigatorKey
+                                  .currentContext!.localizations.health
+                              // 'Health'
+                              ),
+                          TransactionCategory(
+                              icon: MaterialSymbols
+                                  .directions_car_outline_rounded,
+                              name:
+                                  navigatorKey.currentContext!.localizations.car
+                              //  'Car'
+                              ),
+                          TransactionCategory(
+                            icon: La.chess_knight,
+                            name: navigatorKey
+                                .currentContext!.localizations.gaming,
+                            // 'Game',
+                          ),
+                          TransactionCategory(
+                            icon: Ph.coffee_light,
                             name:
-                                navigatorKey.currentContext!.localizations.gifts
-                            //  'Gifts'
-                            ),
-                        TransactionCategory(
-                            icon: La.stethoscope,
+                                navigatorKey.currentContext!.localizations.cafe,
+                            // 'Cafe'
+                          ),
+                          TransactionCategory(
+                              icon: La.plane,
+                              name: navigatorKey
+                                  .currentContext!.localizations.travel
+                              // 'Travel'
+                              ),
+                          TransactionCategory(
+                            icon: Ph.lightbulb_filament_light,
                             name: navigatorKey
-                                .currentContext!.localizations.health
-                            // 'Health'
-                            ),
-                        TransactionCategory(
-                            icon:
-                                MaterialSymbols.directions_car_outline_rounded,
-                            name: navigatorKey.currentContext!.localizations.car
-                            //  'Car'
-                            ),
-                        TransactionCategory(
-                          icon: La.chess_knight,
-                          name:
-                              navigatorKey.currentContext!.localizations.gaming,
-                          // 'Game',
-                        ),
-                        TransactionCategory(
-                          icon: Ph.coffee_light,
-                          name: navigatorKey.currentContext!.localizations.cafe,
-                          // 'Cafe'
-                        ),
-                        TransactionCategory(
-                            icon: La.plane,
+                                .currentContext!.localizations.utility,
+                            // 'Utility'
+                          ),
+                          TransactionCategory(
+                              icon: Ic.round_face_2,
+                              name: navigatorKey
+                                  .currentContext!.localizations.care
+                              // 'Care'
+                              ),
+                          TransactionCategory(
+                              icon: Ic.outline_tv,
+                              name: navigatorKey
+                                  .currentContext!.localizations.devices
+                              //  'Devices'
+                              ),
+                          TransactionCategory(
+                              icon: Ph.fork_knife_fill,
+                              name: navigatorKey
+                                  .currentContext!.localizations.food
+                              // 'Food'
+                              ),
+                          TransactionCategory(
+                            icon: Ph.shopping_cart_thin,
                             name: navigatorKey
-                                .currentContext!.localizations.travel
-                            // 'Travel'
-                            ),
-                        TransactionCategory(
-                          icon: Ph.lightbulb_filament_light,
-                          name: navigatorKey
-                              .currentContext!.localizations.utility,
-                          // 'Utility'
-                        ),
-                        TransactionCategory(
-                            icon: Ic.round_face_2,
-                            name:
-                                navigatorKey.currentContext!.localizations.care
-                            // 'Care'
-                            ),
-                        TransactionCategory(
-                            icon: Ic.outline_tv,
-                            name: navigatorKey
-                                .currentContext!.localizations.devices
-                            //  'Devices'
-                            ),
-                        TransactionCategory(
-                            icon: Ph.fork_knife_fill,
-                            name:
-                                navigatorKey.currentContext!.localizations.food
-                            // 'Food'
-                            ),
-                        TransactionCategory(
-                          icon: Ph.shopping_cart_thin,
-                          name: navigatorKey
-                              .currentContext!.localizations.shopping,
-                          // 'Shopping'
-                        ),
-                        TransactionCategory(
-                            icon: MdiLight.truck,
-                            name: navigatorKey
-                                .currentContext!.localizations.transport
-                            //  'Transport'
-                            ),
-                      ]);
-                      await navigatorKey.currentState!
-                          .pushReplacement(MaterialPageRoute(
-                        builder: (context) => const SignInScreen(),
-                      ));
+                                .currentContext!.localizations.shopping,
+                            // 'Shopping'
+                          ),
+                          TransactionCategory(
+                              icon: MdiLight.truck,
+                              name: navigatorKey
+                                  .currentContext!.localizations.transport
+                              //  'Transport'
+                              ),
+                        ]);
+                        await navigatorKey.currentState!
+                            .pushReplacement(MaterialPageRoute(
+                          builder: (context) => const SignInScreen(),
+                        ));
+                      }
                     }
                   },
                 ),

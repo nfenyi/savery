@@ -49,8 +49,8 @@ class _OTPScreenState extends State<OTPScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     _pinController.dispose();
+    super.dispose();
   }
 
   @override
