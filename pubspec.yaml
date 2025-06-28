@@ -55,7 +55,7 @@ dependencies:
   flutter_riverpod: ^2.6.1
   flutter_svg: ^2.0.16
   flutter_timer_countdown: ^1.0.7
-  fluttertoast: ^8.2.8
+  fluttertoast: ^8.2.12
   font_awesome_flutter: ^10.7.0
   form_builder_validators: ^11.0.0
   gap: ^3.0.1

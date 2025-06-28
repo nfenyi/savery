@@ -22,7 +22,7 @@ class PageViewTextWidget extends StatelessWidget {
         AppText(
           text: bodyText,
           size: AppSizes.bodySmall,
-          color: AppColors.neutral500,
+          color: AppColors.neutral300,
         ),
       ],
     );

@@ -22,7 +22,18 @@ class _TermsAndConditionWebviewState extends State<TermsAndConditionWebview> {
           size: AppSizes.bodySmall,
         ),
       ),
-      body: const Column(),
+      body: const Padding(
+        padding: EdgeInsets.symmetric(
+            horizontal: AppSizes.horizontalPadding, vertical: 20),
+        child: Column(
+          children: [
+            AppText(
+              text: 'Terms and conditions webview goes here.',
+              style: FontStyle.italic,
+            )
+          ],
+        ),
+      ),
     );
   }
 }

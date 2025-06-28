@@ -736,9 +736,9 @@
   "@sign_in_beginning_caps": {
     "description": "Sign in"
   },
-  "coming_soon_toast_info": "Coming soon.",
+  "coming_soon_toast_info": "I haven't paid $99 yet🙃.",
   "@coming_soon_toast_info": {
-    "description": "Coming soon"
+    "description": "I haven't paid $99 yet"
   },
   "dont_have_an_account": "Don''t have an account?",
   "@dont_have_an_account": {

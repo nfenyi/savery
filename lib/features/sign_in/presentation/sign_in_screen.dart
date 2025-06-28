@@ -282,7 +282,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   showInfoToast(
                       navigatorKey
                           .currentContext!.localizations.coming_soon_toast_info
-                      // 'Coming soon.'
+                      // 'I haven't paid $99 yet.'
                       ,
                       context: context);
                 },
